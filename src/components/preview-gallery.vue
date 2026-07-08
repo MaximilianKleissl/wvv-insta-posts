@@ -89,6 +89,23 @@ const openExpandedPreview = (slide: PreviewSlideRef) => {
 const closeExpandedPreview = () => {
   expandedSlide.value = null;
 };
+const nextSlide = () => {
+  if (!expandedSlide.value) return;
+
+  const idx = slides.value.findIndex((s) => s.slideId === expandedSlide.value!.slideId);
+  if (idx === -1) return;
+
+  expandedSlide.value = slides.value[(idx + 1) % slides.value.length];
+};
+
+const previousSlide = () => {
+  if (!expandedSlide.value) return;
+
+  const idx = slides.value.findIndex((s) => s.slideId === expandedSlide.value!.slideId);
+  if (idx === -1) return;
+
+  expandedSlide.value = slides.value[(idx - 1 + slides.value.length) % slides.value.length];
+};
 </script>
 
 <template>
@@ -119,28 +136,19 @@ const closeExpandedPreview = () => {
     </div>
 
     <div v-if="selectedWeekend" class="space-y-4">
-      <div class="grid gap-4 md:grid-cols-3">
+      <div class="flex flex-wrap gap-4">
         <div
           v-for="slide in slides"
           :key="slide.slideId"
-          class="rounded-2xl border border-gray-200 bg-gray-50 p-2"
+          class="rounded-2xl border border-gray-200 bg-gray-50 p-2 hover:bg-gray-200"
+          @click="openExpandedPreview(slide)"
         >
-          <div class="mb-2 flex items-center justify-between text-sm font-semibold text-gray-700">
-            <span>{{ slide.kind === 'overview' ? 'Übersicht' : 'Spieltag' }}</span>
-            <button
-              type="button"
-              class="rounded-full bg-green-900 px-3 py-1 text-xs font-semibold text-white hover:bg-green-800"
-              @click="openExpandedPreview(slide)"
-            >
-              Groß ansehen
-            </button>
-          </div>
           <div
-            class="mx-auto h-[240px] w-[240px] overflow-hidden border border-gray-200 bg-white shadow-sm"
+            class="mx-auto h-[216px] w-[216px] overflow-hidden border border-gray-200 bg-white shadow-sm"
           >
             <div
               class="origin-top-left"
-              style="transform: scale(0.204); width: 1080px; height: 1080px"
+              style="transform: scale(0.2); width: 1080px; height: 1080px"
             >
               <SlideOverview
                 v-if="slide.kind === 'overview'"
@@ -206,49 +214,54 @@ const closeExpandedPreview = () => {
         >
           Schließen
         </button>
-        <div
-          class="mx-auto h-[720px] w-[720px] overflow-hidden border border-gray-200 bg-white shadow-sm"
-        >
+        <div class="flex">
+          <button class="bg-gray-50 hover:bg-gray-200 p-2" @click="previousSlide">‹</button>
+
           <div
-            class="origin-top-left"
-            style="transform: scale(0.6667); width: 1080px; height: 1080px"
+            class="flex gap-1 h-[750px] w-[750px] overflow-hidden border border-gray-200 bg-white shadow-sm"
           >
-            <SlideOverview
-              v-if="expandedSlide.kind === 'overview'"
-              :id="expandedSlide.slideId"
-              :season="props.season"
-              :weekend-index="expandedSlide.weekendIndex"
-              :logo-library="props.logoLibrary"
-            />
-            <SlideTournament
-              v-else-if="
-                isTournamentMatchDay(
+            <div
+              class="origin-top-left"
+              style="transform: scale(0.6667); width: 1080px; height: 1080px"
+            >
+              <SlideOverview
+                v-if="expandedSlide.kind === 'overview'"
+                :id="expandedSlide.slideId"
+                :season="props.season"
+                :weekend-index="expandedSlide.weekendIndex"
+                :logo-library="props.logoLibrary"
+              />
+              <SlideTournament
+                v-else-if="
+                  isTournamentMatchDay(
+                    props.season.weekends[expandedSlide.weekendIndex].matchDays[
+                      expandedSlide.matchDayOriginalIndex ?? 0
+                    ],
+                  )
+                "
+                :id="expandedSlide.slideId"
+                :season="props.season"
+                :match-day="
                   props.season.weekends[expandedSlide.weekendIndex].matchDays[
                     expandedSlide.matchDayOriginalIndex ?? 0
-                  ],
-                )
-              "
-              :id="expandedSlide.slideId"
-              :season="props.season"
-              :match-day="
-                props.season.weekends[expandedSlide.weekendIndex].matchDays[
-                  expandedSlide.matchDayOriginalIndex ?? 0
-                ]
-              "
-              :logo-library="props.logoLibrary"
-            />
-            <SlideMatchday
-              v-else
-              :id="expandedSlide.slideId"
-              :season="props.season"
-              :match-day="
-                props.season.weekends[expandedSlide.weekendIndex].matchDays[
-                  expandedSlide.matchDayOriginalIndex ?? 0
-                ]
-              "
-              :logo-library="props.logoLibrary"
-            />
+                  ]
+                "
+                :logo-library="props.logoLibrary"
+              />
+              <SlideMatchday
+                v-else
+                :id="expandedSlide.slideId"
+                :season="props.season"
+                :match-day="
+                  props.season.weekends[expandedSlide.weekendIndex].matchDays[
+                    expandedSlide.matchDayOriginalIndex ?? 0
+                  ]
+                "
+                :logo-library="props.logoLibrary"
+              />
+            </div>
           </div>
+          <button class="bg-gray-50 hover:bg-gray-200 p-2" @click="nextSlide">></button>
         </div>
       </div>
     </div>
