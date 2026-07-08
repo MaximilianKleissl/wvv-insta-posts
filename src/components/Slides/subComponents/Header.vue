@@ -68,7 +68,7 @@ const actionImage = computed(() => {
   const images = getActionImagesForTeam(props.slideTitle.subtitle);
   const hash = simpleHash(props.slideTitle.label);
   const index = hash % images.length;
-  return `/action-images/${images[index]}`;
+  return `./action-images/${images[index]}`;
 });
 
 function getActionImagesForTeam(teamName: string): readonly string[] {
