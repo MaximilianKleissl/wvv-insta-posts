@@ -220,6 +220,23 @@ const closeExpandedPreview = () => {
               :weekend-index="expandedSlide.weekendIndex"
               :logo-library="props.logoLibrary"
             />
+            <SlideTournament
+              v-else-if="
+                isTournamentMatchDay(
+                  props.season.weekends[expandedSlide.weekendIndex].matchDays[
+                    expandedSlide.matchDayOriginalIndex ?? 0
+                  ],
+                )
+              "
+              :id="expandedSlide.slideId"
+              :season="props.season"
+              :match-day="
+                props.season.weekends[expandedSlide.weekendIndex].matchDays[
+                  expandedSlide.matchDayOriginalIndex ?? 0
+                ]
+              "
+              :logo-library="props.logoLibrary"
+            />
             <SlideMatchday
               v-else
               :id="expandedSlide.slideId"
