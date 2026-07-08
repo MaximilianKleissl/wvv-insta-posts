@@ -4,15 +4,25 @@
  * image there is enough. The resolver treats these as bundled defaults and uses them when
  * no custom logo has been uploaded.
  */
-import { normalizeTeamName } from "./logo-matcher";
+import { normalizeTeamName } from './logo-matcher';
 
-const BUNDLED_LOGO_FILES = import.meta.glob("/public/logos/*", { eager: true, query: "?url", import: "default" }) as Record<string, string>;
+const BUNDLED_LOGO_FILES = import.meta.glob('/public/logos/*', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+}) as Record<string, string>;
 
-function getBundledLogoFileEntries() {
+type LogoFileEntry = {
+  name: string;
+  fileName: string;
+  url: string;
+};
+
+function getBundledLogoFileEntries(): LogoFileEntry[] {
   return Object.entries(BUNDLED_LOGO_FILES)
     .map(([path, url]) => {
-      const fileName = path.replace(/^\/public\/logos\//, "");
-      const displayName = fileName.replace(/\.[^.]+$/, "");
+      const fileName = path.replace(/^\/public\/logos\//, '');
+      const displayName = fileName.replace(/\.[^.]+$/, '');
       return { name: displayName, fileName, url };
     })
     .sort((a, b) => a.name.localeCompare(b.name));
@@ -27,7 +37,14 @@ export function getBundledLogoEntries(basePath: string) {
 
 export function getBundledLogoUrl(teamName: string, basePath: string): string | undefined {
   const key = normalizeTeamName(teamName);
-  const match = getBundledLogoFileEntries().find(({ name }) => normalizeTeamName(name) === key);
-  if (!match) alert(`No bundled logo found for team: ${teamName} (${key}). Available teams: ${getBundledLogoFileEntries().map(({ name }) => normalizeTeamName(name)).join(", ")}`);
+  const match: LogoFileEntry = getBundledLogoFileEntries().find(
+    ({ name }) => normalizeTeamName(name) === key,
+  );
+  if (!match || match === undefined)
+    alert(
+      `No bundled logo found for team: ${teamName} (${key}). Available teams: ${getBundledLogoFileEntries()
+        .map(({ name }) => normalizeTeamName(name))
+        .join(', ')}`,
+    );
   return `${basePath}logos/${encodeURIComponent(match.fileName)}`;
 }

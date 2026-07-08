@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { Home, Car, Calendar, MapPin } from "lucide-vue-next";
-import type { SeasonData } from "@/lib/types";
-import { sortedMatchDaysForWeekend, germanWeekdayName } from "@/lib/grouping";
-import SharedContainer from "./sharedContainer.vue";
-import { useSlideDensity } from "@/composables/Slides/useDensity.ts";
-import Cell from "@/components/Slides/subComponents/Cell.vue";
-import type { LogoLibrary } from "@/lib/types";
-import OverviewHomeOrAway from "@/components/Slides/subComponents/OverviewHomeOrAway.vue";
-import { BADGE_LABELS } from "@/lib/slide-constants";
-import type { SlideTitle } from "@/lib/slide-types";
+import { computed } from 'vue';
+import { Home, Car, Calendar, MapPin } from 'lucide-vue-next';
+import type { SeasonData } from '@/lib/types';
+import { sortedMatchDaysForWeekend, germanWeekdayName } from '@/lib/grouping';
+import SharedContainer from './sharedContainer.vue';
+import { useSlideDensity } from '@/composables/Slides/useDensity.ts';
+import Cell from '@/components/Slides/subComponents/Cell.vue';
+import type { LogoLibrary } from '@/lib/types';
+import OverviewHomeOrAway from '@/components/Slides/subComponents/OverviewHomeOrAway.vue';
+import { BADGE_LABELS } from '@/lib/slide-constants';
+import type { SlideTitle } from '@/lib/slide-types';
 
 interface SlideOverviewProps {
   id: string;
@@ -28,29 +28,34 @@ const { density, styles } = useSlideDensity(matchDays.value.length);
 // Dynamic grid allocation based on match count to balance empty spaces
 const containerGridClass = computed(() => {
   if (matchDays.value.length <= 2 || matchDays.value.length >= 5) {
-    return "grid grid-cols-1 md:grid-cols-2 gap-6 items-center w-full my-auto";
+    return 'grid grid-cols-1 md:grid-cols-2 gap-6 items-center w-full my-auto';
   }
-  return "flex flex-col gap-4 w-full";
+  return 'flex flex-col gap-4 w-full';
 });
 
 const teamTextSize = computed(() => {
   switch (density.value) {
-    case "tight": return "text-xl md:text-2xl";
-    case "compact": return "text-2xl md:text-3xl";
-    default: return "text-3xl md:text-4xl";
+    case 'tight':
+      return 'text-xl md:text-2xl';
+    case 'compact':
+      return 'text-2xl md:text-3xl';
+    default:
+      return 'text-3xl md:text-4xl';
   }
 });
 
 const metaTextSize = computed(() => {
   switch (density.value) {
-    case "tight": return "text-sm md:text-base";
-    default: return "text-base md:text-lg";
+    case 'tight':
+      return 'text-sm md:text-base';
+    default:
+      return 'text-base md:text-lg';
   }
 });
 
 const slideTitle = computed<SlideTitle>(() => ({
   subtitle: props.season.club,
-  title: "Spiel\nWochenende",
+  title: 'Spiel\nWochenende',
   label: weekend.value.dateRange,
 }));
 </script>
@@ -58,13 +63,13 @@ const slideTitle = computed<SlideTitle>(() => ({
 <template>
   <SharedContainer :id="id" :styles="styles" :slideTitle="slideTitle">
     <div :class="containerGridClass">
-      <Cell 
-        v-for="(md, idx) in matchDays" 
-        :key="idx" 
+      <Cell
+        v-for="(md, idx) in matchDays"
+        :key="idx"
         :styles="styles"
         class="relative flex flex-col sm:flex-row sm:items-center gap-6 p-6 md:p-8 bg-white rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] overflow-hidden"
       >
-        <div 
+        <div
           class="absolute top-0 left-6 px-4 py-1 text-[10px] font-black tracking-widest uppercase rounded-b-lg text-white"
           :class="md.home ? 'bg-emerald-600' : 'bg-green-800'"
         >
@@ -89,7 +94,9 @@ const slideTitle = computed<SlideTitle>(() => ({
             {{ md.team }}
           </h3>
 
-          <div :class="['flex flex-wrap items-center gap-x-4 gap-y-1 text-slate-500', metaTextSize]">
+          <div
+            :class="['flex flex-wrap items-center gap-x-4 gap-y-1 text-slate-500', metaTextSize]"
+          >
             <span class="flex items-center gap-1.5 font-bold text-slate-800">
               <Calendar :size="16" class="text-slate-400 shrink-0" />
               {{ germanWeekdayName(md.date) }}

@@ -46,7 +46,7 @@ export interface LogoEntry {
 
 export type LogoLibrary = Record<string, string>;
 
-export type TemplateId = "classic";
+export type TemplateId = 'classic';
 
 export interface TemplateDefinition {
   id: TemplateId;
@@ -57,7 +57,7 @@ export interface TemplateDefinition {
 export interface GeneratedSlide {
   id: string;
   weekendIndex: number;
-  kind: "overview" | "matchday";
+  kind: 'overview' | 'matchday';
   matchDayIndex?: number;
   title: string;
   caption: string;

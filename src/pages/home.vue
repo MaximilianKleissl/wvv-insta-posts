@@ -1,48 +1,42 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
-import { useSeasonData } from "@/composables/useSeasonData";
-import { useLogoLibrary } from "@/composables/useLogoLibrary";
-import PageHeader from "@/components/PageHeader.vue";
-import SlideOverview from "@/components/Slides/slide-overview.vue";
-import SlideMatchday from "@/components/Slides/slide-matchday.vue";
-import PreviewGallery from "@/components/preview-gallery.vue";
-import { SAMPLE_SEASON_FILES } from "@/lib/sample-data";
-import { sortedMatchDaysForWeekend, slugify } from "@/lib/grouping";
-import { getBundledLogoEntries } from "@/lib/logo-assets";
+import { ref, computed, watch } from 'vue';
+import { useSeasonData } from '@/composables/useSeasonData';
+import { useLogoLibrary } from '@/composables/useLogoLibrary';
+import PageHeader from '@/components/PageHeader.vue';
+import SlideOverview from '@/components/Slides/slide-overview.vue';
+import SlideMatchday from '@/components/Slides/slide-matchday.vue';
+import PreviewGallery from '@/components/preview-gallery.vue';
+import { SAMPLE_SEASON_FILES } from '@/lib/sample-data';
+import { sortedMatchDaysForWeekend, slugify } from '@/lib/grouping';
+import { getBundledLogoEntries } from '@/lib/logo-assets';
 import {
   exportSeasonZip,
   downloadBlob,
   seasonZipFileName,
   type ExportProgress,
-} from "@/lib/export-zip";
-import { parseSeasonImportFiles } from "@/lib/schema";
-import type { SeasonData } from "@/lib/types";
+} from '@/lib/export-zip';
+import { parseSeasonImportFiles } from '@/lib/schema';
+import type { SeasonData } from '@/lib/types';
 
 interface SlideRef {
   slideId: string;
   weekendIndex: number;
-  kind: "overview" | "matchday";
+  kind: 'overview' | 'matchday';
   matchDayOriginalIndex?: number;
 }
 
-const {
-  rawJson,
-  setRawJson,
-  parseJson,
-  setSeasonData,
-  validationResult,
-  seasonData,
-} = useSeasonData();
+const { rawJson, setRawJson, parseJson, setSeasonData, validationResult, seasonData } =
+  useSeasonData();
 const { library } = useLogoLibrary();
 
 const exporting = ref(false);
 const progress = ref<ExportProgress | null>(null);
 const importState = ref<{
-  status: "idle" | "loading" | "success" | "error";
+  status: 'idle' | 'loading' | 'success' | 'error';
   message: string;
 }>({
-  status: "idle",
-  message: "",
+  status: 'idle',
+  message: '',
 });
 
 const slideNodes = ref<Map<string, HTMLElement>>(new Map());
@@ -60,32 +54,32 @@ const season = computed<SeasonData>(() => seasonData.value!);
 const getSlideElement = (id: string) => slideNodes.value.get(id) ?? null;
 
 const weekendCount = computed(() => seasonData.value?.weekends.length ?? 0);
-const matchDayCount = computed(() => 
-  seasonData.value?.weekends.reduce((sum, w) => sum + w.matchDays.length, 0) ?? 0
+const matchDayCount = computed(
+  () => seasonData.value?.weekends.reduce((sum, w) => sum + w.matchDays.length, 0) ?? 0,
 );
-const matchCount = computed(() => 
-  seasonData.value?.weekends.reduce((sum, w) => 
-    sum + w.matchDays.reduce((mdSum, md) => 
-      mdSum + (md.matches?.length ?? md.teams?.length ?? 0), 0
-    ), 0
-  ) ?? 0
+const matchCount = computed(
+  () =>
+    seasonData.value?.weekends.reduce(
+      (sum, w) =>
+        sum +
+        w.matchDays.reduce((mdSum, md) => mdSum + (md.matches?.length ?? md.teams?.length ?? 0), 0),
+      0,
+    ) ?? 0,
 );
 
 const handleLoadSample = async () => {
   await importFiles(SAMPLE_SEASON_FILES);
 };
 
-const importFiles = async (
-  files: Array<File | { name: string; content: string }>,
-) => {
-  importState.value = { status: "loading", message: "Lade Dateien..." };
+const importFiles = async (files: Array<File | { name: string; content: string }>) => {
+  importState.value = { status: 'loading', message: 'Lade Dateien...' };
 
   try {
     const result = await parseSeasonImportFiles(files);
     if (!result.success || !result.data) {
       importState.value = {
-        status: "error",
-        message: result.issues?.[0]?.message ?? "Import fehlgeschlagen.",
+        status: 'error',
+        message: result.issues?.[0]?.message ?? 'Import fehlgeschlagen.',
       };
       return;
     }
@@ -93,14 +87,13 @@ const importFiles = async (
     setSeasonData(result.data);
     setRawJson(JSON.stringify(result.data, null, 2));
     importState.value = {
-      status: "success",
+      status: 'success',
       message: `${files.length} Datei(en) verarbeitet. ${result.data.weekends.length} Wochenende erkannt.`,
     };
   } catch (error) {
     importState.value = {
-      status: "error",
-      message:
-        error instanceof Error ? error.message : "Import fehlgeschlagen.",
+      status: 'error',
+      message: error instanceof Error ? error.message : 'Import fehlgeschlagen.',
     };
   }
 };
@@ -111,7 +104,7 @@ const handleFileInputChange = async (event: Event) => {
   if (files.length === 0) return;
 
   await importFiles(files);
-  input.value = "";
+  input.value = '';
 };
 
 const allSlideRefs = computed<SlideRef[]>(() => {
@@ -122,7 +115,7 @@ const allSlideRefs = computed<SlideRef[]>(() => {
       refs.push({
         slideId: `overview-${weekendIndex}`,
         weekendIndex,
-        kind: "overview",
+        kind: 'overview',
       });
     }
     weekend.matchDays.forEach((md) => {
@@ -130,7 +123,7 @@ const allSlideRefs = computed<SlideRef[]>(() => {
       refs.push({
         slideId: `matchday-${weekendIndex}-${originalIndex}`,
         weekendIndex,
-        kind: "matchday",
+        kind: 'matchday',
         matchDayOriginalIndex: originalIndex,
       });
     });
@@ -146,7 +139,7 @@ const exportSlides = computed<SlideRef[]>(() => {
       refs.push({
         slideId: `overview-${weekendIndex}`,
         weekendIndex,
-        kind: "overview",
+        kind: 'overview',
       });
     }
     sortedMatchDaysForWeekend(weekend).forEach((md) => {
@@ -154,7 +147,7 @@ const exportSlides = computed<SlideRef[]>(() => {
       refs.push({
         slideId: `matchday-${weekendIndex}-${originalIndex}`,
         weekendIndex,
-        kind: "matchday",
+        kind: 'matchday',
         matchDayOriginalIndex: originalIndex,
       });
     });
@@ -162,29 +155,20 @@ const exportSlides = computed<SlideRef[]>(() => {
   return refs;
 });
 
-const bundledLogoEntries = computed(() =>
-  getBundledLogoEntries(import.meta.env.BASE_URL),
-);
+const bundledLogoEntries = computed(() => getBundledLogoEntries(import.meta.env.BASE_URL));
 
 const handleExport = async () => {
   if (!seasonData.value) return;
   exporting.value = true;
   progress.value = null;
   try {
-    const blob = await exportSeasonZip(
-      seasonData.value,
-      undefined,
-      getSlideElement,
-      (p) => {
-        progress.value = p;
-      },
-    );
+    const blob = await exportSeasonZip(seasonData.value, undefined, getSlideElement, (p) => {
+      progress.value = p;
+    });
     downloadBlob(blob, seasonZipFileName(seasonData.value));
-    alert("ZIP erstellt - Der Download hat begonnen.");
+    alert('ZIP erstellt - Der Download hat begonnen.');
   } catch (err) {
-    alert(
-      `Export fehlgeschlagen: ${err instanceof Error ? err.message : "Unbekannter Fehler"}`,
-    );
+    alert(`Export fehlgeschlagen: ${err instanceof Error ? err.message : 'Unbekannter Fehler'}`);
   } finally {
     exporting.value = false;
     progress.value = null;
@@ -196,22 +180,15 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
   exporting.value = true;
   progress.value = null;
   try {
-    const blob = await exportSeasonZip(
-      seasonData.value,
-      [weekendIndex],
-      getSlideElement,
-      (p) => {
-        progress.value = p;
-      },
-    );
+    const blob = await exportSeasonZip(seasonData.value, [weekendIndex], getSlideElement, (p) => {
+      progress.value = p;
+    });
     const weekend = seasonData.value.weekends[weekendIndex];
-    const fileName = `${slugify(seasonData.value.club)}_${weekend.dateRange.replace(/\s+/g, "_")}.zip`;
+    const fileName = `${slugify(seasonData.value.club)}_${weekend.dateRange.replace(/\s+/g, '_')}.zip`;
     downloadBlob(blob, fileName);
-    alert("ZIP erstellt - Der Download hat begonnen.");
+    alert('ZIP erstellt - Der Download hat begonnen.');
   } catch (err) {
-    alert(
-      `Export fehlgeschlagen: ${err instanceof Error ? err.message : "Unbekannter Fehler"}`,
-    );
+    alert(`Export fehlgeschlagen: ${err instanceof Error ? err.message : 'Unbekannter Fehler'}`);
   } finally {
     exporting.value = false;
     progress.value = null;
@@ -245,10 +222,7 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
         </p>
       </div>
 
-      <span
-        v-if="importState.status === 'error'"
-        class="block text-sm font-medium text-red-600"
-      >
+      <span v-if="importState.status === 'error'" class="block text-sm font-medium text-red-600">
         {{ importState.message }}
       </span>
       <span
@@ -267,16 +241,7 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
       />
     </main>
 
-    <div
-      style="
-        position: absolute;
-        left: -15000px;
-        top: 0;
-        width: 0;
-        height: 0;
-        overflow: hidden;
-      "
-    >
+    <div style="position: absolute; left: -15000px; top: 0; width: 0; height: 0; overflow: hidden">
       <div
         v-for="slide in exportSlides"
         :key="slide.slideId"
@@ -296,9 +261,7 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
           :id="slide.slideId"
           :season="season"
           :matchDay="
-            season.weekends[slide.weekendIndex].matchDays[
-              slide.matchDayOriginalIndex ?? 0
-            ]
+            season.weekends[slide.weekendIndex].matchDays[slide.matchDayOriginalIndex ?? 0]
           "
           :logoLibrary="library"
         />

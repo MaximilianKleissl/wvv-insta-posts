@@ -1,59 +1,58 @@
-import { z } from "zod";
-import type { SeasonData, MatchDay } from "./types";
-import { buildWeekendsFromMatchDays } from "./grouping";
+import { z } from 'zod';
+import type { SeasonData, MatchDay } from './types';
+import { buildWeekendsFromMatchDays } from './grouping';
 
 const matchSchema = z.object({
-  time: z.string().min(1, "Uhrzeit fehlt"),
-  home: z.string().min(1, "Heimteam fehlt"),
-  away: z.string().min(1, "Gastteam fehlt"),
+  time: z.string().min(1, 'Uhrzeit fehlt'),
+  home: z.string().min(1, 'Heimteam fehlt'),
+  away: z.string().min(1, 'Gastteam fehlt'),
 });
 
 const matchDaySchema = z
   .object({
-    team: z.string().min(1, "Teamname fehlt"),
+    team: z.string().min(1, 'Teamname fehlt'),
     home: z.boolean({ message: "'home' muss true oder false sein" }),
-    date: z.string().min(1, "Datum fehlt"),
-    location: z.string().min(1, "Spielort fehlt"),
+    date: z.string().min(1, 'Datum fehlt'),
+    location: z.string().min(1, 'Spielort fehlt'),
     matches: z.array(matchSchema).optional(),
-    teams: z.array(z.string().min(1, "Teamname darf nicht leer sein")).optional(),
+    teams: z.array(z.string().min(1, 'Teamname darf nicht leer sein')).optional(),
   })
-  .refine(
-    (md) => (md.matches && md.matches.length > 0) || (md.teams && md.teams.length >= 2),
-    {
-      message:
-        "Entweder 'matches' (mit mindestens einem Spiel) oder 'teams' (mit mindestens zwei teilnehmenden Mannschaften, falls Gegner/Uhrzeit noch unbekannt sind) muss angegeben werden",
-    },
-  );
+  .refine((md) => (md.matches && md.matches.length > 0) || (md.teams && md.teams.length >= 2), {
+    message:
+      "Entweder 'matches' (mit mindestens einem Spiel) oder 'teams' (mit mindestens zwei teilnehmenden Mannschaften, falls Gegner/Uhrzeit noch unbekannt sind) muss angegeben werden",
+  });
 
 const weekendSchema = z.object({
-  dateRange: z.string().min(1, "Datumsbereich fehlt"),
-  matchDays: z.array(matchDaySchema).min(1, "Mindestens ein Spieltag wird benötigt"),
+  dateRange: z.string().min(1, 'Datumsbereich fehlt'),
+  matchDays: z.array(matchDaySchema).min(1, 'Mindestens ein Spieltag wird benötigt'),
 });
 
 const legacyWeekendSchema = z.object({
-  dateRange: z.string().min(1, "Datumsbereich fehlt"),
+  dateRange: z.string().min(1, 'Datumsbereich fehlt'),
   weekendTitle: z.string().min(1).optional(),
-  matchDays: z.array(matchDaySchema).min(1, "Mindestens ein Spieltag wird benötigt"),
+  matchDays: z.array(matchDaySchema).min(1, 'Mindestens ein Spieltag wird benötigt'),
 });
 
 export const seasonSchema = z.object({
-  season: z.string().min(1, "Saison fehlt"),
-  club: z.string().min(1, "Vereinsname fehlt"),
-  weekends: z.array(weekendSchema).min(1, "Mindestens ein Wochenende wird benötigt"),
+  season: z.string().min(1, 'Saison fehlt'),
+  club: z.string().min(1, 'Vereinsname fehlt'),
+  weekends: z.array(weekendSchema).min(1, 'Mindestens ein Wochenende wird benötigt'),
 });
 
 const legacySeasonSchema = z.object({
-  season: z.string().min(1, "Saison fehlt"),
-  club: z.string().min(1, "Vereinsname fehlt"),
-  weekends: z.array(legacyWeekendSchema).min(1, "Mindestens ein Wochenende wird benötigt"),
+  season: z.string().min(1, 'Saison fehlt'),
+  club: z.string().min(1, 'Vereinsname fehlt'),
+  weekends: z.array(legacyWeekendSchema).min(1, 'Mindestens ein Wochenende wird benötigt'),
 });
 
 const metadataSchema = z.object({
-  season: z.string().min(1, "Saison fehlt"),
-  club: z.string().min(1, "Vereinsname fehlt"),
+  season: z.string().min(1, 'Saison fehlt'),
+  club: z.string().min(1, 'Vereinsname fehlt'),
 });
 
-const matchDaysArraySchema = z.array(matchDaySchema).min(1, "Mindestens ein Spieltag wird benötigt");
+const matchDaysArraySchema = z
+  .array(matchDaySchema)
+  .min(1, 'Mindestens ein Spieltag wird benötigt');
 
 export type ValidationIssue = {
   path: string;
@@ -72,7 +71,13 @@ export interface ImportFileSource {
   content: string;
 }
 
-function isLegacySeasonShape(value: unknown): value is { season: string; club: string; weekends: Array<{ dateRange: string; matchDays: MatchDay[] }> } {
+function isLegacySeasonShape(
+  value: unknown,
+): value is {
+  season: string;
+  club: string;
+  weekends: Array<{ dateRange: string; matchDays: MatchDay[] }>;
+} {
   return legacySeasonSchema.safeParse(value).success;
 }
 
@@ -86,7 +91,7 @@ function isMatchDaysArrayShape(value: unknown): value is MatchDay[] {
 
 function buildValidationIssues(issues: z.ZodIssue[]): ValidationIssue[] {
   return issues.map((issue) => ({
-    path: issue.path.join(".") || "(root)",
+    path: issue.path.join('.') || '(root)',
     message: issue.message,
   }));
 }
@@ -109,7 +114,13 @@ function buildSeasonDataFromParsedValue(parsed: unknown): ValidationResult {
   if (isMetadataShape(parsed) || isMatchDaysArrayShape(parsed)) {
     return {
       success: false,
-      issues: [{ path: "(root)", message: "Bitte lade eine Metadaten-Datei mit season/club und mindestens eine MatchDay-Datei mit einem Array von Spieltagen." }],
+      issues: [
+        {
+          path: '(root)',
+          message:
+            'Bitte lade eine Metadaten-Datei mit season/club und mindestens eine MatchDay-Datei mit einem Array von Spieltagen.',
+        },
+      ],
     };
   }
 
@@ -128,14 +139,16 @@ export function validateSeasonJson(raw: string): ValidationResult {
   } catch (err) {
     return {
       success: false,
-      parseError: err instanceof Error ? err.message : "Ungültiges JSON",
+      parseError: err instanceof Error ? err.message : 'Ungültiges JSON',
     };
   }
 
   return buildSeasonDataFromParsedValue(parsed);
 }
 
-export async function parseSeasonImportFiles(files: Array<File | ImportFileSource>): Promise<ValidationResult> {
+export async function parseSeasonImportFiles(
+  files: Array<File | ImportFileSource>,
+): Promise<ValidationResult> {
   const sources = await Promise.all(
     files.map(async (file) => {
       if (file instanceof File) {
@@ -154,7 +167,10 @@ export async function parseSeasonImportFiles(files: Array<File | ImportFileSourc
     try {
       parsed = JSON.parse(source.content);
     } catch (err) {
-      issues.push({ path: source.name, message: err instanceof Error ? err.message : "Ungültiges JSON" });
+      issues.push({
+        path: source.name,
+        message: err instanceof Error ? err.message : 'Ungültiges JSON',
+      });
       continue;
     }
 
@@ -174,20 +190,40 @@ export async function parseSeasonImportFiles(files: Array<File | ImportFileSourc
       continue;
     }
 
-    issues.push({ path: source.name, message: "Datei muss entweder ein Metadaten-Objekt mit season/club oder ein Array von Spieltagen sein." });
+    issues.push({
+      path: source.name,
+      message:
+        'Datei muss entweder ein Metadaten-Objekt mit season/club oder ein Array von Spieltagen sein.',
+    });
   }
 
   if (!metadata) {
     return {
       success: false,
-      issues: issues.length > 0 ? issues : [{ path: "(files)", message: "Bitte lade mindestens eine Metadaten-Datei mit season/club hoch." }],
+      issues:
+        issues.length > 0
+          ? issues
+          : [
+              {
+                path: '(files)',
+                message: 'Bitte lade mindestens eine Metadaten-Datei mit season/club hoch.',
+              },
+            ],
     };
   }
 
   if (matchDays.length === 0) {
     return {
       success: false,
-      issues: issues.length > 0 ? issues : [{ path: "(files)", message: "Bitte lade mindestens eine Datei mit einem Array von Spieltagen hoch." }],
+      issues:
+        issues.length > 0
+          ? issues
+          : [
+              {
+                path: '(files)',
+                message: 'Bitte lade mindestens eine Datei mit einem Array von Spieltagen hoch.',
+              },
+            ],
     };
   }
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AlertCircle } from "lucide-vue-next";
+import { AlertCircle } from 'lucide-vue-next';
 </script>
 
 <template>
@@ -10,9 +10,7 @@ import { AlertCircle } from "lucide-vue-next";
         <h1 class="text-2xl font-bold text-gray-900">404 Page Not Found</h1>
       </div>
 
-      <p class="mt-4 text-sm text-gray-600">
-        Did you forget to add the page to the router?
-      </p>
+      <p class="mt-4 text-sm text-gray-600">Did you forget to add the page to the router?</p>
     </div>
   </div>
 </template>

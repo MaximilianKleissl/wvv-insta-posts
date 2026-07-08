@@ -23,7 +23,7 @@
     "match_day_name": "3. Spieltag LP / LM Qualifikation",
     "teams": ["Werderaner VV 1990", "VC BW Brandenburg", "Kremmener SV", "SC Potsdam"]
   },
-   {
+  {
     "team": "U20 - Weiblich",
     "home": false,
     "date": "06.12.2026",
@@ -31,7 +31,7 @@
     "match_day_name": "LM Qualifikation",
     "teams": ["Werderaner VV 1990", "VC BW Brandenburg", "Kremmener SV", "SC Potsdam"]
   },
-   {
+  {
     "team": "U20 - Weiblich",
     "home": false,
     "date": "24.01.2027",
@@ -39,7 +39,7 @@
     "match_day_name": "4. Spieltag LP Qualifikation",
     "teams": ["Werderaner VV 1990", "VC BW Brandenburg", "Kremmener SV", "SC Potsdam"]
   },
-   {
+  {
     "team": "U20 - Weiblich",
     "home": false,
     "date": "28.02.2027",

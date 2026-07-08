@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import type { ExportProgress } from "@/lib/export-zip";
+import { ref, computed } from 'vue';
+import type { ExportProgress } from '@/lib/export-zip';
 
 const props = defineProps<{
   exporting?: boolean;
@@ -88,16 +88,21 @@ defineExpose({
       </button>
     </div>
 
-    <div
-      v-if="isOpen"
-      class="absolute right-0 top-12 z-50 w-72 rounded-lg bg-white shadow-xl"
-    >
+    <div v-if="isOpen" class="absolute right-0 top-12 z-50 w-72 rounded-lg bg-white shadow-xl">
       <div v-if="activeMenu === 'upload'" class="p-4">
         <h3 class="text-lg font-semibold text-gray-900 mb-3">Upload</h3>
-        <label class="flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-4 text-center text-sm text-gray-600 hover:bg-gray-100">
+        <label
+          class="flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-4 text-center text-sm text-gray-600 hover:bg-gray-100"
+        >
           <span class="font-semibold text-gray-800">JSON-Dateien auswählen</span>
           <span class="mt-1 text-xs">Metadaten + MatchDay-Dateien</span>
-          <input type="file" class="sr-only" multiple accept=".json,application/json" @change="emit('fileUpload', $event)" />
+          <input
+            type="file"
+            class="sr-only"
+            multiple
+            accept=".json,application/json"
+            @change="emit('fileUpload', $event)"
+          />
         </label>
         <button
           @click="emit('loadSample')"
@@ -118,7 +123,7 @@ defineExpose({
           :disabled="props.exporting"
           class="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-300 transition"
         >
-          {{ props.exporting ? "Erstelle ZIP..." : "ZIP herunterladen" }}
+          {{ props.exporting ? 'Erstelle ZIP...' : 'ZIP herunterladen' }}
         </button>
         <div v-if="props.exportProgress" class="mt-3">
           <div class="flex justify-between text-xs text-gray-600 mb-1">
@@ -128,7 +133,9 @@ defineExpose({
           <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
             <div
               class="h-full bg-blue-600 transition-all"
-              :style="{ width: `${(props.exportProgress.current / props.exportProgress.total) * 100}%` }"
+              :style="{
+                width: `${(props.exportProgress.current / props.exportProgress.total) * 100}%`,
+              }"
             ></div>
           </div>
         </div>

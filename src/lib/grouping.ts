@@ -1,13 +1,13 @@
-import type { MatchDay, Weekend } from "./types";
+import type { MatchDay, Weekend } from './types';
 
 const GERMAN_WEEKDAYS = [
-  "Sonntag",
-  "Montag",
-  "Dienstag",
-  "Mittwoch",
-  "Donnerstag",
-  "Freitag",
-  "Samstag",
+  'Sonntag',
+  'Montag',
+  'Dienstag',
+  'Mittwoch',
+  'Donnerstag',
+  'Freitag',
+  'Samstag',
 ];
 
 /** Parses "DD.MM.YYYY" into a Date. Returns null if the format is unexpected. */
@@ -20,19 +20,23 @@ export function parseGermanDate(date: string): Date | null {
 
 export function germanWeekdayName(date: string): string {
   const parsed = parseGermanDate(date);
-  if (!parsed) return "";
+  if (!parsed) return '';
   return GERMAN_WEEKDAYS[parsed.getDay()];
 }
 
 /** True when a match day only lists participating teams, without known pairings/times (e.g. tournaments). */
 export function isTournamentMatchDay(matchDay: MatchDay): boolean {
-  return (!matchDay.matches || matchDay.matches.length === 0) && !!matchDay.teams && matchDay.teams.length > 0;
+  return (
+    (!matchDay.matches || matchDay.matches.length === 0) &&
+    !!matchDay.teams &&
+    matchDay.teams.length > 0
+  );
 }
 
 /** Sorts match days: home matches first, then away matches, each group chronological by date then earliest match time. */
 export function sortMatchDays(matchDays: MatchDay[]): MatchDay[] {
   const earliestTime = (md: MatchDay): string => {
-    if (!md.matches || md.matches.length === 0) return "99:99";
+    if (!md.matches || md.matches.length === 0) return '99:99';
     return md.matches.reduce((min, m) => (m.time < min ? m.time : min), md.matches[0].time);
   };
 
@@ -56,25 +60,25 @@ export function sortedMatchDaysForWeekend(weekend: Weekend): MatchDay[] {
 }
 
 /** Sorts an individual match day's matches chronologically by time. */
-export function sortMatches(matchDay: MatchDay): NonNullable<MatchDay["matches"]> {
+export function sortMatches(matchDay: MatchDay): NonNullable<MatchDay['matches']> {
   return [...(matchDay.matches ?? [])].sort((a, b) => a.time.localeCompare(b.time));
 }
 
 export function slugify(value: string): string {
   return value
     .trim()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\s+/g, "_")
-    .replace(/[^a-zA-Z0-9_]/g, "");
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '_')
+    .replace(/[^a-zA-Z0-9_]/g, '');
 }
 
 function formatGermanDate(date: Date): string {
-  return `${String(date.getDate()).padStart(2, "0")}.${String(date.getMonth() + 1).padStart(2, "0")}.${date.getFullYear()}`;
+  return `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}.${date.getFullYear()}`;
 }
 
 function formatGermanDateShort(date: Date): string {
-  return `${String(date.getDate()).padStart(2, "0")}.${String(date.getMonth() + 1).padStart(2, "0")}`;
+  return `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}`;
 }
 
 function weekStartKey(date: string): string {
@@ -87,7 +91,7 @@ function weekStartKey(date: string): string {
   weekStart.setDate(weekStart.getDate() - diff);
   weekStart.setHours(0, 0, 0, 0);
 
-  return `${weekStart.getFullYear()}-${String(weekStart.getMonth() + 1).padStart(2, "0")}-${String(weekStart.getDate()).padStart(2, "0")}`;
+  return `${weekStart.getFullYear()}-${String(weekStart.getMonth() + 1).padStart(2, '0')}-${String(weekStart.getDate()).padStart(2, '0')}`;
 }
 
 export function buildWeekendsFromMatchDays(matchDays: MatchDay[]): Weekend[] {
@@ -115,16 +119,18 @@ export function buildWeekendsFromMatchDays(matchDays: MatchDay[]): Weekend[] {
         .filter((date): date is Date => !!date)
         .sort((a, b) => a.getTime() - b.getTime());
 
-      const dateRange = parsedDates.length === 0
-        ? ""
-        : parsedDates[0].getTime() === parsedDates[parsedDates.length - 1].getTime()
-          ? formatGermanDate(parsedDates[0])
-          : `${formatGermanDate(parsedDates[0])}–${formatGermanDate(parsedDates[parsedDates.length - 1])}`;
-      const dateRangeShort = parsedDates.length === 0
-        ? ""
-        : parsedDates[0].getTime() === parsedDates[parsedDates.length - 1].getTime()
-          ? formatGermanDateShort(parsedDates[0])
-          : `${formatGermanDateShort(parsedDates[0])}–${formatGermanDateShort(parsedDates[parsedDates.length - 1])}`;
+      const dateRange =
+        parsedDates.length === 0
+          ? ''
+          : parsedDates[0].getTime() === parsedDates[parsedDates.length - 1].getTime()
+            ? formatGermanDate(parsedDates[0])
+            : `${formatGermanDate(parsedDates[0])}–${formatGermanDate(parsedDates[parsedDates.length - 1])}`;
+      const dateRangeShort =
+        parsedDates.length === 0
+          ? ''
+          : parsedDates[0].getTime() === parsedDates[parsedDates.length - 1].getTime()
+            ? formatGermanDateShort(parsedDates[0])
+            : `${formatGermanDateShort(parsedDates[0])}–${formatGermanDateShort(parsedDates[parsedDates.length - 1])}`;
 
       return {
         dateRange,
@@ -135,6 +141,6 @@ export function buildWeekendsFromMatchDays(matchDays: MatchDay[]): Weekend[] {
 }
 
 export function weekendFolderName(weekend: Weekend, index: number): string {
-  const num = String(index + 1).padStart(2, "0");
-  return `Wochenende_${num}_${weekend.dateRange.replace(/\./g, "-").replace(/ /g, "_")}`;
+  const num = String(index + 1).padStart(2, '0');
+  return `Wochenende_${num}_${weekend.dateRange.replace(/\./g, '-').replace(/ /g, '_')}`;
 }

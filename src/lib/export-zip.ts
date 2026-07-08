@@ -1,8 +1,8 @@
-import JSZip from "jszip";
-import { toPng } from "html-to-image";
-import type { SeasonData } from "./types";
-import { weekendFolderName, slugify, sortedMatchDaysForWeekend } from "./grouping";
-import { buildWeekendCaption } from "./caption";
+import JSZip from 'jszip';
+import { toPng } from 'html-to-image';
+import type { SeasonData } from './types';
+import { weekendFolderName, slugify, sortedMatchDaysForWeekend } from './grouping';
+import { buildWeekendCaption } from './caption';
 
 export interface ExportProgress {
   current: number;
@@ -28,18 +28,18 @@ export async function exportSeasonZip(
 
   const jobs: { weekendIndex: number; slideId: string; fileBase: string; caption?: string }[] = [];
 
-  const weekendsToExport = selectedWeekendIndexes 
-    ? selectedWeekendIndexes.map(i => season.weekends[i]).filter(Boolean)
+  const weekendsToExport = selectedWeekendIndexes
+    ? selectedWeekendIndexes.map((i) => season.weekends[i]).filter(Boolean)
     : season.weekends;
 
   weekendsToExport.forEach((weekend, index) => {
     const weekendIndex = selectedWeekendIndexes ? selectedWeekendIndexes[index] : index;
-    
+
     // Add weekend caption file
     jobs.push({
       weekendIndex,
       slideId: `caption-${weekendIndex}`,
-      fileBase: "caption",
+      fileBase: 'caption',
       caption: buildWeekendCaption(season, weekendIndex),
     });
 
@@ -47,7 +47,7 @@ export async function exportSeasonZip(
       jobs.push({
         weekendIndex,
         slideId: `overview-${weekendIndex}`,
-        fileBase: "overview",
+        fileBase: 'overview',
       });
     }
 
@@ -65,20 +65,20 @@ export async function exportSeasonZip(
   let done = 0;
   for (const job of jobs) {
     const folder = weekendFolderName(season.weekends[job.weekendIndex], job.weekendIndex);
-    
+
     // Only render PNG for slide jobs (not caption-only jobs) and if getSlideElement is provided
-    if (!job.slideId.startsWith("caption-") && getSlideElement) {
+    if (!job.slideId.startsWith('caption-') && getSlideElement) {
       const node = getSlideElement(job.slideId);
       if (node) {
-        const dataUrl = await toPng(node, { 
-          pixelRatio: 2, 
-          cacheBust: true
+        const dataUrl = await toPng(node, {
+          pixelRatio: 2,
+          cacheBust: true,
         });
-        const base64 = dataUrl.split(",")[1] ?? "";
+        const base64 = dataUrl.split(',')[1] ?? '';
         zip.file(`${folder}/${job.fileBase}.png`, base64, { base64: true });
       }
     }
-    
+
     if (job.caption) {
       zip.file(`${folder}/${job.fileBase}.txt`, job.caption);
     }
@@ -86,12 +86,12 @@ export async function exportSeasonZip(
     onProgress?.({ current: done, total: jobs.length, label: `${folder}/${job.fileBase}` });
   }
 
-  return zip.generateAsync({ type: "blob" });
+  return zip.generateAsync({ type: 'blob' });
 }
 
 export function downloadBlob(blob: Blob, fileName: string): void {
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
+  const a = document.createElement('a');
   a.href = url;
   a.download = fileName;
   document.body.appendChild(a);
@@ -101,6 +101,6 @@ export function downloadBlob(blob: Blob, fileName: string): void {
 }
 
 export function seasonZipFileName(season: SeasonData): string {
-  const seasonSlug = season.season.replace(/[^0-9a-zA-Z]/g, "-");
+  const seasonSlug = season.season.replace(/[^0-9a-zA-Z]/g, '-');
   return `${slugify(season.club)}_${seasonSlug}.zip`;
 }

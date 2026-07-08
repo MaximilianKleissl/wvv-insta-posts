@@ -1,10 +1,6 @@
-import { ref, onMounted } from "vue";
-import type { LogoLibrary } from "@/lib/types";
-import {
-  loadLogoLibrary,
-  addLogoToLibrary,
-  removeLogoFromLibrary,
-} from "@/lib/logo-matcher";
+import { ref, onMounted } from 'vue';
+import type { LogoLibrary } from '@/lib/types';
+import { loadLogoLibrary, addLogoToLibrary, removeLogoFromLibrary } from '@/lib/logo-matcher';
 
 export function useLogoLibrary() {
   const library = ref<LogoLibrary>({});

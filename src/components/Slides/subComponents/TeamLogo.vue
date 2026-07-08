@@ -5,10 +5,7 @@
     :alt="teamName"
     :class="[sizeClass, 'object-contain shrink-0']"
   />
-  <div
-    v-else
-    :class="[sizeClass, fallbackClass]"
-  >
+  <div v-else :class="[sizeClass, fallbackClass]">
     <span class="text-xl font-bold text-green-800 text-muted">?</span>
   </div>
 </template>

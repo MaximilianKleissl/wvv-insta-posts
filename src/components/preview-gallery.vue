@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
-import SlideOverview from "@/components/Slides/slide-overview.vue";
-import SlideMatchday from "@/components/Slides/slide-matchday.vue";
-import { sortedMatchDaysForWeekend } from "@/lib/grouping";
-import { buildWeekendCaption } from "@/lib/caption";
-import type { SeasonData, LogoLibrary } from "@/lib/types";
+import { computed, ref, watch } from 'vue';
+import SlideOverview from '@/components/Slides/slide-overview.vue';
+import SlideMatchday from '@/components/Slides/slide-matchday.vue';
+import { sortedMatchDaysForWeekend } from '@/lib/grouping';
+import { buildWeekendCaption } from '@/lib/caption';
+import type { SeasonData, LogoLibrary } from '@/lib/types';
 
 interface PreviewSlideRef {
   slideId: string;
   weekendIndex: number;
-  kind: "overview" | "matchday";
+  kind: 'overview' | 'matchday';
   matchDayOriginalIndex?: number;
 }
 
@@ -55,7 +55,7 @@ const slides = computed<PreviewSlideRef[]>(() => {
     refs.push({
       slideId: `overview-${weekendIndex}`,
       weekendIndex,
-      kind: "overview",
+      kind: 'overview',
     });
   }
 
@@ -64,7 +64,7 @@ const slides = computed<PreviewSlideRef[]>(() => {
     refs.push({
       slideId: `matchday-${weekendIndex}-${originalIndex}`,
       weekendIndex,
-      kind: "matchday",
+      kind: 'matchday',
       matchDayOriginalIndex: originalIndex,
     });
   });
@@ -73,7 +73,7 @@ const slides = computed<PreviewSlideRef[]>(() => {
 });
 
 const caption = computed(() => {
-  if (selectedWeekendIndex.value === null) return "";
+  if (selectedWeekendIndex.value === null) return '';
   return buildWeekendCaption(props.season, selectedWeekendIndex.value);
 });
 
@@ -106,11 +106,7 @@ const closeExpandedPreview = () => {
           :min="0"
           :max="availableWeekendIndexes.length - 1"
           :value="selectedWeekendIndex ?? 0"
-          @input="
-            selectedWeekendIndex = Number(
-              ($event.target as HTMLInputElement).value,
-            )
-          "
+          @input="selectedWeekendIndex = Number(($event.target as HTMLInputElement).value)"
           class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-900"
         />
         <span class="text-sm font-medium text-gray-700 min-w-[80px] text-right">
@@ -126,12 +122,8 @@ const closeExpandedPreview = () => {
           :key="slide.slideId"
           class="rounded-2xl border border-gray-200 bg-gray-50 p-2"
         >
-          <div
-            class="mb-2 flex items-center justify-between text-sm font-semibold text-gray-700"
-          >
-            <span>{{
-              slide.kind === "overview" ? "Übersicht" : "Spieltag"
-            }}</span>
+          <div class="mb-2 flex items-center justify-between text-sm font-semibold text-gray-700">
+            <span>{{ slide.kind === 'overview' ? 'Übersicht' : 'Spieltag' }}</span>
             <button
               type="button"
               class="rounded-full bg-green-900 px-3 py-1 text-xs font-semibold text-white hover:bg-green-800"
@@ -177,7 +169,7 @@ const closeExpandedPreview = () => {
         :disabled="props.exporting"
         class="rounded-full px-4 py-2 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-300 transition"
       >
-        {{ props.exporting ? "Exportiere..." : "Export" }}
+        {{ props.exporting ? 'Exportiere...' : 'Export' }}
       </button>
     </div>
     <div

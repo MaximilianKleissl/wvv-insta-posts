@@ -1,27 +1,27 @@
-import type { LogoLibrary } from "./types";
+import type { LogoLibrary } from './types';
 
-const LOGO_STORAGE_KEY = "wvv-logo-library-v1";
+const LOGO_STORAGE_KEY = 'wvv-logo-library-v1';
 
 /** Normalizes a team name into a stable lookup key (lowercase, no diacritics, no punctuation). */
 export function normalizeTeamName(name: string): string {
   return name
     .toLowerCase()
-    .replace("/", "")
-    .replace(/ [0-9]+/, "")
+    .replace('/', '')
+    .replace(/ [0-9]+/, '')
     .trim()
-    .replace(/[i,v]+$/, "") //replace end with latin numbers with ""
+    .replace(/[i,v]+$/, '') //replace end with latin numbers with ""
     .trim()
-    .replace(" ", "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]*/g, "")
-    .replace("volleyballverein", "")
-    .replace("sv ", "")
-    .replace("vc ", "")
-    .replace("sv", "")
-    .replace("vc", "")
-    .replace("vv", "")
-    .replace(/\d*/, "");
+    .replace(' ', '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]*/g, '')
+    .replace('volleyballverein', '')
+    .replace('sv ', '')
+    .replace('vc ', '')
+    .replace('sv', '')
+    .replace('vc', '')
+    .replace('vv', '')
+    .replace(/\d*/, '');
 }
 
 export function loadLogoLibrary(): LogoLibrary {
@@ -53,10 +53,7 @@ export function addLogoToLibrary(
   return next;
 }
 
-export function removeLogoFromLibrary(
-  library: LogoLibrary,
-  teamName: string,
-): LogoLibrary {
+export function removeLogoFromLibrary(library: LogoLibrary, teamName: string): LogoLibrary {
   const key = normalizeTeamName(teamName);
   const next = { ...library };
   delete next[key];
@@ -75,5 +72,5 @@ export function fileToDataUrl(file: File): Promise<string> {
 
 /** Guesses a team name from an uploaded file name, e.g. "VC BW Brandenburg.png" -> "VC BW Brandenburg". */
 export function guessTeamNameFromFileName(fileName: string): string {
-  return fileName.replace(/\.[a-zA-Z0-9]+$/, "").trim();
+  return fileName.replace(/\.[a-zA-Z0-9]+$/, '').trim();
 }
