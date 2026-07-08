@@ -1,0 +1,66 @@
+[
+  {
+    "team": "U18 - Männlich",
+    "home": false,
+    "date": "27.09.2026",
+    "location": "???",
+    "match_day_name": "1. Spieltag LP / LM Qualifikation",
+    "teams": ["Werderaner VV 1990", "VC BW Brandenburg", "Kremmener SV", "SC Potsdam"]
+  },
+  {
+    "team": "U18 - Männlich",
+    "home": false,
+    "date": "08.11.2026",
+    "location": "???",
+    "match_day_name": "2. Spieltag LP / LM Qualifikation",
+    "teams": ["Werderaner VV 1990", "VC BW Brandenburg", "Kremmener SV", "SC Potsdam"]
+  },
+  {
+    "team": "U18 - Männlich",
+    "home": false,
+    "date": "28.11.2026",
+    "location": "???",
+    "match_day_name": "3. Spieltag LP / LM Qualifikation",
+    "teams": ["Werderaner VV 1990", "VC BW Brandenburg", "Kremmener SV", "SC Potsdam"]
+  },
+  {
+    "team": "U18 - Männlich",
+    "home": false,
+    "date": "20.12.2026",
+    "location": "???",
+    "match_day_name": "LM Qualifikation",
+    "teams": ["Werderaner VV 1990", "VC BW Brandenburg", "Kremmener SV", "SC Potsdam"]
+  },
+  {
+    "team": "U18 - Männlich",
+    "home": false,
+    "date": "10.01.2027",
+    "location": "???",
+    "match_day_name": "4. Spieltag LP Qualifikation",
+    "teams": ["Werderaner VV 1990", "VC BW Brandenburg", "Kremmener SV", "SC Potsdam"]
+  },
+  {
+    "team": "U18 - Männlich",
+    "home": false,
+    "date": "21.02.2027",
+    "location": "???",
+    "match_day_name": "5. Spieltag LP Qualifikation",
+    "teams": ["Werderaner VV 1990", "VC BW Brandenburg", "Kremmener SV", "SC Potsdam"]
+  },
+  {
+    "team": "U18 - Männlich",
+    "home": false,
+    "date": "07.03.2027",
+    "location": "???",
+    "match_day_name": "Landesmeisterschaft",
+    "teams": ["Werderaner VV 1990", "VC BW Brandenburg", "Kremmener SV", "SC Potsdam"]
+  },
+  {
+    "team": "U18 - Männlich",
+    "home": false,
+    "date": "21.04.2027",
+    "location": "???",
+    "match_day_name": "Landespokal - Endrunde",
+    "teams": ["Werderaner VV 1990", "VC BW Brandenburg", "Kremmener SV", "SC Potsdam"]
+  }
+]

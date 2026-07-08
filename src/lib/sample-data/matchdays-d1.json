@@ -1,0 +1,226 @@
+[
+  {
+    "team": "Damen 1",
+    "home": false,
+    "date": "26.09.2026",
+    "location": "Angermünde",
+    "homeTeam": "VC Angermünde",
+    "match_day_name": "Landesliga",
+    "matches": [
+      {
+        "time": "11:00",
+        "home": "SG Einheit Zepernick II",
+        "away": "Werderaner VV 1990"
+      },
+      {
+        "time": "13:00",
+        "home": "VC Angermünde",
+        "away": "SG Einheit Zepernick II"
+      },
+      {
+        "time": "15:00",
+        "home": "VC Angermünde",
+        "away": "Werderaner VV 1990"
+      }
+    ]
+  },
+  {
+    "team": "Damen 1",
+    "home": true,
+    "date": "14.11.2026",
+    "location": "Havelauenhalle",
+    "homeTeam": "Werderaner VV 1990",
+    "match_day_name": "Landesliga",
+    "matches": [
+      {
+        "time": "11:00",
+        "home": "VV Michendorf",
+        "away": "SV Motor Hennigsdorf"
+      },
+      {
+        "time": "13:00",
+        "home": "Werderaner VV 1990",
+        "away": "VV Michendorf"
+      },
+      {
+        "time": "15:00",
+        "home": "Werderaner VV 1990",
+        "away": "SV Motor Hennigsdorf"
+      }
+    ]
+  },
+  {
+    "team": "Damen 1",
+    "home": false,
+    "date": "28.11.2026",
+    "location": "Bad Belzig",
+    "homeTeam": "Belziger SG Einheit",
+    "match_day_name": "Landesliga",
+    "matches": [
+      {
+        "time": "13:00",
+        "home": "Belziger SG Einheit",
+        "away": "Potsdamer VC 91"
+      },
+      {
+        "time": "15:00",
+        "home": "Belziger SG Einheit",
+        "away": "Werderaner VV 1990"
+      },
+      {
+        "time": "11:00",
+        "home": "Potsdamer VC 91",
+        "away": "Werderaner VV 1990"
+      }
+    ]
+  },
+  {
+    "team": "Damen 1",
+    "home": false,
+    "date": "12.12.2026",
+    "location": "Zepernick",
+    "homeTeam": "SG Einheit Zepernick II",
+      "matches": [
+      {
+        "time": "13:00",
+        "home": "SG Einheit Zepernick II",
+        "away": "SV LdV Nauen"
+      },
+      {
+        "time": "15:00",
+        "home": "SG Einheit Zepernick II",
+        "away": "Werderaner VV 1990"
+      },
+      {
+        "time": "11:00",
+        "home": "SV LdV Nauen",
+        "away": "Werderaner VV 1990"
+      }
+    ]
+  },
+  {
+    "team": "Damen 1",
+    "home": false,
+    "date": "19.12.2026",
+    "location": "Kyritz",
+    "homeTeam": "VC Fortuna Kyritz",
+    "match_day_name": "Landesliga",
+    "matches": [
+      {
+        "time": "11:00",
+        "home": "Werderaner VV 1990",
+        "away": "SV Motor Hennigsdorf"
+      },
+      {
+        "time": "13:00",
+        "home": "VC Fortuna Kyritz",
+        "away": "Werderaner VV 1990"
+      },
+      {
+        "time": "15:00",
+        "home": "VC Fortuna Kyritz",
+        "away": "SV Motor Hennigsdorf"
+      }
+    ]
+  },
+  {
+    "team": "Damen 1",
+    "home": true,
+    "date": "16.01.2027",
+    "location": "Havelauenhalle",
+    "homeTeam": "Werderaner VV 1990",
+    "match_day_name": "Landesliga",
+    "matches": [
+      {
+        "time": "11:00",
+        "home": "VV Michendorf",
+        "away": "Luckenwalder Volleyball Club"
+      },
+      {
+        "time": "13:00",
+        "home": "Werderaner VV 1990",
+        "away": "VV Michendorf"
+      },
+      {
+        "time": "15:00",
+        "home": "Werderaner VV 1990",
+        "away": "Luckenwalder Volleyball Club"
+      }
+    ]
+  },
+  {
+    "team": "Damen 1",
+    "home": false,
+    "date": "20.02.2027",
+    "location": "Nauen",
+    "homeTeam": "SV LdV Nauen",
+    "match_day_name": "Landesliga",
+    "matches": [
+      {
+        "time": "11:00",
+        "home": "Werderaner VV 1990",
+        "away": "Belziger SG Einheit"
+      },
+      {
+        "time": "13:00",
+        "home": "SV LdV Nauen",
+        "away": "Werderaner VV 1990"
+      },
+      {
+        "time": "15:00",
+        "home": "SV LdV Nauen",
+        "away": "Belziger SG Einheit"
+      }
+    ]
+  },
+  {
+    "team": "Damen 1",
+    "home": false,
+    "date": "06.03.2027",
+    "location": "Potsdam",
+    "homeTeam": "Potsdamer VC 91",
+    "match_day_name": "Landesliga",
+    "matches": [
+      {
+        "time": "11:00",
+        "home": "Werderaner VV 1990",
+        "away": "VC Fortuna Kyritz"
+      },
+      {
+        "time": "13:00",
+        "home": "Potsdamer VC 91",
+        "away": "Werderaner VV 1990"
+      },
+      {
+        "time": "15:00",
+        "home": "Potsdamer VC 91",
+        "away": "VC Fortuna Kyritz"
+      }
+    ]
+  },
+  {
+    "team": "Damen 1",
+    "home": true,
+    "date": "20.03.2027",
+    "location": "Havelauenhalle",
+    "homeTeam": "Werderaner VV 1990",
+    "match_day_name": "Landesliga",
+    "matches": [
+      {
+        "time": "11:00",
+        "home": "Luckenwalder Volleyball Club",
+        "away": "VC Angermünde"
+      },
+      {
+        "time": "13:00",
+        "home": "Werderaner VV 1990",
+        "away": "Luckenwalder Volleyball Club"
+      },
+      {
+        "time": "15:00",
+        "home": "Werderaner VV 1990",
+        "away": "VC Angermünde"
+      }
+    ]
+  }
+]

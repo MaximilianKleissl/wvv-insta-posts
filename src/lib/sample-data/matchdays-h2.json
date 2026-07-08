@@ -1,0 +1,227 @@
+[
+  {
+    "team": "Herren 2",
+    "home": true,
+    "date": "19.09.2026",
+    "location": "Havelauenhalle",
+    "homeTeam": "Werderaner VV",
+    "match_day_name": "Landesliga",
+    "matches": [
+      {
+        "time": "11:00",
+        "home": "VV Michendorf",
+        "away": "VC Teltow/Kleinmachnow I"
+      },
+      {
+        "time": "13:00",
+        "home": "Werderaner VV 1990 II",
+        "away": "VV Michendorf"
+      },
+      {
+        "time": "15:00",
+        "home": "Werderaner VV 1990 II",
+        "away": "VC Teltow/Kleinmachnow I"
+      }
+    ]
+  },
+  {
+    "team": "Herren 2",
+    "home": false,
+    "date": "03.10.2026",
+    "location": "Nauen",
+    "homeTeam": "SV LdV Nauen",
+    "match_day_name": "Landesliga",
+    "matches": [
+      {
+        "time": "11:00",
+        "home": "Werderaner VV 1990 II",
+        "away": "USV Potsdam"
+      },
+      {
+        "time": "13:00",
+        "home": "SV LdV Nauen",
+        "away": "Werderaner VV 1990 II"
+      },
+      {
+        "time": "15:00",
+        "home": "SV LdV Nauen",
+        "away": "USV Potsdam"
+      }
+    ]
+  },
+  {
+    "team": "Herren 2",
+    "home": false,
+    "date": "07.11.2026",
+    "location": "Schöneiche",
+    "homeTeam": "TSGL Schöneiche III",
+    "match_day_name": "Landesliga",
+    "matches": [
+      {
+        "time": "11:00",
+        "home": "Potsdamer VC 91 II",
+        "away": "Werderaner VV 1990 II"
+      },
+      {
+        "time": "13:00",
+        "home": "TSGL Schöneiche III",
+        "away": "Potsdamer VC 91 II"
+      },
+      {
+        "time": "15:00",
+        "home": "TSGL Schöneiche III",
+        "away": "Werderaner VV 1990 II"
+      }
+    ]
+  },
+  {
+    "team": "Herren 2",
+    "home": true,
+    "date": "21.11.2026",
+    "location": "Havelauenhalle",
+    "homeTeam": "Werderaner VV",
+    "match_day_name": "Landesliga",
+    "matches": [
+      {
+        "time": "11:00",
+        "home": "SV Medizin Wittstock",
+        "away": "SV 05 Rehbrücke 05"
+      },
+      {
+        "time": "13:00",
+        "home": "Werderaner VV 1990 II",
+        "away": "SV Medizin Wittstock"
+      },
+      {
+        "time": "15:00",
+        "home": "Werderaner VV 1990 II",
+        "away": "SV 05 Rehbrücke 05"
+      }
+    ]
+  },
+  {
+    "team": "Herren 2",
+    "home": false,
+    "date": "09.01.2027",
+    "location": "Michendorf",
+    "homeTeam": "VV Michendorf",
+    "match_day_name": "Landesliga",
+    "matches": [
+      {
+        "time": "11:00",
+        "home": "TSGL Schöneiche III",
+        "away": "Werderaner VV 1990 II"
+      },
+      {
+        "time": "13:00",
+        "home": "VV Michendorf",
+        "away": "TSGL Schöneiche III"
+      },
+      {
+        "time": "15:00",
+        "home": "VV Michendorf",
+        "away": "Werderaner VV 1990 II"
+      }
+    ]
+  },
+  {
+    "team": "Herren 2",
+    "home": false,
+    "date": "23.01.2027",
+    "location": "Potsdam",
+    "homeTeam": "SC Potsdam IV",
+    "match_day_name": "Landesliga",
+    "matches": [
+      {
+        "time": "11:00",
+        "home": "Werderaner VV 1990 II",
+        "away": "SV LdV Nauen"
+      },
+      {
+        "time": "13:00",
+        "home": "SC Potsdam IV",
+        "away": "Werderaner VV 1990 II"
+      },
+      {
+        "time": "15:00",
+        "home": "SC Potsdam IV",
+        "away": "SV LdV Nauen"
+      }
+    ]
+  },
+  {
+    "team": "Herren 2",
+    "home": false,
+    "date": "13.02.2027",
+    "location": "Potsdam",
+    "homeTeam": "Potsdamer VC 91 II",
+    "match_day_name": "Landesliga",
+    "matches": [
+      {
+        "time": "11:00",
+        "home": "Werderaner VV 1990 II",
+        "away": "SV 05 Rehbrücke 05"
+      },
+      {
+        "time": "13:00",
+        "home": "Potsdamer VC 91 II",
+        "away": "Werderaner VV 1990 II"
+      },
+      {
+        "time": "15:00",
+        "home": "Potsdamer VC 91 II",
+        "away": "SV 05 Rehbrücke 05"
+      }
+    ]
+  },
+  {
+    "team": "Herren 2",
+    "home": true,
+    "date": "27.02.2027",
+    "location": "Havelauenhalle",
+    "homeTeam": "Werderaner VV 1990 II",
+    "match_day_name": "Landesliga",
+    "matches": [
+      {
+        "time": "11:00",
+        "home": "USV Potsdam",
+        "away": "SV Medizin Wittstock"
+      },
+      {
+        "time": "13:00",
+        "home": "Werderaner VV 1990 II",
+        "away": "USV Potsdam"
+      },
+      {
+        "time": "15:00",
+        "home": "Werderaner VV 1990 II",
+        "away": "SV Medizin Wittstock"
+      }
+    ]
+  },
+  {
+    "team": "Herren 2",
+    "home": false,
+    "date": "13.03.2027",
+    "location": "Teltow/Kleinmachnow",
+    "homeTeam": "VC Teltow/Kleinmachnow I",
+    "match_day_name": "Landesliga",
+    "matches": [
+      {
+        "time": "11:00",
+        "home": "SC Potsdam IV",
+        "away": "Werderaner VV 1990 II"
+      },
+      {
+        "time": "13:00",
+        "home": "VC Teltow/Kleinmachnow I",
+        "away": "SC Potsdam IV"
+      },
+      {
+        "time": "15:00",
+        "home": "VC Teltow/Kleinmachnow I",
+        "away": "Werderaner VV 1990 II"
+      }
+    ]
+  }
+]
