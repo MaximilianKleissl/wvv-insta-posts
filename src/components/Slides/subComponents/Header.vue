@@ -28,7 +28,7 @@
     </div>
 
     <div
-      class="absolute left-0 top-0 w-[720px] h-full z-0 bg-green-900"
+      class="absolute left-0 top-0 w-[720px] h-full z-0 bg-green-900/90"
       :style="{ clipPath: 'polygon(0 0, 100% 0, 80% 100%, 0 100%)' }"
     ></div>
 

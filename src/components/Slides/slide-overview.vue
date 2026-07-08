@@ -7,7 +7,7 @@ import SharedContainer from './sharedContainer.vue';
 import { useSlideDensity } from '@/composables/Slides/useDensity.ts';
 import Cell from '@/components/Slides/subComponents/Cell.vue';
 import type { LogoLibrary } from '@/lib/types';
-import OverviewHomeOrAway from '@/components/Slides/subComponents/OverviewHomeOrAway.vue';
+import HomeTeamIndication from '@/components/Slides/subComponents/HomeTeamIndication.vue';
 import { BADGE_LABELS } from '@/lib/slide-constants';
 import type { SlideTitle } from '@/lib/slide-types';
 
@@ -101,8 +101,25 @@ const slideTitle = computed<SlideTitle>(() => ({
           </div>
         </div>
 
+        <div v-if="md.match_day_result" class="flex items-center justify-center shrink-0">
+          <div
+            class="relative flex flex-col items-center justify-center min-w-[92px] px-4 py-2 rounded-2xl bg-green-900 shadow-lg overflow-hidden"
+          >
+            <!-- subtle highlight -->
+            <div class="absolute inset-x-0 top-0 h-1 bg-green-400/80" />
+
+            <span class="text-[10px] uppercase tracking-[0.25em] font-black text-green-200">
+              Ergebnis
+            </span>
+
+            <span class="text-4xl leading-none font-black text-white tracking-tight">
+              {{ md.match_day_result }}
+            </span>
+          </div>
+        </div>
+
         <div class="flex items-center justify-end shrink-0 sm:border-l sm:border-slate-100 sm:pl-6">
-          <OverviewHomeOrAway :md="md" :logo-library="logoLibrary" />
+          <HomeTeamIndication :md="md" :logo-library="logoLibrary" />
         </div>
       </Cell>
     </div>

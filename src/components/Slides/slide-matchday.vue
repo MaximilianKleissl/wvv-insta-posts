@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import type { SeasonData, MatchDay, LogoLibrary } from '@/lib/types';
 import { sortMatches, isTournamentMatchDay } from '@/lib/grouping';
-import { Clock, Users } from 'lucide-vue-next';
+import { Clock } from 'lucide-vue-next';
 import SharedContainer from './sharedContainer.vue';
 import { useSlideDensity } from '@/composables/Slides/useDensity.ts';
 import VsBadge from '@/components/Slides/subComponents/VsBadge.vue';
@@ -32,9 +32,7 @@ const { styles } = useSlideDensity(
 );
 
 // Computed properties
-const tournament = computed(() => isTournamentMatchDay(props.matchDay));
 const matches = computed(() => sortMatches(props.matchDay));
-const teams = computed(() => props.matchDay.teams ?? []);
 
 const slideTitle = computed<SlideTitle>(() => ({
   subtitle: props.matchDay.team,
@@ -50,83 +48,59 @@ const matchDayMeta = computed<MatchDayMetaData>(() => ({
 
 <template>
   <SharedContainer :id="id" :styles="styles" :slide-title="slideTitle" :match-day="matchDayMeta">
-    <template v-if="tournament">
-      <div class="flex items-center gap-3 text-2xl font-bold text-muted-green-800/80 mb-2">
-        <Users class="w-7 h-7 text-green-800" />
-        <span>Teilnehmende Mannschaften</span>
-      </div>
-      <div class="grid grid-cols-2 gap-4 content-start flex-1 overflow-hidden">
-        <Cell v-for="(team, idx) in teams" :key="idx" :styles="styles">
-          <template #left_part>
-            <TeamLogo
-              :team-name="team"
-              :size-class="styles.logoSize"
-              :custom-library="props.logoLibrary"
-            />
-          </template>
+    <Cell v-for="(m, idx) in matches" :key="idx" :styles="styles">
+      <template #left_part>
+        <Clock class="w-6 h-6 text-green-800 mb-1 shrink-0" />
+        <span class="text-3xl font-bold text-green-800 tracking-tighter">{{ m.time }}</span>
+        <span class="text-lg font-bold text-green-800 text-muted uppercase tracking-wider mt-0.5"
+          >Uhr</span
+        >
+      </template>
+
+      <div class="flex-1 flex items-center justify-between gap-4 px-2">
+        <div class="flex-1 flex flex-col items-center text-center gap-2 min-w-0">
+          <TeamLogo
+            :team-name="m.home"
+            :size-class="styles.logoSize"
+            :custom-library="props.logoLibrary"
+          />
+          <span
+            class="font-black leading-tight wrap w-full"
+            :class="[styles.textSize, getTeamTextColor(m.home)]"
+          >
+            {{ m.home }}
+          </span>
+        </div>
+
+        <!-- Result -->
+        <div
+          class="flex items-center gap-3 px-5 py-2 rounded-2xl bg-green-900 shadow-lg"
+          v-if="m.result"
+        >
+          <span class="text-6xl font-black text-white leading-none">{{ m.result.home }}</span>
+          <span class="text-3xl font-black text-green-200"> : </span>
+          <span class="text-6xl font-black text-white leading-none">{{ m.result.away }}</span>
+        </div>
+
+        <VsBadge v-else />
+
+        <div class="flex-1 flex flex-col items-center text-center gap-2 min-w-0">
+          <TeamLogo
+            :team-name="m.away"
+            :size-class="styles.logoSize"
+            :custom-library="props.logoLibrary"
+          />
           <span
             :class="[
               styles.textSize,
-              'font-extrabold leading-snug truncate',
-              getTeamTextColor(team),
+              'font-black leading-tight wrap w-full',
+              getTeamTextColor(m.away),
             ]"
           >
-            {{ team }}
+            {{ m.away }}
           </span>
-        </Cell>
-      </div>
-    </template>
-
-    <template v-else>
-      <Cell v-for="(m, idx) in matches" :key="idx" :styles="styles">
-        <template #left_part>
-          <Clock class="w-6 h-6 text-green-800 mb-1 shrink-0" />
-          <span :class="[styles.clockSize, 'font-black text-green-800 tracking-tighter']">{{
-            m.time
-          }}</span>
-          <span class="text-lg font-bold text-green-800 text-muted uppercase tracking-wider mt-0.5"
-            >Uhr</span
-          >
-        </template>
-
-        <div class="flex-1 flex items-center justify-between gap-4 px-2">
-          <div class="flex-1 flex flex-col items-center text-center gap-2 min-w-0">
-            <TeamLogo
-              :team-name="m.home"
-              :size-class="styles.logoSize"
-              :custom-library="props.logoLibrary"
-            />
-            <span
-              :class="[
-                styles.textSize,
-                'font-black leading-tight truncate w-full',
-                getTeamTextColor(m.home),
-              ]"
-            >
-              {{ m.home }}
-            </span>
-          </div>
-
-          <VsBadge />
-
-          <div class="flex-1 flex flex-col items-center text-center gap-2 min-w-0">
-            <TeamLogo
-              :team-name="m.away"
-              :size-class="styles.logoSize"
-              :custom-library="props.logoLibrary"
-            />
-            <span
-              :class="[
-                styles.textSize,
-                'font-black leading-tight truncate w-full',
-                getTeamTextColor(m.away),
-              ]"
-            >
-              {{ m.away }}
-            </span>
-          </div>
         </div>
-      </Cell>
-    </template>
+      </div>
+    </Cell>
   </SharedContainer>
 </template>

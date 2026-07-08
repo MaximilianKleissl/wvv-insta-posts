@@ -11,7 +11,7 @@ const matchSchema = z.object({
 const matchDaySchema = z
   .object({
     team: z.string().min(1, 'Teamname fehlt'),
-    home: z.boolean({ message: "'home' muss true oder false sein" }),
+    home: z.boolean({ message: '\'home\' muss true oder false sein' }),
     date: z.string().min(1, 'Datum fehlt'),
     location: z.string().min(1, 'Spielort fehlt'),
     matches: z.array(matchSchema).optional(),
@@ -19,7 +19,7 @@ const matchDaySchema = z
   })
   .refine((md) => (md.matches && md.matches.length > 0) || (md.teams && md.teams.length >= 2), {
     message:
-      "Entweder 'matches' (mit mindestens einem Spiel) oder 'teams' (mit mindestens zwei teilnehmenden Mannschaften, falls Gegner/Uhrzeit noch unbekannt sind) muss angegeben werden",
+      'Entweder \'matches\' (mit mindestens einem Spiel) oder \'teams\' (mit mindestens zwei teilnehmenden Mannschaften, falls Gegner/Uhrzeit noch unbekannt sind) muss angegeben werden',
   });
 
 const weekendSchema = z.object({

@@ -7,7 +7,6 @@ export type SlideStyles = {
   cardRadius: string;
   logoSize: string;
   textSize: string;
-  clockSize: string;
 };
 
 export function useSlideDensity(itemCount: ComputedRef<number> | number) {
@@ -34,12 +33,6 @@ export function useSlideDensity(itemCount: ComputedRef<number> | number) {
         : density.value === 'compact'
           ? 'text-2xl'
           : 'text-xl',
-    clockSize:
-      density.value === 'normal'
-        ? 'text-4xl'
-        : density.value === 'compact'
-          ? 'text-3xl'
-          : 'text-2xl',
   }));
 
   return { density, styles };

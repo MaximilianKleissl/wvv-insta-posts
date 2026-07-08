@@ -37,7 +37,7 @@ export function getBundledLogoEntries(basePath: string) {
 
 export function getBundledLogoUrl(teamName: string, basePath: string): string | undefined {
   const key = normalizeTeamName(teamName);
-  let match: LogoFileEntry | undefined = getBundledLogoFileEntries().find(
+  const match: LogoFileEntry | undefined = getBundledLogoFileEntries().find(
     ({ name }) => normalizeTeamName(name) === key,
   );
   if (!match || match === undefined) {

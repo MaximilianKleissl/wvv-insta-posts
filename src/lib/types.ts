@@ -1,12 +1,19 @@
+export interface MatchResult {
+  home: number;
+  away: number;
+}
+
 export interface Match {
   time: string;
   home: string;
   away: string;
+  result?: MatchResult;
 }
 
 export interface MatchDay {
   team: string;
   home: boolean;
+  match_day_result?: string;
   date: string;
   location: string;
   match_day_name?: string;

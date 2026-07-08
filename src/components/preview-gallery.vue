@@ -2,6 +2,9 @@
 import { computed, ref, watch } from 'vue';
 import SlideOverview from '@/components/Slides/slide-overview.vue';
 import SlideMatchday from '@/components/Slides/slide-matchday.vue';
+import SlideTournament from '@/components/Slides/slide-tournament.vue';
+import { isTournamentMatchDay } from '@/lib/grouping';
+
 import { sortedMatchDaysForWeekend } from '@/lib/grouping';
 import { buildWeekendCaption } from '@/lib/caption';
 import type { SeasonData, LogoLibrary } from '@/lib/types';
@@ -144,6 +147,23 @@ const closeExpandedPreview = () => {
                 :id="slide.slideId"
                 :season="props.season"
                 :weekend-index="slide.weekendIndex"
+                :logo-library="props.logoLibrary"
+              />
+              <SlideTournament
+                v-else-if="
+                  isTournamentMatchDay(
+                    props.season.weekends[slide.weekendIndex].matchDays[
+                      slide.matchDayOriginalIndex ?? 0
+                    ],
+                  )
+                "
+                :id="slide.slideId"
+                :season="props.season"
+                :match-day="
+                  props.season.weekends[slide.weekendIndex].matchDays[
+                    slide.matchDayOriginalIndex ?? 0
+                  ]
+                "
                 :logo-library="props.logoLibrary"
               />
               <SlideMatchday
