@@ -106,8 +106,8 @@ const closeExpandedPreview = () => {
           :min="0"
           :max="availableWeekendIndexes.length - 1"
           :value="selectedWeekendIndex ?? 0"
-          @input="selectedWeekendIndex = Number(($event.target as HTMLInputElement).value)"
           class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-900"
+          @input="selectedWeekendIndex = Number(($event.target as HTMLInputElement).value)"
         />
         <span class="text-sm font-medium text-gray-700 min-w-[80px] text-right">
           {{ props.season.weekends[selectedWeekendIndex ?? 0]?.dateRangeShort }}
@@ -143,19 +143,19 @@ const closeExpandedPreview = () => {
                 v-if="slide.kind === 'overview'"
                 :id="slide.slideId"
                 :season="props.season"
-                :weekendIndex="slide.weekendIndex"
-                :logoLibrary="props.logoLibrary"
+                :weekend-index="slide.weekendIndex"
+                :logo-library="props.logoLibrary"
               />
               <SlideMatchday
                 v-else
                 :id="slide.slideId"
                 :season="props.season"
-                :matchDay="
+                :match-day="
                   props.season.weekends[slide.weekendIndex].matchDays[
                     slide.matchDayOriginalIndex ?? 0
                   ]
                 "
-                :logoLibrary="props.logoLibrary"
+                :logo-library="props.logoLibrary"
               />
             </div>
           </div>
@@ -165,9 +165,9 @@ const closeExpandedPreview = () => {
 
       <button
         v-if="selectedWeekendIndex !== null"
-        @click="emit('exportWeekend', selectedWeekendIndex)"
         :disabled="props.exporting"
         class="rounded-full px-4 py-2 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-300 transition"
+        @click="emit('exportWeekend', selectedWeekendIndex)"
       >
         {{ props.exporting ? 'Exportiere...' : 'Export' }}
       </button>
@@ -197,19 +197,19 @@ const closeExpandedPreview = () => {
               v-if="expandedSlide.kind === 'overview'"
               :id="expandedSlide.slideId"
               :season="props.season"
-              :weekendIndex="expandedSlide.weekendIndex"
-              :logoLibrary="props.logoLibrary"
+              :weekend-index="expandedSlide.weekendIndex"
+              :logo-library="props.logoLibrary"
             />
             <SlideMatchday
               v-else
               :id="expandedSlide.slideId"
               :season="props.season"
-              :matchDay="
+              :match-day="
                 props.season.weekends[expandedSlide.weekendIndex].matchDays[
                   expandedSlide.matchDayOriginalIndex ?? 0
                 ]
               "
-              :logoLibrary="props.logoLibrary"
+              :logo-library="props.logoLibrary"
             />
           </div>
         </div>

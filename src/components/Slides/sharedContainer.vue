@@ -14,7 +14,7 @@
     </div>
 
     <div class="relative z-10 flex h-full w-full flex-col">
-      <Header :slideTitle="slideTitle" :matchDay="matchDay" />
+      <Header :slide-title="slideTitle" :match-day="matchDay" />
       <main class="flex-1 flex flex-col min-w-0 justify-center p-10 gap-5">
         <slot />
       </main>

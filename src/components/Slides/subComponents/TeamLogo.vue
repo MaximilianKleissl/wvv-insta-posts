@@ -25,6 +25,8 @@ interface TeamLogoProps {
 const props = withDefaults(defineProps<TeamLogoProps>(), {
   sizeClass: 'w-12 h-12',
   fallbackClass: 'flex items-center justify-center bg-muted rounded-full border border-border',
+  basePath: import.meta.env.BASE_URL,
+  customLibrary: undefined,
 });
 
 const { getLogoUrl } = useLogo(props.basePath, props.customLibrary);

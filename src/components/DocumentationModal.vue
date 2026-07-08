@@ -26,7 +26,7 @@ defineExpose({
     <div class="max-h-[90vh] max-w-2xl overflow-auto rounded-lg bg-white p-6 shadow-xl">
       <div class="mb-4 flex items-center justify-between">
         <h2 class="text-2xl font-bold text-gray-900">Benutzerdokumentation</h2>
-        <button @click="close" class="rounded-full bg-gray-100 p-2 text-gray-600 hover:bg-gray-200">
+        <button class="rounded-full bg-gray-100 p-2 text-gray-600 hover:bg-gray-200" @click="close">
           <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
@@ -93,8 +93,8 @@ defineExpose({
 
       <div class="mt-6 flex justify-end">
         <button
-          @click="close"
           class="rounded-lg bg-green-900 px-4 py-2 text-white hover:bg-green-800"
+          @click="close"
         >
           Schließen
         </button>

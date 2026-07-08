@@ -8,16 +8,6 @@ export function useSeasonData() {
   const rawJson = ref(SAMPLE_SEASON_JSON);
   const validationResult = ref<ValidationResult | null>(validateSeasonJson(SAMPLE_SEASON_JSON));
 
-  const parseJson = (jsonString: string) => {
-    rawJson.value = jsonString;
-    if (!jsonString.trim()) {
-      validationResult.value = null;
-      return;
-    }
-    const result = validateSeasonJson(jsonString);
-    validationResult.value = result;
-  };
-
   const setSeasonData = (value: SeasonData) => {
     validationResult.value = { success: true, data: value };
     rawJson.value = JSON.stringify(value, null, 2);
@@ -28,11 +18,9 @@ export function useSeasonData() {
   );
 
   return {
-    rawJson,
     setRawJson: (value: string) => {
       rawJson.value = value;
     },
-    parseJson,
     setSeasonData,
     validationResult,
     seasonData,

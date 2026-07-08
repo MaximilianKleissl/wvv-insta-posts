@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed } from 'vue';
 import { useSeasonData } from '@/composables/useSeasonData';
 import { useLogoLibrary } from '@/composables/useLogoLibrary';
 import PageHeader from '@/components/PageHeader.vue';
@@ -8,13 +8,8 @@ import SlideMatchday from '@/components/Slides/slide-matchday.vue';
 import PreviewGallery from '@/components/preview-gallery.vue';
 import { SAMPLE_SEASON_FILES } from '@/lib/sample-data';
 import { sortedMatchDaysForWeekend, slugify } from '@/lib/grouping';
-import { getBundledLogoEntries } from '@/lib/logo-assets';
-import {
-  exportSeasonZip,
-  downloadBlob,
-  seasonZipFileName,
-  type ExportProgress,
-} from '@/lib/export-zip';
+import { exportSeasonZip, downloadBlob, seasonZipFileName } from '@/lib/export-zip';
+import type { ExportProgress } from '@/lib/export-zip';
 import { parseSeasonImportFiles } from '@/lib/schema';
 import type { SeasonData } from '@/lib/types';
 
@@ -25,8 +20,7 @@ interface SlideRef {
   matchDayOriginalIndex?: number;
 }
 
-const { rawJson, setRawJson, parseJson, setSeasonData, validationResult, seasonData } =
-  useSeasonData();
+const { setRawJson, setSeasonData, validationResult, seasonData } = useSeasonData();
 const { library } = useLogoLibrary();
 
 const exporting = ref(false);
@@ -107,30 +101,6 @@ const handleFileInputChange = async (event: Event) => {
   input.value = '';
 };
 
-const allSlideRefs = computed<SlideRef[]>(() => {
-  if (!seasonData.value) return [];
-  const refs: SlideRef[] = [];
-  seasonData.value.weekends.forEach((weekend, weekendIndex) => {
-    if (weekend.matchDays.length > 1) {
-      refs.push({
-        slideId: `overview-${weekendIndex}`,
-        weekendIndex,
-        kind: 'overview',
-      });
-    }
-    weekend.matchDays.forEach((md) => {
-      const originalIndex = weekend.matchDays.indexOf(md);
-      refs.push({
-        slideId: `matchday-${weekendIndex}-${originalIndex}`,
-        weekendIndex,
-        kind: 'matchday',
-        matchDayOriginalIndex: originalIndex,
-      });
-    });
-  });
-  return refs;
-});
-
 const exportSlides = computed<SlideRef[]>(() => {
   if (!seasonData.value) return [];
   const refs: SlideRef[] = [];
@@ -154,8 +124,6 @@ const exportSlides = computed<SlideRef[]>(() => {
   });
   return refs;
 });
-
-const bundledLogoEntries = computed(() => getBundledLogoEntries(import.meta.env.BASE_URL));
 
 const handleExport = async () => {
   if (!seasonData.value) return;
@@ -235,9 +203,9 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
       <PreviewGallery
         v-if="seasonData"
         :season="season"
-        :logoLibrary="library"
+        :logo-library="library"
         :exporting="exporting"
-        @exportWeekend="handleExportSingleWeekend"
+        @export-weekend="handleExportSingleWeekend"
       />
     </main>
 
@@ -253,17 +221,17 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
           v-if="slide.kind === 'overview'"
           :id="slide.slideId"
           :season="season"
-          :weekendIndex="slide.weekendIndex"
-          :logoLibrary="library"
+          :weekend-index="slide.weekendIndex"
+          :logo-library="library"
         />
         <SlideMatchday
           v-else
           :id="slide.slideId"
           :season="season"
-          :matchDay="
+          :match-day="
             season.weekends[slide.weekendIndex].matchDays[slide.matchDayOriginalIndex ?? 0]
           "
-          :logoLibrary="library"
+          :logo-library="library"
         />
       </div>
     </div>

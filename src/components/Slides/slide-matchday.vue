@@ -2,13 +2,12 @@
 import { computed } from 'vue';
 import type { SeasonData, MatchDay, LogoLibrary } from '@/lib/types';
 import { sortMatches, isTournamentMatchDay } from '@/lib/grouping';
-import { MapPin, Calendar, Clock, Users } from 'lucide-vue-next';
+import { Clock, Users } from 'lucide-vue-next';
 import SharedContainer from './sharedContainer.vue';
 import { useSlideDensity } from '@/composables/Slides/useDensity.ts';
 import VsBadge from '@/components/Slides/subComponents/VsBadge.vue';
 import Cell from '@/components/Slides/subComponents/Cell.vue';
 import TeamLogo from '@/components/Slides/subComponents/TeamLogo.vue';
-import { useLogo } from '@/composables/useLogo';
 import { useTeamHighlight } from '@/composables/useTeamHighlight';
 import type { SlideTitle, MatchDayMetaData } from '@/lib/slide-types';
 
@@ -22,7 +21,6 @@ interface SlideMatchdayProps {
 const props = defineProps<SlideMatchdayProps>();
 
 // Composables
-const { getLogoUrl } = useLogo(import.meta.env.BASE_URL, props.logoLibrary);
 const { getTeamTextColor } = useTeamHighlight(props.season);
 const { styles } = useSlideDensity(
   computed(() => {
@@ -51,7 +49,7 @@ const matchDayMeta = computed<MatchDayMetaData>(() => ({
 </script>
 
 <template>
-  <SharedContainer :id="id" :styles="styles" :slideTitle="slideTitle" :matchDay="matchDayMeta">
+  <SharedContainer :id="id" :styles="styles" :slide-title="slideTitle" :match-day="matchDayMeta">
     <template v-if="tournament">
       <div class="flex items-center gap-3 text-2xl font-bold text-muted-green-800/80 mb-2">
         <Users class="w-7 h-7 text-green-800" />
@@ -78,7 +76,7 @@ const matchDayMeta = computed<MatchDayMetaData>(() => ({
     </template>
 
     <template v-else>
-      <Cell :styles="styles" v-for="(m, idx) in matches" :key="idx">
+      <Cell v-for="(m, idx) in matches" :key="idx" :styles="styles">
         <div
           class="flex flex-col items-center justify-center px-4 border-r border-green-800/60 min-w-[130px]"
         >

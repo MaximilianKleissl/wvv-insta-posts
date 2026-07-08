@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { SeasonData, MatchDay } from './types';
+import type { SeasonData, MatchDay, Weekend } from './types';
 import { buildWeekendsFromMatchDays } from './grouping';
 
 const matchSchema = z.object({
@@ -71,12 +71,10 @@ export interface ImportFileSource {
   content: string;
 }
 
-function isLegacySeasonShape(
-  value: unknown,
-): value is {
+function isLegacySeasonShape(value: unknown): value is {
   season: string;
   club: string;
-  weekends: Array<{ dateRange: string; matchDays: MatchDay[] }>;
+  weekends: Array<Weekend>;
 } {
   return legacySeasonSchema.safeParse(value).success;
 }
@@ -96,7 +94,7 @@ function buildValidationIssues(issues: z.ZodIssue[]): ValidationIssue[] {
   }));
 }
 
-function buildSeasonDataFromParsedValue(parsed: unknown): ValidationResult {
+function buildSeasonDataFromParsedValue(parsed: SeasonData): ValidationResult {
   if (isLegacySeasonShape(parsed)) {
     return {
       success: true,
@@ -105,6 +103,7 @@ function buildSeasonDataFromParsedValue(parsed: unknown): ValidationResult {
         club: parsed.club,
         weekends: parsed.weekends.map((weekend) => ({
           dateRange: weekend.dateRange,
+          dateRangeShort: weekend.dateRangeShort,
           matchDays: weekend.matchDays,
         })),
       },

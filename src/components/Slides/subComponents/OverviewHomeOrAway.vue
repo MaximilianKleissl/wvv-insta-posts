@@ -32,7 +32,7 @@ import TeamLogo from './TeamLogo.vue';
 import { BADGE_LABELS } from '@/lib/slide-constants';
 import type { LogoLibrary } from '@/lib/types';
 
-const props = defineProps<{
+defineProps<{
   md: {
     home: boolean;
     homeTeam?: string;

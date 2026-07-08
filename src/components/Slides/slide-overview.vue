@@ -61,7 +61,7 @@ const slideTitle = computed<SlideTitle>(() => ({
 </script>
 
 <template>
-  <SharedContainer :id="id" :styles="styles" :slideTitle="slideTitle">
+  <SharedContainer :id="id" :styles="styles" :slide-title="slideTitle">
     <div :class="containerGridClass">
       <Cell
         v-for="(md, idx) in matchDays"
@@ -110,7 +110,7 @@ const slideTitle = computed<SlideTitle>(() => ({
         </div>
 
         <div class="flex items-center justify-end shrink-0 sm:border-l sm:border-slate-100 sm:pl-6">
-          <OverviewHomeOrAway :md="md" :logoLibrary="logoLibrary" />
+          <OverviewHomeOrAway :md="md" :logo-library="logoLibrary" />
         </div>
       </Cell>
     </div>
