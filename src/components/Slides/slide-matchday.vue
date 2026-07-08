@@ -57,11 +57,13 @@ const matchDayMeta = computed<MatchDayMetaData>(() => ({
       </div>
       <div class="grid grid-cols-2 gap-4 content-start flex-1 overflow-hidden">
         <Cell v-for="(team, idx) in teams" :key="idx" :styles="styles">
-          <TeamLogo
-            :team-name="team"
-            :size-class="styles.logoSize"
-            :custom-library="props.logoLibrary"
-          />
+          <template #left_part>
+            <TeamLogo
+              :team-name="team"
+              :size-class="styles.logoSize"
+              :custom-library="props.logoLibrary"
+            />
+          </template>
           <span
             :class="[
               styles.textSize,
@@ -77,9 +79,7 @@ const matchDayMeta = computed<MatchDayMetaData>(() => ({
 
     <template v-else>
       <Cell v-for="(m, idx) in matches" :key="idx" :styles="styles">
-        <div
-          class="flex flex-col items-center justify-center px-4 border-r border-green-800/60 min-w-[130px]"
-        >
+        <template #left_part>
           <Clock class="w-6 h-6 text-green-800 mb-1 shrink-0" />
           <span :class="[styles.clockSize, 'font-black text-green-800 tracking-tighter']">{{
             m.time
@@ -87,7 +87,7 @@ const matchDayMeta = computed<MatchDayMetaData>(() => ({
           <span class="text-lg font-bold text-green-800 text-muted uppercase tracking-wider mt-0.5"
             >Uhr</span
           >
-        </div>
+        </template>
 
         <div class="flex-1 flex items-center justify-between gap-4 px-2">
           <div class="flex-1 flex flex-col items-center text-center gap-2 min-w-0">

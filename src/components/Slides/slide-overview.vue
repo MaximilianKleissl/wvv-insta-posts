@@ -63,26 +63,18 @@ const slideTitle = computed<SlideTitle>(() => ({
 <template>
   <SharedContainer :id="id" :styles="styles" :slide-title="slideTitle">
     <div :class="containerGridClass">
-      <Cell
-        v-for="(md, idx) in matchDays"
-        :key="idx"
-        :styles="styles"
-        class="relative flex flex-col sm:flex-row sm:items-center gap-6 p-6 md:p-8 bg-white rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] overflow-hidden"
-      >
-        <div
-          class="absolute top-0 left-6 px-4 py-1 text-[10px] font-black tracking-widest uppercase rounded-b-lg text-white"
-          :class="md.home ? 'bg-emerald-600' : 'bg-green-800'"
-        >
-          {{ md.home ? BADGE_LABELS.HOME : BADGE_LABELS.AWAY }}
-        </div>
-
-        <div
-          class="flex w-14 h-14 items-center justify-center rounded-2xl shrink-0 transition-colors"
-          :class="md.home ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-green-800'"
-        >
-          <Home v-if="md.home" :size="26" class="stroke-[2.2]" />
-          <Car v-else :size="26" class="stroke-[2.2]" />
-        </div>
+      <Cell v-for="(md, idx) in matchDays" :key="idx" :styles="styles">
+        <template #left_part>
+          <div class="bg-green-800/20 items-center flex flex-col rounded-lg pt-1 min-w-[90px]">
+            <Home v-if="md.home" :size="26" class="stroke-[2.2]" />
+            <Car v-else :size="26" class="stroke-[2.2]" />
+            <div
+              class="top-0 text-center left-6 p-1 text-[10px] w-full font-black tracking-widest uppercase rounded-b-lg text-white bg-green-800"
+            >
+              {{ md.home ? BADGE_LABELS.HOME_SHORT : BADGE_LABELS.AWAY_SHORT }}
+            </div>
+          </div>
+        </template>
 
         <div class="flex-1 min-w-0 z-10 space-y-2">
           <h3
