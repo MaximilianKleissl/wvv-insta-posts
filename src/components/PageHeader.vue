@@ -16,8 +16,6 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  fileUpload: [event: Event];
-  loadSample: [];
   exportAll: [];
 }>();
 
@@ -48,8 +46,6 @@ defineExpose({
           :weekend-count="props.weekendCount"
           :match-day-count="props.matchDayCount"
           :match-count="props.matchCount"
-          @file-upload="emit('fileUpload', $event)"
-          @load-sample="emit('loadSample')"
           @export-all="emit('exportAll')"
           @open-documentation="openDocumentation"
         />

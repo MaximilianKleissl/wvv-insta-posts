@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { SeasonData, MatchDay, LogoLibrary } from '@/lib/types';
+import type { SeasonData, MatchDay } from '@/lib/types';
 import { sortMatches, isTournamentMatchDay } from '@/lib/grouping';
 import { Users } from 'lucide-vue-next';
 import SharedContainer from './sharedContainer.vue';
@@ -14,7 +14,6 @@ interface SlideMatchdayProps {
   id: string;
   season: SeasonData;
   matchDay: MatchDay;
-  logoLibrary: LogoLibrary;
 }
 
 const props = defineProps<SlideMatchdayProps>();
@@ -54,11 +53,7 @@ const matchDayMeta = computed<MatchDayMetaData>(() => ({
     <div class="grid grid-cols-2 gap-4 content-start flex-1 overflow-hidden">
       <Cell v-for="(team, idx) in teams" :key="idx" :styles="styles">
         <template #left_part>
-          <TeamLogo
-            :team-name="team"
-            :size-class="styles.logoSize"
-            :custom-library="props.logoLibrary"
-          />
+          <TeamLogo :team-name="team" :size-class="styles.logoSize" />
         </template>
         <span
           class="font-extrabold leading-snug truncate"

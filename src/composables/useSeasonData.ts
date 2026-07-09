@@ -1,28 +1,20 @@
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import type { SeasonData } from '@/lib/types';
-import type { ValidationResult } from '@/lib/schema';
-import { validateSeasonJson } from '@/lib/schema';
-import { SAMPLE_SEASON_JSON } from '@/lib/sample-data';
 
 export function useSeasonData() {
-  const rawJson = ref(SAMPLE_SEASON_JSON);
-  const validationResult = ref<ValidationResult | null>(validateSeasonJson(SAMPLE_SEASON_JSON));
+  const seasonData = ref<SeasonData | null>(null);
+  const loading = ref(false);
+  const error = ref<string | null>(null);
 
   const setSeasonData = (value: SeasonData) => {
-    validationResult.value = { success: true, data: value };
-    rawJson.value = JSON.stringify(value, null, 2);
+    seasonData.value = value;
+    error.value = null;
   };
 
-  const seasonData = computed(() =>
-    validationResult.value?.success ? validationResult.value.data : undefined,
-  );
-
   return {
-    setRawJson: (value: string) => {
-      rawJson.value = value;
-    },
     setSeasonData,
-    validationResult,
     seasonData,
+    loading,
+    error,
   };
 }

@@ -27,7 +27,6 @@ export async function exportSeasonZip(
   const zip = new JSZip();
 
   const jobs: { weekendIndex: number; slideId: string; fileBase: string; caption?: string }[] = [];
-
   const weekendsToExport = selectedWeekendIndexes
     ? selectedWeekendIndexes.map((i) => season.weekends[i]).filter(Boolean)
     : season.weekends;
