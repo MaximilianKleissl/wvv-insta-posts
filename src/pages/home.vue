@@ -1,17 +1,16 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useSeasonData } from '@/composables/useSeasonData';
-import { useLogoLibrary } from '@/composables/useLogoLibrary';
 import PageHeader from '@/components/PageHeader.vue';
 import SlideOverview from '@/components/Slides/slide-overview.vue';
 import SlideMatchday from '@/components/Slides/slide-matchday.vue';
+import SlideTournament from '@/components/Slides/slide-tournament.vue';
 import PreviewGallery from '@/components/preview-gallery.vue';
-import { SAMPLE_SEASON_FILES } from '@/lib/sample-data';
+import { fetchSeasonData } from '@/lib/sample-data';
 import { sortedMatchDaysForWeekend, slugify } from '@/lib/grouping';
 import { exportSeasonZip, downloadBlob, seasonZipFileName } from '@/lib/export-zip';
 import type { ExportProgress } from '@/lib/export-zip';
-import { parseSeasonImportFiles } from '@/lib/schema';
-import type { SeasonData } from '@/lib/types';
+import { isTournamentMatchDay } from '@/lib/grouping';
 
 interface SlideRef {
   slideId: string;
@@ -20,18 +19,10 @@ interface SlideRef {
   matchDayOriginalIndex?: number;
 }
 
-const { setRawJson, setSeasonData, validationResult, seasonData } = useSeasonData();
-const { library } = useLogoLibrary();
+const { setSeasonData, seasonData, loading, error } = useSeasonData();
 
 const exporting = ref(false);
 const progress = ref<ExportProgress | null>(null);
-const importState = ref<{
-  status: 'idle' | 'loading' | 'success' | 'error';
-  message: string;
-}>({
-  status: 'idle',
-  message: '',
-});
 
 const slideNodes = ref<Map<string, HTMLElement>>(new Map());
 
@@ -43,7 +34,7 @@ const registerSlideNode = (id: string, el: HTMLElement | null) => {
 const registerSlideRef = (slideId: string) => (el: HTMLElement | null) =>
   registerSlideNode(slideId, el);
 
-const season = computed<SeasonData>(() => seasonData.value!);
+const season = computed(() => seasonData.value);
 
 const getSlideElement = (id: string) => slideNodes.value.get(id) ?? null;
 
@@ -61,45 +52,17 @@ const matchCount = computed(
     ) ?? 0,
 );
 
-const handleLoadSample = async () => {
-  await importFiles(SAMPLE_SEASON_FILES);
-};
-
-const importFiles = async (files: Array<File | { name: string; content: string }>) => {
-  importState.value = { status: 'loading', message: 'Lade Dateien...' };
-
+onMounted(async () => {
+  loading.value = true;
   try {
-    const result = await parseSeasonImportFiles(files);
-    if (!result.success || !result.data) {
-      importState.value = {
-        status: 'error',
-        message: result.issues?.[0]?.message ?? 'Import fehlgeschlagen.',
-      };
-      return;
-    }
-
-    setSeasonData(result.data);
-    setRawJson(JSON.stringify(result.data, null, 2));
-    importState.value = {
-      status: 'success',
-      message: `${files.length} Datei(en) verarbeitet. ${result.data.weekends.length} Wochenende erkannt.`,
-    };
-  } catch (error) {
-    importState.value = {
-      status: 'error',
-      message: error instanceof Error ? error.message : 'Import fehlgeschlagen.',
-    };
+    const data = await fetchSeasonData();
+    setSeasonData(data);
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'Fehler beim Laden der Daten';
+  } finally {
+    loading.value = false;
   }
-};
-
-const handleFileInputChange = async (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  const files = Array.from(input.files ?? []);
-  if (files.length === 0) return;
-
-  await importFiles(files);
-  input.value = '';
-};
+});
 
 const exportSlides = computed<SlideRef[]>(() => {
   if (!seasonData.value) return [];
@@ -172,38 +135,24 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
       :weekend-count="weekendCount"
       :match-day-count="matchDayCount"
       :match-count="matchCount"
-      @file-upload="handleFileInputChange"
-      @load-sample="handleLoadSample"
       @export-all="handleExport"
     />
 
     <main class="max-w-4xl mx-auto space-y-8">
-      <div
-        v-if="validationResult && !validationResult.success"
-        class="p-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600"
-      >
-        <p v-if="validationResult.parseError">
-          Ungueltiges JSON: {{ validationResult.parseError }}
-        </p>
-        <p v-for="(issue, i) in validationResult.issues" :key="i">
-          <strong>{{ issue.path }}:</strong> {{ issue.message }}
-        </p>
+      <div v-if="loading" class="text-center py-12">
+        <div
+          class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-800"
+        ></div>
+        <p class="mt-4 text-gray-600">Lade Daten...</p>
       </div>
 
-      <span v-if="importState.status === 'error'" class="block text-sm font-medium text-red-600">
-        {{ importState.message }}
-      </span>
-      <span
-        v-else-if="importState.status === 'loading'"
-        class="block text-sm font-medium text-blue-600"
-      >
-        {{ importState.message }}
-      </span>
+      <div v-else-if="error" class="p-4 bg-red-50 border border-red-200 rounded-lg text-red-600">
+        {{ error }}
+      </div>
 
       <PreviewGallery
-        v-if="seasonData"
+        v-else-if="seasonData"
         :season="season"
-        :logo-library="library"
         :exporting="exporting"
         @export-weekend="handleExportSingleWeekend"
       />
@@ -222,16 +171,25 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
           :id="slide.slideId"
           :season="season"
           :weekend-index="slide.weekendIndex"
-          :logo-library="library"
         />
-        <SlideMatchday
-          v-else
+        <SlideTournament
+          v-else-if="
+            isTournamentMatchDay(
+              season.weekends[slide.weekendIndex].matchDays[slide.matchDayOriginalIndex ?? 0],
+            )
+          "
           :id="slide.slideId"
           :season="season"
           :match-day="
             season.weekends[slide.weekendIndex].matchDays[slide.matchDayOriginalIndex ?? 0]
           "
-          :logo-library="library"
+        />
+        <SlideMatchday
+          v-else
+          :season="season"
+          :match-day="
+            season.weekends[slide.weekendIndex].matchDays[slide.matchDayOriginalIndex ?? 0]
+          "
         />
       </div>
     </div>

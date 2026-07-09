@@ -11,8 +11,6 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  fileUpload: [event: Event];
-  loadSample: [];
   exportAll: [];
   openDocumentation: [];
 }>();
@@ -43,18 +41,6 @@ defineExpose({
 <template>
   <div class="relative">
     <div class="flex items-center gap-2">
-      <button
-        :class="[
-          'flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold transition',
-          activeMenu === 'upload'
-            ? 'bg-white text-green-900'
-            : 'bg-white/20 text-white hover:bg-white/30',
-        ]"
-        title="Upload"
-        @click="toggleMenu('upload')"
-      >
-        ↑
-      </button>
       <button
         :class="[
           'flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold transition',
@@ -89,30 +75,6 @@ defineExpose({
     </div>
 
     <div v-if="isOpen" class="absolute right-0 top-12 z-50 w-72 rounded-lg bg-white shadow-xl">
-      <div v-if="activeMenu === 'upload'" class="p-4">
-        <h3 class="text-lg font-semibold text-gray-900 mb-3">Upload</h3>
-        <label
-          class="flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-4 text-center text-sm text-gray-600 hover:bg-gray-100"
-        >
-          <span class="font-semibold text-gray-800">JSON-Dateien auswählen</span>
-          <span class="mt-1 text-xs">Metadaten + MatchDay-Dateien</span>
-          <input
-            type="file"
-            class="sr-only"
-            multiple
-            accept=".json,application/json"
-            @change="emit('fileUpload', $event)"
-          />
-        </label>
-        <button
-          class="mt-3 w-full flex flex-col items-center justify-center rounded-xl border border-gray-300 bg-gray-50 px-4 py-4 text-center text-sm text-gray-600 hover:bg-gray-100"
-          @click="emit('loadSample')"
-        >
-          <span class="font-semibold text-gray-800">Beispieldaten laden</span>
-          <span class="mt-1 text-xs">Demo-Daten importieren</span>
-        </button>
-      </div>
-
       <div v-if="activeMenu === 'export'" class="p-4">
         <h3 class="text-lg font-semibold text-gray-900 mb-3">Export</h3>
         <p class="text-sm text-gray-600 mb-3">

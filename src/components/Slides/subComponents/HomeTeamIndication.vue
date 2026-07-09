@@ -7,7 +7,6 @@
       <TeamLogo
         v-if="md.homeTeam"
         :team-name="md.homeTeam"
-        :custom-library="logoLibrary"
         size-class="w-full h-full object-contain p-3"
         fallback-class=""
       />
@@ -30,13 +29,11 @@
 <script setup lang="ts">
 import TeamLogo from './TeamLogo.vue';
 import { BADGE_LABELS } from '@/lib/slide-constants';
-import type { LogoLibrary } from '@/lib/types';
 
 defineProps<{
   md: {
     home: boolean;
     homeTeam?: string;
   };
-  logoLibrary: LogoLibrary;
 }>();
 </script>

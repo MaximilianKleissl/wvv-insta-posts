@@ -7,7 +7,7 @@ import { isTournamentMatchDay } from '@/lib/grouping';
 
 import { sortedMatchDaysForWeekend } from '@/lib/grouping';
 import { buildWeekendCaption } from '@/lib/caption';
-import type { SeasonData, LogoLibrary } from '@/lib/types';
+import type { SeasonData } from '@/lib/types';
 
 interface PreviewSlideRef {
   slideId: string;
@@ -18,7 +18,6 @@ interface PreviewSlideRef {
 
 const props = defineProps<{
   season: SeasonData;
-  logoLibrary: LogoLibrary;
   exporting?: boolean;
 }>();
 
@@ -155,7 +154,6 @@ const previousSlide = () => {
                 :id="slide.slideId"
                 :season="props.season"
                 :weekend-index="slide.weekendIndex"
-                :logo-library="props.logoLibrary"
               />
               <SlideTournament
                 v-else-if="
@@ -172,7 +170,6 @@ const previousSlide = () => {
                     slide.matchDayOriginalIndex ?? 0
                   ]
                 "
-                :logo-library="props.logoLibrary"
               />
               <SlideMatchday
                 v-else
@@ -183,7 +180,6 @@ const previousSlide = () => {
                     slide.matchDayOriginalIndex ?? 0
                   ]
                 "
-                :logo-library="props.logoLibrary"
               />
             </div>
           </div>
@@ -229,7 +225,6 @@ const previousSlide = () => {
                 :id="expandedSlide.slideId"
                 :season="props.season"
                 :weekend-index="expandedSlide.weekendIndex"
-                :logo-library="props.logoLibrary"
               />
               <SlideTournament
                 v-else-if="
@@ -246,7 +241,6 @@ const previousSlide = () => {
                     expandedSlide.matchDayOriginalIndex ?? 0
                   ]
                 "
-                :logo-library="props.logoLibrary"
               />
               <SlideMatchday
                 v-else
@@ -257,7 +251,6 @@ const previousSlide = () => {
                     expandedSlide.matchDayOriginalIndex ?? 0
                   ]
                 "
-                :logo-library="props.logoLibrary"
               />
             </div>
           </div>

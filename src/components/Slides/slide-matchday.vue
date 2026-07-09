@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { SeasonData, MatchDay, LogoLibrary } from '@/lib/types';
+import type { SeasonData, MatchDay } from '@/lib/types';
 import { sortMatches, isTournamentMatchDay } from '@/lib/grouping';
 import { Clock } from 'lucide-vue-next';
 import SharedContainer from './sharedContainer.vue';
@@ -15,7 +15,6 @@ interface SlideMatchdayProps {
   id: string;
   season: SeasonData;
   matchDay: MatchDay;
-  logoLibrary: LogoLibrary;
 }
 
 const props = defineProps<SlideMatchdayProps>();
@@ -59,11 +58,7 @@ const matchDayMeta = computed<MatchDayMetaData>(() => ({
 
       <div class="flex-1 flex items-center justify-between gap-4 px-2">
         <div class="flex-1 flex flex-col items-center text-center gap-2 min-w-0">
-          <TeamLogo
-            :team-name="m.home"
-            :size-class="styles.logoSize"
-            :custom-library="props.logoLibrary"
-          />
+          <TeamLogo :team-name="m.home" :size-class="styles.logoSize" />
           <span
             class="font-black leading-tight wrap w-full"
             :class="[styles.textSize, getTeamTextColor(m.home)]"
@@ -85,11 +80,7 @@ const matchDayMeta = computed<MatchDayMetaData>(() => ({
         <VsBadge v-else />
 
         <div class="flex-1 flex flex-col items-center text-center gap-2 min-w-0">
-          <TeamLogo
-            :team-name="m.away"
-            :size-class="styles.logoSize"
-            :custom-library="props.logoLibrary"
-          />
+          <TeamLogo :team-name="m.away" :size-class="styles.logoSize" />
           <span
             :class="[
               styles.textSize,

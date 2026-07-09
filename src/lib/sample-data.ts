@@ -1,44 +1,42 @@
 import type { MatchDay, SeasonData } from './types';
 import { buildWeekendsFromMatchDays } from './grouping';
 
-// Dynamically load all JSON files from sample-data directory
-const sampleDataModules = import.meta.glob<{ default: unknown }>('./sample-data/*.json', {
-  eager: true,
-});
+const BASE_URL = 'https://maximiliankleissl.github.io/wvv-posts-config/Spiele';
 
-const SAMPLE_METADATA = (() => {
-  const metadataModule = sampleDataModules['./sample-data/metadata.json'];
-  return metadataModule?.default as { season: string; club: string };
-})();
+export async function fetchSeasonData(): Promise<SeasonData> {
+  // Fetch the file overview to get available files
+  const overviewResponse = await fetch(`${BASE_URL}/File_Overview.json`);
+  if (!overviewResponse.ok) {
+    throw new Error('Failed to fetch file overview');
+  }
+  const files: string[] = await overviewResponse.json();
 
-const SAMPLE_MATCH_DAYS = (() => {
+  // Fetch metadata
+  const metadataResponse = await fetch(`${BASE_URL}/metadata.json`);
+  if (!metadataResponse.ok) {
+    throw new Error('Failed to fetch metadata');
+  }
+  const metadata = await metadataResponse.json();
+
+  // Fetch all matchday files
   const matchDays: MatchDay[] = [];
-  for (const [path, module] of Object.entries(sampleDataModules)) {
-    if (path.includes('metadata.json')) continue;
-    const data = module.default as MatchDay[];
+  for (const file of files) {
+    if (file === 'metadata.json' || file === 'File_Overview.json') continue;
+
+    const response = await fetch(`${BASE_URL}/${file}`);
+    if (!response.ok) {
+      console.warn(`Failed to fetch ${file}`);
+      continue;
+    }
+    const data = await response.json();
     if (Array.isArray(data)) {
       matchDays.push(...data);
     }
   }
-  return matchDays;
-})();
 
-export const SAMPLE_SEASON_DATA: SeasonData = {
-  season: SAMPLE_METADATA.season,
-  club: SAMPLE_METADATA.club,
-  weekends: buildWeekendsFromMatchDays(SAMPLE_MATCH_DAYS),
-};
-
-export const SAMPLE_SEASON_METADATA_JSON = JSON.stringify(
-  { season: SAMPLE_SEASON_DATA.season, club: SAMPLE_SEASON_DATA.club },
-  null,
-  2,
-);
-export const SAMPLE_SEASON_MATCHDAYS_JSON = JSON.stringify(SAMPLE_MATCH_DAYS, null, 2);
-
-export const SAMPLE_SEASON_FILES = [
-  { name: 'metadata.json', content: SAMPLE_SEASON_METADATA_JSON },
-  { name: 'matchdays.json', content: SAMPLE_SEASON_MATCHDAYS_JSON },
-];
-
-export const SAMPLE_SEASON_JSON = JSON.stringify(SAMPLE_SEASON_DATA, null, 2);
+  return {
+    season: metadata.season,
+    club: metadata.club,
+    weekends: buildWeekendsFromMatchDays(matchDays),
+  };
+}

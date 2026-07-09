@@ -1,9 +1,10 @@
 <template>
   <img
-    v-if="logoUrl"
+    v-if="logoUrl && !imageError"
     :src="logoUrl"
     :alt="teamName"
     :class="[sizeClass, 'object-contain shrink-0']"
+    @error="handleImageError"
   />
   <div v-else :class="[sizeClass, fallbackClass]">
     <span class="text-xl font-bold text-green-800 text-muted">?</span>
@@ -11,25 +12,27 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useLogo } from '@/composables/useLogo';
 
 interface TeamLogoProps {
   teamName: string;
   sizeClass?: string;
   fallbackClass?: string;
-  basePath?: string;
-  customLibrary?: Record<string, string>;
 }
 
 const props = withDefaults(defineProps<TeamLogoProps>(), {
   sizeClass: 'w-12 h-12',
   fallbackClass: 'flex items-center justify-center bg-muted rounded-full border border-border',
-  basePath: import.meta.env.BASE_URL,
-  customLibrary: undefined,
 });
 
-const { getLogoUrl } = useLogo(props.basePath, props.customLibrary);
+const { getLogoUrl } = useLogo();
 
 const logoUrl = computed(() => getLogoUrl(props.teamName));
+const imageError = ref(false);
+
+const handleImageError = () => {
+  imageError.value = true;
+  //alert(`Logo not found for team: ${props.teamName}`);
+};
 </script>

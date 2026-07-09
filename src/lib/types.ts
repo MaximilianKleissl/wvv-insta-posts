@@ -42,17 +42,6 @@ export interface SeasonData {
   weekends: Weekend[];
 }
 
-export interface LogoEntry {
-  /** normalized team name used as the lookup key */
-  key: string;
-  /** original team name as uploaded */
-  name: string;
-  /** data URL of the logo image */
-  dataUrl: string;
-}
-
-export type LogoLibrary = Record<string, string>;
-
 export type TemplateId = 'classic';
 
 export interface TemplateDefinition {

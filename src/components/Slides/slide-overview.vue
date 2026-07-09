@@ -6,7 +6,6 @@ import { sortedMatchDaysForWeekend, germanWeekdayName } from '@/lib/grouping';
 import SharedContainer from './sharedContainer.vue';
 import { useSlideDensity } from '@/composables/Slides/useDensity.ts';
 import Cell from '@/components/Slides/subComponents/Cell.vue';
-import type { LogoLibrary } from '@/lib/types';
 import HomeTeamIndication from '@/components/Slides/subComponents/HomeTeamIndication.vue';
 import { BADGE_LABELS } from '@/lib/slide-constants';
 import type { SlideTitle } from '@/lib/slide-types';
@@ -15,7 +14,6 @@ interface SlideOverviewProps {
   id: string;
   season: SeasonData;
   weekendIndex: number;
-  logoLibrary: LogoLibrary;
 }
 
 const props = defineProps<SlideOverviewProps>();
@@ -119,7 +117,7 @@ const slideTitle = computed<SlideTitle>(() => ({
         </div>
 
         <div class="flex items-center justify-end shrink-0 sm:border-l sm:border-slate-100 sm:pl-6">
-          <HomeTeamIndication :md="md" :logo-library="logoLibrary" />
+          <HomeTeamIndication :md="md" />
         </div>
       </Cell>
     </div>
