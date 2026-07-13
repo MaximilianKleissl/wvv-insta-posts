@@ -3,7 +3,8 @@ import { germanWeekdayName } from './grouping';
 
 export function buildWeekendCaption(season: SeasonData, weekendIndex: number): string {
   const weekend = season.weekends[weekendIndex];
-  const intro = '🏐 Endlich ist wieder Spielwochenende! Unsere Teams sind bereit, alles auf dem Feld zu geben. Kommt vorbei oder drückt auswärts die Daumen!';
+  const intro =
+    '🏐 Endlich ist wieder Spielwochenende! Unsere Teams sind bereit, alles auf dem Feld zu geben. Kommt vorbei oder drückt auswärts die Daumen!';
 
   const entries = weekend.matchDays.map((md) => {
     const icon = md.home ? '🏠' : '🚗';
