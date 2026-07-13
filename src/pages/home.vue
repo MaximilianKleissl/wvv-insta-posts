@@ -34,7 +34,7 @@ const registerSlideNode = (id: string, el: HTMLElement | null) => {
 const registerSlideRef = (slideId: string) => (el: HTMLElement | null) =>
   registerSlideNode(slideId, el);
 
-const season = computed(() => seasonData.value);
+const season = computed(() => seasonData.value!);
 
 const getSlideElement = (id: string) => slideNodes.value.get(id) ?? null;
 
@@ -158,7 +158,10 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
       />
     </main>
 
-    <div style="position: absolute; left: -15000px; top: 0; width: 0; height: 0; overflow: hidden">
+    <div
+      v-if="seasonData"
+      style="position: absolute; left: -15000px; top: 0; width: 0; height: 0; overflow: hidden"
+    >
       <div
         v-for="slide in exportSlides"
         :key="slide.slideId"
@@ -186,6 +189,7 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
         />
         <SlideMatchday
           v-else
+          :id="slide.slideId"
           :season="season"
           :match-day="
             season.weekends[slide.weekendIndex].matchDays[slide.matchDayOriginalIndex ?? 0]

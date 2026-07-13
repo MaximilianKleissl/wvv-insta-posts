@@ -17,7 +17,7 @@ export default [
     files: ['**/*.{ts,vue}'],
     rules: {
       semi: ['error', 'always'],
-      quotes: ['error', 'single'],
+      quotes: ['off'],
       'vue/multi-word-component-names': 'off',
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'error',
