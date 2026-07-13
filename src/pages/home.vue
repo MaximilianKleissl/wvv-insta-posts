@@ -186,6 +186,7 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
         />
         <SlideMatchday
           v-else
+          :id="slide.slideId"
           :season="season"
           :match-day="
             season.weekends[slide.weekendIndex].matchDays[slide.matchDayOriginalIndex ?? 0]

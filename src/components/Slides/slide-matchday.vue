@@ -69,8 +69,8 @@ const matchDayMeta = computed<MatchDayMetaData>(() => ({
 
         <!-- Result -->
         <div
-          class="flex items-center gap-3 px-5 py-2 rounded-2xl bg-green-900 shadow-lg"
           v-if="m.result"
+          class="flex items-center gap-3 px-5 py-2 rounded-2xl bg-green-900 shadow-lg"
         >
           <span class="text-6xl font-black text-white leading-none">{{ m.result.home }}</span>
           <span class="text-3xl font-black text-green-200"> : </span>
