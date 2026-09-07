@@ -62,11 +62,18 @@ const exportSlides = computed(() => {
   if (!teamData) return [];
 
   return [
-    {
-      slideId: `team-${slugify(selectedTeam.value)}`,
-      kind: 'team-summary' as const,
-      teamName: selectedTeam.value,
-    },
+    ...(['home', 'away'] as const)
+      .filter((gameType) =>
+        teamData.matchDays.some((matchDay) =>
+          gameType === 'home' ? matchDay.home : !matchDay.home,
+        ),
+      )
+      .map((gameType) => ({
+        slideId: `team-${gameType}-${slugify(selectedTeam.value!)}`,
+        kind: 'team-summary' as const,
+        teamName: selectedTeam.value!,
+        gameType,
+      })),
   ];
 });
 
@@ -154,9 +161,19 @@ const goBack = () => {
             </div>
           </div>
 
-          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <SlideTeamSummary :id="`preview-${slugify(selectedTeam)}`" :season="season" :team-name="selectedTeam"
-              :match-days="teamMatchDays.find((t) => t.teamName === selectedTeam)?.matchDays || []" />
+          <div class="space-y-6">
+            <div v-for="gameType in ['home', 'away'] as const" v-show="teamMatchDays.find((t) => t.teamName === selectedTeam)?.matchDays.some((md) =>
+              gameType === 'home' ? md.home : !md.home,
+            )" :key="gameType" class="overflow-hidden rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+              <div
+                class="mx-auto h-[540px] w-[540px] max-w-full overflow-hidden border border-gray-200 bg-white shadow-sm">
+                <div class="origin-top-left" style="transform: scale(0.5); width: 1080px; height: 1080px">
+                  <SlideTeamSummary :id="`preview-${gameType}-${slugify(selectedTeam)}`" :season="season"
+                    :team-name="selectedTeam" :game-type="gameType"
+                    :match-days="teamMatchDays.find((t) => t.teamName === selectedTeam)?.matchDays || []" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -167,7 +184,7 @@ const goBack = () => {
       style="position: absolute; left: -15000px; top: 0; width: 0; height: 0; overflow: hidden">
       <div v-for="slide in exportSlides" :key="slide.slideId" :ref="registerSlideRef(slide.slideId)" class="absolute"
         style="width: 1080px; height: 1080px">
-        <SlideTeamSummary :id="slide.slideId" :season="season" :team-name="slide.teamName"
+        <SlideTeamSummary :id="slide.slideId" :season="season" :team-name="slide.teamName" :game-type="slide.gameType"
           :match-days="teamMatchDays.find((t) => t.teamName === slide.teamName)?.matchDays || []" />
       </div>
     </div>

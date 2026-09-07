@@ -119,13 +119,23 @@ export async function exportTeamZip(
   const zip = new JSZip();
   const folderName = slugify(teamData.teamName);
 
-  const jobs: { slideId: string; fileBase: string; caption?: string }[] = [
-    {
-      slideId: `team-${slugify(teamData.teamName)}`,
-      fileBase: 'saison_uebersicht',
-      caption: buildTeamCaption(season, teamData),
-    },
-  ];
+  const jobs: { slideId: string; fileBase: string; caption?: string }[] = [];
+  const gameTypes = [
+    { key: 'home', label: 'heim', isHome: true },
+    { key: 'away', label: 'auswaerts', isHome: false },
+  ] as const;
+  let captionAttached = false;
+
+  gameTypes.forEach(({ key, label, isHome }) => {
+    if (teamData.matchDays.some((matchDay) => matchDay.home === isHome)) {
+      jobs.push({
+        slideId: `team-${key}-${slugify(teamData.teamName)}`,
+        fileBase: `saison_uebersicht_${label}`,
+        ...(!captionAttached ? { caption: buildTeamCaption(season, teamData) } : {}),
+      });
+      captionAttached = true;
+    }
+  });
 
   let done = 0;
   for (const job of jobs) {
