@@ -1,4 +1,4 @@
-import type { MatchDay, Weekend } from './types';
+import type { MatchDay, Weekend, SeasonData } from './types';
 
 const GERMAN_WEEKDAYS = [
   'Sonntag',
@@ -143,4 +143,30 @@ export function buildWeekendsFromMatchDays(matchDays: MatchDay[]): Weekend[] {
 export function weekendFolderName(weekend: Weekend, index: number): string {
   const num = String(index + 1).padStart(2, '0');
   return `Wochenende_${num}_${weekend.dateRange.replace(/\./g, '-').replace(/ /g, '_')}`;
+}
+
+export interface TeamMatchDays {
+  teamName: string;
+  matchDays: MatchDay[];
+}
+
+export function groupMatchDaysByTeam(seasonData: SeasonData): TeamMatchDays[] {
+  const teamMap = new Map<string, MatchDay[]>();
+
+  seasonData.weekends.forEach((weekend) => {
+    weekend.matchDays.forEach((matchDay) => {
+      const teamName = matchDay.team.trim();
+      if (!teamMap.has(teamName)) {
+        teamMap.set(teamName, []);
+      }
+      teamMap.get(teamName)!.push(matchDay);
+    });
+  });
+
+  return Array.from(teamMap.entries())
+    .map(([teamName, matchDays]) => ({
+      teamName,
+      matchDays: sortMatchDays(matchDays),
+    }))
+    .sort((a, b) => a.teamName.localeCompare(b.teamName));
 }

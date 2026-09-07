@@ -1,21 +1,15 @@
 <template>
-  <div
-    :id="id"
-    class="relative flex flex-col bg-slate-50 text-slate-900 antialiased select-none"
-    style="width: 1080px; height: 1080px"
-  >
+  <div :id="id" class="relative flex flex-col bg-slate-50 text-slate-900 antialiased select-none"
+    style="width: 1080px; height: 1080px">
     <div class="absolute inset-0 pointer-events-none overflow-hidden">
-      <img
-        src="/Splashlogo_Weiss.png"
-        alt=""
-        class="absolute inset-0 m-auto invert h-[820px] w-[820px] object-contain opacity-[0.035] mix-blend-multiply"
-      />
+      <img src="/Splashlogo_Weiss.png" alt=""
+        class="absolute inset-0 m-auto invert h-[820px] w-[820px] object-contain opacity-[0.035] mix-blend-multiply" />
       <div class="absolute -top-40 -right-40 w-96 h-96 bg-green-800 rounded-full blur-3xl" />
     </div>
 
     <div class="relative z-10 flex h-full w-full flex-col">
       <Header :slide-title="slideTitle" :match-day="matchDay" />
-      <main class="flex-1 flex flex-col min-w-0 justify-center p-10 gap-5">
+      <main class="flex-1 flex flex-col min-w-0 min-h-0 justify-center p-10 gap-5 overflow-hidden">
         <slot />
       </main>
       <footer class="flex flex-col items-center gap-3 pb-6">
@@ -23,13 +17,8 @@
           Der WVV bedankt sich bei seinen Sponsoren
         </p>
         <div class="flex items-center justify-center gap-8">
-          <img
-            v-for="(logo, index) in sponsorLogos"
-            :key="index"
-            :src="logo.src"
-            :alt="logo.alt"
-            class="h-12 w-auto object-contain brightness-95"
-          />
+          <img v-for="(logo, index) in sponsorLogos" :key="index" :src="logo.src" :alt="logo.alt"
+            class="h-12 w-auto object-contain brightness-95" />
         </div>
       </footer>
     </div>
