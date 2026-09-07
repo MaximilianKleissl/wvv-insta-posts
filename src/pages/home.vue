@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { useSeasonData } from '@/composables/useSeasonData';
 import { useSponsors } from '@/composables/useSponsors';
 import PageHeader from '@/components/PageHeader.vue';
@@ -12,6 +13,8 @@ import { sortedMatchDaysForWeekend, slugify } from '@/lib/grouping';
 import { exportSeasonZip, downloadBlob, seasonZipFileName } from '@/lib/export-zip';
 import type { ExportProgress } from '@/lib/export-zip';
 import { isTournamentMatchDay } from '@/lib/grouping';
+
+const router = useRouter();
 
 interface SlideRef {
   slideId: string;
@@ -139,7 +142,16 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
       :match-day-count="matchDayCount"
       :match-count="matchCount"
       @export-all="handleExport"
-    />
+    >
+      <template #extra-actions>
+        <button
+          class="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 transition-colors"
+          @click="router.push('/team-mode')"
+        >
+          Team-Modus
+        </button>
+      </template>
+    </PageHeader>
 
     <main class="max-w-4xl mx-auto space-y-8">
       <div v-if="loading" class="text-center py-12">

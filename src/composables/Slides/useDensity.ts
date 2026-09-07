@@ -3,6 +3,7 @@ import { computed, ComputedRef } from 'vue';
 export type Density = 'normal' | 'compact' | 'tight';
 
 export type SlideStyles = {
+  density: Density;
   cardPadding: string;
   cardRadius: string;
   logoSize: string;
@@ -18,7 +19,8 @@ export function useSlideDensity(itemCount: ComputedRef<number> | number) {
     return 'normal';
   });
 
-  const styles = computed(() => ({
+  const styles = computed<SlideStyles>(() => ({
+    density: density.value,
     cardPadding: density.value === 'normal' ? 'p-8' : density.value === 'compact' ? 'p-5' : 'p-4',
     cardRadius: density.value === 'normal' ? 'rounded-3xl' : 'rounded-2xl',
     logoSize:

@@ -1,7 +1,13 @@
 import JSZip from 'jszip';
 import { toPng } from 'html-to-image';
 import type { SeasonData } from './types';
-import { weekendFolderName, slugify, sortedMatchDaysForWeekend } from './grouping';
+import {
+  weekendFolderName,
+  slugify,
+  sortedMatchDaysForWeekend,
+  isTournamentMatchDay,
+  type TeamMatchDays,
+} from './grouping';
 import { buildWeekendCaption } from './caption';
 
 export interface ExportProgress {
@@ -102,4 +108,87 @@ export function downloadBlob(blob: Blob, fileName: string): void {
 export function seasonZipFileName(season: SeasonData): string {
   const seasonSlug = season.season.replace(/[^0-9a-zA-Z]/g, '-');
   return `${slugify(season.club)}_${seasonSlug}.zip`;
+}
+
+export async function exportTeamZip(
+  season: SeasonData,
+  teamData: TeamMatchDays,
+  getSlideElement?: (slideId: string) => HTMLElement | null,
+  onProgress?: (progress: ExportProgress) => void,
+): Promise<Blob> {
+  const zip = new JSZip();
+  const folderName = slugify(teamData.teamName);
+
+  const jobs: { slideId: string; fileBase: string; caption?: string }[] = [];
+  const gameTypes = [
+    { key: 'home', label: 'heim', isHome: true },
+    { key: 'away', label: 'auswaerts', isHome: false },
+  ] as const;
+  let captionAttached = false;
+
+  gameTypes.forEach(({ key, label, isHome }) => {
+    if (teamData.matchDays.some((matchDay) => matchDay.home === isHome)) {
+      jobs.push({
+        slideId: `team-${key}-${slugify(teamData.teamName)}`,
+        fileBase: `saison_uebersicht_${label}`,
+        ...(!captionAttached ? { caption: buildTeamCaption(season, teamData) } : {}),
+      });
+      captionAttached = true;
+    }
+  });
+
+  let done = 0;
+  for (const job of jobs) {
+    if (getSlideElement) {
+      const node = getSlideElement(job.slideId);
+      if (node) {
+        const dataUrl = await toPng(node, {
+          pixelRatio: 2,
+          cacheBust: true,
+        });
+        const base64 = dataUrl.split(',')[1] ?? '';
+        zip.file(`${folderName}/${job.fileBase}.png`, base64, { base64: true });
+      }
+    }
+
+    if (job.caption) {
+      zip.file(`${folderName}/${job.fileBase}.txt`, job.caption);
+    }
+    done += 1;
+    onProgress?.({ current: done, total: jobs.length, label: `${folderName}/${job.fileBase}` });
+  }
+
+  return zip.generateAsync({ type: 'blob' });
+}
+
+function buildTeamCaption(season: SeasonData, teamData: TeamMatchDays): string {
+  const lines = [
+    `Saison ${season.season}`,
+    `Team: ${teamData.teamName}`,
+    '',
+    `Spieltage: ${teamData.matchDays.length}`,
+    '',
+    'Spieltagübersicht:',
+  ];
+
+  teamData.matchDays.forEach((md) => {
+    lines.push(`- ${md.date}: ${md.home ? 'Heim' : 'Auswärts'} in ${md.location}`);
+
+    // Get opponents for this matchday
+    const opponents: string[] = [];
+    if (isTournamentMatchDay(md)) {
+      opponents.push(...(md.teams?.filter((t) => t !== teamData.teamName) ?? []));
+    } else if (md.matches) {
+      opponents.push(...md.matches.map((m) => (m.home === teamData.teamName ? m.away : m.home)));
+    }
+
+    // Remove duplicates
+    const uniqueOpponents = Array.from(new Set(opponents));
+
+    if (uniqueOpponents.length > 0) {
+      lines.push(`  Gegner: ${uniqueOpponents.join(', ')}`);
+    }
+  });
+
+  return lines.join('\n');
 }

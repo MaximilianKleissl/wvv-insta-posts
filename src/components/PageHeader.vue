@@ -40,6 +40,7 @@ defineExpose({
         <h1 class="text-3xl font-black">{{ clubName }}</h1>
       </div>
       <div class="flex items-center gap-3">
+        <slot name="extra-actions" />
         <HeaderMenu
           :exporting="props.exporting"
           :export-progress="props.exportProgress"

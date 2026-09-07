@@ -6,7 +6,7 @@
 // Action image configuration per team
 export const ACTION_IMAGES = {
   DAMEN_1: ['damen1.png'],
-  HERREN_1: ['janne.png', 'herren1.png', 'herren1_2.png'],
+  HERREN_1: ['janne.png', 'herren1.png', 'herren1_2.jpeg'],
   DEFAULT: ['baumbluetenumzug.jpg'],
 } as const;
 
