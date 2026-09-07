@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useSeasonData } from '@/composables/useSeasonData';
+import { useSponsors } from '@/composables/useSponsors';
 import PageHeader from '@/components/PageHeader.vue';
 import SlideOverview from '@/components/Slides/slide-overview.vue';
 import SlideMatchday from '@/components/Slides/slide-matchday.vue';
@@ -20,6 +21,7 @@ interface SlideRef {
 }
 
 const { setSeasonData, seasonData, loading, error } = useSeasonData();
+const { loadSponsors } = useSponsors();
 
 const exporting = ref(false);
 const progress = ref<ExportProgress | null>(null);
@@ -55,6 +57,7 @@ const matchCount = computed(
 onMounted(async () => {
   loading.value = true;
   try {
+    await loadSponsors();
     const data = await fetchSeasonData();
     setSeasonData(data);
   } catch (err) {

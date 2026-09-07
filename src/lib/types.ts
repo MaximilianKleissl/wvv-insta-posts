@@ -60,3 +60,9 @@ export interface GeneratedSlide {
   /** file name (without extension) used for export */
   fileName: string;
 }
+
+export interface Sponsor {
+  filename: string;
+  name: string;
+  teams: string[];
+}
