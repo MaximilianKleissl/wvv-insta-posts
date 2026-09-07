@@ -2,8 +2,7 @@
   <div :id="id" class="relative flex flex-col bg-slate-50 text-slate-900 antialiased select-none"
     style="width: 1080px; height: 1080px">
     <div class="absolute inset-0 pointer-events-none overflow-hidden">
-      <img src="/Splashlogo_Weiss.png" alt=""
-        class="absolute inset-0 m-auto invert h-[820px] w-[820px] object-contain opacity-[0.035] mix-blend-multiply" />
+      <img src="/image.png" alt="" class="absolute inset-0 m-auto h-[1080px] w-[1080px] object-contain" />
       <div class="absolute -top-40 -right-40 w-96 h-96 bg-green-800 rounded-full blur-3xl" />
     </div>
 
