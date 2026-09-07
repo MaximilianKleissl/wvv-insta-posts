@@ -24,7 +24,7 @@
       :style="{ clipPath: 'polygon(0 0, 100% 0, 80% 100%, 0 100%)' }"></div>
 
     <div v-if="matchDay"
-      class="absolute bottom-0 left-0 w-[580px] h-[64px] bg-white z-20 flex items-center px-10 gap-8 text-green-800"
+      class="absolute bottom-0 left-0 w-[580px] h-[64px] bg-green-900/90 z-20 flex items-center px-10 gap-8 text-white"
       :style="{ clipPath: 'polygon(0 0, 93% 0, 100% 100%, 0 100%)' }">
       <div class="flex items-center gap-2">
         <Calendar class="w-6 h-6 shrink-0" />
