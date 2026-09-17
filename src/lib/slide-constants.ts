@@ -7,7 +7,7 @@
 export const ACTION_IMAGES = {
   DAMEN_1: ['damen1.png', 'damen1II.png'],
   HERREN_1: ['janne.png', 'herren1.png', 'herren1_2.jpeg'],
-  HERREN_2: ['herren2.jpeg'],
+  HERREN_2: ['herrren2_2.png'],
   U_20W: ['jugend_gesamt.png'],
   U_18W: ['u18w.png', 'u18wII.png', 'u18wIII.png', 'u18wIV.png'],
   U_16W: ['jugend_gesamt.png'],
