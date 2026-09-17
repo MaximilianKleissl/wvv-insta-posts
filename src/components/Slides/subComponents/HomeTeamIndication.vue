@@ -10,7 +10,6 @@
         size-class="w-full h-full object-contain p-3"
         fallback-class=""
       />
-      {{ md.homeTeam }}
     </div>
 
     <!-- Der Eck-Badge (Top-Right) -->
