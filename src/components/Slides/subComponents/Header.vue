@@ -5,7 +5,7 @@
         class="w-full h-full object-cover object-top-right brightness-90" />
     </div>
 
-    <div class="absolute left-0 top-0 w-[640px] h-full z-10 bg-green-800"
+    <div :class="['absolute left-0 top-0 w-[640px] h-full z-10', teamColors.getBadgeBgColor()]"
       :style="{ clipPath: 'polygon(0 0, 100% 0, 74% 100%, 0 100%)' }">
       <div class="p-10 text-white">
         <p class="text-xl font-bold tracking-widest text-slate-100 uppercase mb-2">
@@ -14,17 +14,18 @@
         <h1 class="text-[52px] font-black uppercase tracking-tight leading-none mb-6">
           {{ slideTitle.title }}
         </h1>
-        <span class="inline-block font-black text-xl px-6 py-2 rounded-full shadow-md bg-white text-green-800">
+        <span
+          :class="['inline-block font-black text-xl px-6 py-2 rounded-full shadow-md bg-white', teamColors.getHomeIconColor()]">
           {{ slideTitle.label }}
         </span>
       </div>
     </div>
 
-    <div class="absolute left-0 top-0 w-[720px] h-full z-0 bg-green-900/90"
+    <div :class="['absolute left-0 top-0 w-[720px] h-full z-0', teamColors.getResultBgColorWithOpacity('90')]"
       :style="{ clipPath: 'polygon(0 0, 100% 0, 80% 100%, 0 100%)' }"></div>
 
     <div v-if="matchDay"
-      class="absolute bottom-0 left-0 w-[580px] h-[64px] bg-green-900/90 z-20 flex items-center px-10 gap-8 text-white"
+      :class="['absolute bottom-0 left-0 w-[580px] h-[64px] z-20 flex items-center px-10 gap-8 text-white', teamColors.getResultBgColorWithOpacity('90')]"
       :style="{ clipPath: 'polygon(0 0, 93% 0, 100% 100%, 0 100%)' }">
       <div class="flex items-center gap-2">
         <Calendar class="w-6 h-6 shrink-0" />
@@ -45,11 +46,13 @@ import { MapPin, Calendar } from 'lucide-vue-next';
 import { germanWeekdayName } from '@/lib/grouping';
 import { TEAM_ACTION_IMAGE_MAP, ACTION_IMAGES } from '@/lib/slide-constants';
 import type { SlideTitle, MatchDayMetaData } from '@/lib/slide-types';
+import { useTeamColors } from '@/composables/useTeamColors';
 
 const props = defineProps<{
   slideTitle: SlideTitle;
   matchDay?: MatchDayMetaData;
 }>();
+const teamColors = useTeamColors(props.slideTitle.subtitle);
 
 const actionImage = computed(() => {
   const images = getActionImagesForTeam(props.slideTitle.subtitle);

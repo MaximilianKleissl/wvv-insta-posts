@@ -8,6 +8,7 @@ import { useSlideDensity } from '@/composables/Slides/useDensity.ts';
 import Cell from '@/components/Slides/subComponents/Cell.vue';
 import HomeTeamIndication from '@/components/Slides/subComponents/HomeTeamIndication.vue';
 import { BADGE_LABELS } from '@/lib/slide-constants';
+import { useTeamColors } from '@/composables/useTeamColors';
 import type { SlideTitle } from '@/lib/slide-types';
 
 interface SlideOverviewProps {
@@ -22,6 +23,7 @@ const weekend = computed(() => props.season.weekends[props.weekendIndex]);
 const matchDays = computed(() => sortedMatchDaysForWeekend(weekend.value));
 
 const { density, styles } = useSlideDensity(matchDays.value.length);
+const teamColors = useTeamColors(props.season.club);
 
 // Dynamic grid allocation based on match count to balance empty spaces
 const containerGridClass = computed(() => {
@@ -61,32 +63,28 @@ const slideTitle = computed<SlideTitle>(() => ({
 <template>
   <SharedContainer :id="id" :styles="styles" :slide-title="slideTitle">
     <div :class="containerGridClass">
-      <Cell v-for="(md, idx) in matchDays" :key="idx" :styles="styles">
+      <Cell v-for="(md, idx) in matchDays" :key="idx" :styles="styles"
+        :border-color="teamColors.getHomeBorderColor('60')">
         <template #left_part>
-          <div class="bg-green-800/20 items-center flex flex-col rounded-lg pt-1 min-w-[90px]">
-            <Home v-if="md.home" :size="26" class="stroke-[2.2]" />
+          <div :class="['items-center flex flex-col rounded-lg pt-1 min-w-[90px]', teamColors.getLeftPanelBgColor()]">
+            <Home v-if="md.home" :size="26" :class="['stroke-[2.2]', teamColors.getHomeIconColor()]" />
             <Car v-else :size="26" class="stroke-[2.2]" />
             <div
-              class="top-0 text-center left-6 p-1 text-[10px] w-full font-black tracking-widest uppercase rounded-b-lg text-white bg-green-800"
-            >
+              :class="['top-0 text-center left-6 p-1 text-[10px] w-full font-black tracking-widest uppercase rounded-b-lg text-white', teamColors.getBadgeBgColor()]">
               {{ md.home ? BADGE_LABELS.HOME_SHORT : BADGE_LABELS.AWAY_SHORT }}
             </div>
           </div>
         </template>
 
         <div class="flex-1 min-w-0 z-10 space-y-2">
-          <h3
-            :class="[
-              'font-black tracking-tight truncate leading-tight uppercase text-slate-900',
-              teamTextSize,
-            ]"
-          >
+          <h3 :class="[
+            'font-black tracking-tight truncate leading-tight uppercase text-slate-900',
+            teamTextSize,
+          ]">
             {{ md.team }}
           </h3>
 
-          <div
-            :class="['flex flex-wrap items-center gap-x-4 gap-y-1 text-slate-500', metaTextSize]"
-          >
+          <div :class="['flex flex-wrap items-center gap-x-4 gap-y-1 text-slate-500', metaTextSize]">
             <span class="flex items-center gap-1.5 font-bold text-slate-800">
               <Calendar :size="16" class="text-slate-400 shrink-0" />
               {{ germanWeekdayName(md.date) }}
@@ -101,12 +99,11 @@ const slideTitle = computed<SlideTitle>(() => ({
 
         <div v-if="md.match_day_result" class="flex items-center justify-center shrink-0">
           <div
-            class="relative flex flex-col items-center justify-center min-w-[92px] px-4 py-2 rounded-2xl bg-green-900 shadow-lg overflow-hidden"
-          >
+            :class="['relative flex flex-col items-center justify-center min-w-[92px] px-4 py-2 rounded-2xl shadow-lg overflow-hidden', teamColors.getResultBgColor()]">
             <!-- subtle highlight -->
-            <div class="absolute inset-x-0 top-0 h-1 bg-green-400/80" />
+            <div :class="['absolute inset-x-0 top-0 h-1', teamColors.getHighlightColor()]" />
 
-            <span class="text-[10px] uppercase tracking-[0.25em] font-black text-green-200">
+            <span :class="['text-[10px] uppercase tracking-[0.25em] font-black', teamColors.getAccentColor()]">
               Ergebnis
             </span>
 
