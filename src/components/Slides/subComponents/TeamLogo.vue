@@ -3,14 +3,14 @@
     <!-- Hidden, only used to detect load/error -->
     <img :src="logoUrl" class="hidden" @error="handleImageError" @load="handleImageLoad" />
 
-    <svg v-if="imageLoaded" :class="[sizeClass, 'block']" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <!-- Themed: remap black -> tint color, keep white and transparent -->
+    <svg v-if="imageLoaded && themeTeamName" :class="[sizeClass, 'block']" viewBox="0 0 100 100"
+      preserveAspectRatio="xMidYMid meet">
       <defs>
-        <!-- Default SVG mask type is luminance: white pixels -> opaque, black -> transparent -->
         <mask :id="whiteMaskId">
           <image :href="logoUrl" x="0" y="0" width="100" height="100" preserveAspectRatio="xMidYMid meet" />
         </mask>
 
-        <!-- Same image, colors inverted: original black becomes white -> opaque here -->
         <mask :id="tintMaskId">
           <image :href="logoUrl" x="0" y="0" width="100" height="100" preserveAspectRatio="xMidYMid meet"
             style="filter: invert(1)" />
@@ -20,6 +20,9 @@
       <rect width="100" height="100" fill="#ffffff" :mask="`url(#${whiteMaskId})`" />
       <rect width="100" height="100" :fill="tintColor" :mask="`url(#${tintMaskId})`" />
     </svg>
+
+    <!-- Untheme: original colors as-is -->
+    <img v-else-if="imageLoaded" :src="logoUrl" :alt="teamName" :class="[sizeClass, 'object-contain shrink-0']" />
   </div>
 
   <div v-else :class="[sizeClass, fallbackClass]">
@@ -57,7 +60,6 @@ const tintColor = computed(() => teamColors.colorScheme.value.imageTint);
 const imageError = ref(false);
 const imageLoaded = ref(false);
 
-// Unique per-instance IDs so multiple logos on one page don't collide on url(#id)
 const uid = Math.random().toString(36).slice(2, 10);
 const whiteMaskId = `logo-white-mask-${uid}`;
 const tintMaskId = `logo-tint-mask-${uid}`;
