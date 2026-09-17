@@ -116,7 +116,7 @@ const slideTitle = computed<SlideTitle>(() => ({
           </div>
         </div>
 
-        <div class="flex items-center justify-end shrink-0 sm:border-l sm:border-slate-100 sm:pl-6">
+        <div class="flex items-center justify-end shrink-0 sm:pl-6">
           <HomeTeamIndication :md="md" />
         </div>
       </Cell>

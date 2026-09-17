@@ -3,7 +3,7 @@ import { computed, ref, watch } from 'vue';
 import SlideOverview from '@/components/Slides/slide-overview.vue';
 import SlideMatchday from '@/components/Slides/slide-matchday.vue';
 import SlideTournament from '@/components/Slides/slide-tournament.vue';
-import { isTournamentMatchDay } from '@/lib/grouping';
+import { isTournamentMatchDay, parseGermanDate } from '@/lib/grouping';
 
 import { sortedMatchDaysForWeekend } from '@/lib/grouping';
 import { buildWeekendCaption } from '@/lib/caption';
@@ -31,11 +31,29 @@ const availableWeekendIndexes = computed(() => {
   return props.season.weekends.map((_, i) => i);
 });
 
+const findNextWeekendIndex = (): number | null => {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+
+  for (let i = 0; i < props.season.weekends.length; i++) {
+    const weekend = props.season.weekends[i];
+    for (const matchDay of weekend.matchDays) {
+      const matchDate = parseGermanDate(matchDay.date);
+      if (matchDate && matchDate >= now) {
+        return i;
+      }
+    }
+  }
+
+  // If no future weekend found, return the first one
+  return props.season.weekends.length > 0 ? 0 : null;
+};
+
 watch(
   availableWeekendIndexes,
   (indexes) => {
     if (!indexes.includes(selectedWeekendIndex.value ?? -1)) {
-      selectedWeekendIndex.value = indexes[0] ?? null;
+      selectedWeekendIndex.value = findNextWeekendIndex();
     }
   },
   { immediate: true },

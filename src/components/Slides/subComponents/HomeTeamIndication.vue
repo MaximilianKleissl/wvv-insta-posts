@@ -2,7 +2,7 @@
   <div class="relative w-20 h-20 shrink-0">
     <!-- Das Logo -->
     <div
-      class="w-full h-full flex items-center justify-center rounded-2xl bg-white border border-slate-100 shadow-sm"
+      class="w-full h-full flex items-center justify-center rounded-2xl border border-slate-100 shadow-sm"
     >
       <TeamLogo
         v-if="md.homeTeam"
