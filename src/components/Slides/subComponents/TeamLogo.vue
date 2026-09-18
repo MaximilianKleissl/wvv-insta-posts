@@ -3,17 +3,34 @@
     <!-- Hidden, only used to detect load/error -->
     <img :src="logoUrl" class="hidden" @error="handleImageError" @load="handleImageLoad" />
 
-    <!-- Themed: remap black -> tint color, keep white and transparent -->
-    <svg v-if="imageLoaded && themeTeamName" :class="[sizeClass, 'block']" viewBox="0 0 100 100"
-      preserveAspectRatio="xMidYMid meet">
+    <svg
+      v-if="imageLoaded && themeTeamName"
+      :class="[sizeClass, 'block']"
+      viewBox="0 0 100 100"
+      preserveAspectRatio="xMidYMid meet"
+    >
       <defs>
         <mask :id="whiteMaskId">
-          <image :href="logoUrl" x="0" y="0" width="100" height="100" preserveAspectRatio="xMidYMid meet" />
+          <image
+            :href="logoUrl"
+            x="0"
+            y="0"
+            width="100"
+            height="100"
+            preserveAspectRatio="xMidYMid meet"
+          />
         </mask>
 
         <mask :id="tintMaskId">
-          <image :href="logoUrl" x="0" y="0" width="100" height="100" preserveAspectRatio="xMidYMid meet"
-            style="filter: invert(1)" />
+          <image
+            :href="logoUrl"
+            x="0"
+            y="0"
+            width="100"
+            height="100"
+            preserveAspectRatio="xMidYMid meet"
+            style="filter: invert(1)"
+          />
         </mask>
       </defs>
 
@@ -26,9 +43,7 @@
   </div>
 
   <div v-else :class="[sizeClass, fallbackClass]">
-    <span :class="['text-xl font-bold text-muted', teamColors.getHomeIconColor()]">
-      ?
-    </span>
+    <span :class="['text-xl font-bold text-muted', teamColors.getHomeIconColor()]"> ? </span>
   </div>
 </template>
 
@@ -45,6 +60,7 @@ interface TeamLogoProps {
 }
 
 const props = withDefaults(defineProps<TeamLogoProps>(), {
+  themeTeamName: undefined,
   sizeClass: 'w-12 h-12',
   fallbackClass:
     'flex items-center justify-center bg-muted rounded-full border border-border',

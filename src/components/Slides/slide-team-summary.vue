@@ -91,68 +91,107 @@ const opponentLogoSize = computed(() => {
 <template>
   <SharedContainer :id="id" :styles="summaryStyles" :slide-title="slideTitle">
     <div class="flex min-h-0 w-full flex-1 flex-col gap-3 overflow-hidden">
-      <div :class="[
-        'mx-auto grid min-h-0 w-full flex-1 gap-4 overflow-y-auto pr-2',
-        isDenseSummary
-          ? 'h-full max-w-4xl auto-rows-fr grid-cols-2'
-          : 'max-w-3xl grid-cols-1 content-start',
-      ]">
-        <Cell v-for="(md, idx) in sortedMatchDays" :key="idx" :styles="summaryStyles"
-          :border-color="md.home ? teamColors.getHomeBorderColor('60') : undefined" :class="[
+      <div
+        :class="[
+          'mx-auto grid min-h-0 w-full flex-1 gap-4 overflow-y-auto pr-2',
+          isDenseSummary
+            ? 'h-full max-w-4xl auto-rows-fr grid-cols-2'
+            : 'max-w-3xl grid-cols-1 content-start',
+        ]"
+      >
+        <Cell
+          v-for="(md, idx) in sortedMatchDays"
+          :key="idx"
+          :styles="summaryStyles"
+          :border-color="md.home ? teamColors.getHomeBorderColor('60') : undefined"
+          :class="[
             'w-full',
             isDenseSummary ? 'h-full' : '',
             md.home
-              ? ['border-2', teamColors.getHomeBorderColor('95'), teamColors.getHomeBgColor(), 'shadow-md']
+              ? [
+                  'border-2',
+                  teamColors.getHomeBorderColor('95'),
+                  teamColors.getHomeBgColor(),
+                  'shadow-md',
+                ]
               : 'bg-white/80',
-          ]">
+          ]"
+        >
           <template #left_part>
-            <div :class="[
-              'flex min-w-20 flex-col items-center rounded-lg',
-              isDenseSummary ? 'pt-0' : 'pt-1',
-              md.home ? teamColors.getLeftPanelBgColor() : 'bg-slate-100',
-            ]">
-              <Home v-if="md.home" :size="isDenseSummary ? 16 : 22"
-                :class="['stroke-[2.2]', teamColors.getHomeIconColor()]" />
+            <div
+              :class="[
+                'flex min-w-20 flex-col items-center rounded-lg',
+                isDenseSummary ? 'pt-0' : 'pt-1',
+                md.home ? teamColors.getLeftPanelBgColor() : 'bg-slate-100',
+              ]"
+            >
+              <Home
+                v-if="md.home"
+                :size="isDenseSummary ? 16 : 22"
+                :class="['stroke-[2.2]', teamColors.getHomeIconColor()]"
+              />
               <Car v-else :size="isDenseSummary ? 16 : 22" class="stroke-[2.2] text-slate-500" />
-              <div :class="[
-                'flex w-full items-center justify-center gap-1 rounded-b-lg text-center font-black uppercase tracking-widest text-white',
-                teamColors.getBadgeBgColor(),
-                isDenseSummary ? 'p-0.5 text-[7px]' : 'p-1 text-[9px]',
-              ]">
-                <MapPin v-if="!md.home" :size="isDenseSummary ? 9 : 12"
-                  :class="['shrink-0', teamColors.getAccentColor()]" />
+              <div
+                :class="[
+                  'flex w-full items-center justify-center gap-1 rounded-b-lg text-center font-black uppercase tracking-widest text-white',
+                  teamColors.getBadgeBgColor(),
+                  isDenseSummary ? 'p-0.5 text-[7px]' : 'p-1 text-[9px]',
+                ]"
+              >
+                <MapPin
+                  v-if="!md.home"
+                  :size="isDenseSummary ? 9 : 12"
+                  :class="['shrink-0', teamColors.getAccentColor()]"
+                />
                 {{ md.home ? BADGE_LABELS.HOME_SHORT : md.location }}
               </div>
             </div>
           </template>
 
-          <div :class="[
-            'z-10 flex min-w-0 flex-1 flex-col items-center justify-center',
-            isDenseSummary ? 'gap-1' : 'gap-3',
-          ]">
-            <div :class="[
-              'flex flex-wrap items-center justify-center',
+          <div
+            :class="[
+              'z-10 flex min-w-0 flex-1 flex-col items-center justify-center',
               isDenseSummary ? 'gap-1' : 'gap-3',
-            ]">
-              <div v-for="(opponent, oppIdx) in getOpponents(md)" :key="oppIdx" :class="[
-                'flex items-center justify-center rounded-xl',
-                isDenseSummary ? 'p-0.5' : 'p-2',
-              ]">
+            ]"
+          >
+            <div
+              :class="[
+                'flex flex-wrap items-center justify-center',
+                isDenseSummary ? 'gap-1' : 'gap-3',
+              ]"
+            >
+              <div
+                v-for="(opponent, oppIdx) in getOpponents(md)"
+                :key="oppIdx"
+                :class="[
+                  'flex items-center justify-center rounded-xl',
+                  isDenseSummary ? 'p-0.5' : 'p-2',
+                ]"
+              >
                 <TeamLogo :team-name="opponent" :size-class="opponentLogoSize" />
                 <span :class="['ml-2 font-semibold leading-tight', getTeamTextColor(opponent)]">
                   {{ opponent }}
                 </span>
               </div>
             </div>
-            <div :class="[
-              'flex items-center font-black tracking-tight',
-              isDenseSummary ? 'gap-1 text-xs' : 'gap-2',
-              md.home
-                ? isDenseSummary ? ['text-sm', teamColors.colorScheme.value.primaryDark] : ['text-lg', teamColors.colorScheme.value.primaryDark]
-                : isDenseSummary ? 'text-xs text-slate-700' : 'text-base text-slate-700',
-            ]">
-              <Calendar :size="isDenseSummary ? 13 : md.home ? 19 : 17"
-                :class="md.home ? teamColors.getDateTextColor() : 'text-slate-400'" class="shrink-0" />
+            <div
+              :class="[
+                'flex items-center font-black tracking-tight',
+                isDenseSummary ? 'gap-1 text-xs' : 'gap-2',
+                md.home
+                  ? isDenseSummary
+                    ? ['text-sm', teamColors.colorScheme.value.primaryDark]
+                    : ['text-lg', teamColors.colorScheme.value.primaryDark]
+                  : isDenseSummary
+                    ? 'text-xs text-slate-700'
+                    : 'text-base text-slate-700',
+              ]"
+            >
+              <Calendar
+                :size="isDenseSummary ? 13 : md.home ? 19 : 17"
+                :class="md.home ? teamColors.getDateTextColor() : 'text-slate-400'"
+                class="shrink-0"
+              />
               {{ md.date }}
             </div>
           </div>
