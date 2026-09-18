@@ -1,8 +1,12 @@
 <template>
-  <div class="flex items-center gap-6 border border-border/40 shadow-sm"
-    :class="[styles.cardPadding, styles.cardRadius]">
-    <div class="flex flex-col items-center justify-center px-4 border-r min-w-[130px]"
-      :class="borderColor ?? 'border-border/40'">
+  <div
+    class="flex items-center gap-6 border border-border/40 shadow-sm"
+    :class="[styles.cardPadding, styles.cardRadius]"
+  >
+    <div
+      class="flex flex-col items-center justify-center px-4 border-r min-w-[130px]"
+      :class="borderColor ?? 'border-border/40'"
+    >
       <slot name="left_part" />
     </div>
     <slot />

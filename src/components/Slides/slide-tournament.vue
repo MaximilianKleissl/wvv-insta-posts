@@ -48,18 +48,33 @@ const matchDayMeta = computed<MatchDayMetaData>(() => ({
 
 <template>
   <SharedContainer :id="id" :styles="styles" :slide-title="slideTitle" :match-day="matchDayMeta">
-    <div :class="['flex items-center gap-3 text-2xl font-bold mb-2', teamColors.getPrimaryTextColorWithOpacity('80')]">
+    <div
+      :class="[
+        'flex items-center gap-3 text-2xl font-bold mb-2',
+        teamColors.getPrimaryTextColorWithOpacity('80'),
+      ]"
+    >
       <Users :class="['w-7 h-7', teamColors.getHomeIconColor()]" />
       <span>Teilnehmende Mannschaften</span>
     </div>
     <div class="grid grid-cols-2 gap-4 content-start flex-1 overflow-hidden">
-      <Cell v-for="(team, idx) in teams" :key="idx" :styles="styles"
-        :border-color="teamColors.getHomeBorderColor('60')">
+      <Cell
+        v-for="(team, idx) in teams"
+        :key="idx"
+        :styles="styles"
+        :border-color="teamColors.getHomeBorderColor('60')"
+      >
         <template #left_part>
-          <TeamLogo :team-name="team" :theme-team-name="isHomeClub(team) ? props.matchDay.team : undefined"
-            :size-class="styles.logoSize" />
+          <TeamLogo
+            :team-name="team"
+            :theme-team-name="isHomeClub(team) ? props.matchDay.team : undefined"
+            :size-class="styles.logoSize"
+          />
         </template>
-        <span class="font-extrabold leading-snug truncate" :class="[styles.textSize, getTeamTextColor(team)]">
+        <span
+          class="font-extrabold leading-snug truncate"
+          :class="[styles.textSize, getTeamTextColor(team)]"
+        >
           {{ team }}
         </span>
       </Cell>

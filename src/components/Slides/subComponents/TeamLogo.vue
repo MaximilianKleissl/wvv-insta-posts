@@ -3,17 +3,36 @@
     <!-- Hidden, only used to detect load/error -->
     <img :src="logoUrl" class="hidden" @error="handleImageError" @load="handleImageLoad" />
 
-    <svg v-if="imageLoaded" :class="[sizeClass, 'block']" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <svg
+      v-if="imageLoaded"
+      :class="[sizeClass, 'block']"
+      viewBox="0 0 100 100"
+      preserveAspectRatio="xMidYMid meet"
+    >
       <defs>
         <!-- Default SVG mask type is luminance: white pixels -> opaque, black -> transparent -->
         <mask :id="whiteMaskId">
-          <image :href="logoUrl" x="0" y="0" width="100" height="100" preserveAspectRatio="xMidYMid meet" />
+          <image
+            :href="logoUrl"
+            x="0"
+            y="0"
+            width="100"
+            height="100"
+            preserveAspectRatio="xMidYMid meet"
+          />
         </mask>
 
         <!-- Same image, colors inverted: original black becomes white -> opaque here -->
         <mask :id="tintMaskId">
-          <image :href="logoUrl" x="0" y="0" width="100" height="100" preserveAspectRatio="xMidYMid meet"
-            style="filter: invert(1)" />
+          <image
+            :href="logoUrl"
+            x="0"
+            y="0"
+            width="100"
+            height="100"
+            preserveAspectRatio="xMidYMid meet"
+            style="filter: invert(1)"
+          />
         </mask>
       </defs>
 
@@ -23,9 +42,7 @@
   </div>
 
   <div v-else :class="[sizeClass, fallbackClass]">
-    <span :class="['text-xl font-bold text-muted', teamColors.getHomeIconColor()]">
-      ?
-    </span>
+    <span :class="['text-xl font-bold text-muted', teamColors.getHomeIconColor()]"> ? </span>
   </div>
 </template>
 
@@ -43,8 +60,7 @@ interface TeamLogoProps {
 
 const props = withDefaults(defineProps<TeamLogoProps>(), {
   sizeClass: 'w-12 h-12',
-  fallbackClass:
-    'flex items-center justify-center bg-muted rounded-full border border-border',
+  fallbackClass: 'flex items-center justify-center bg-muted rounded-full border border-border',
 });
 
 const { getLogoUrl } = useLogo();
