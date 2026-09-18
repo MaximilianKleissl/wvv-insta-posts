@@ -31,16 +31,16 @@ v-if="format === 'stories'" class="absolute -bottom-44 -right-36 h-[520px] w-[52
     </div>
 
     <div class="relative z-10 flex h-full w-full flex-col">
-      <Header :slide-title="slideTitle" :match-day="matchDay" :format="format" />
+      <Header :slide-title="slideTitle" :format="format" />
       <main
 :class="[
         'flex-1 flex flex-col min-w-0 min-h-0 justify-center p-10 overflow-hidden',
-        format === 'stories' ? 'gap-8' : 'gap-5',
+        format === 'stories' ? 'gap-4' : 'gap-5',
       ]">
         <slot />
       </main>
-      <footer :class="['flex flex-col items-center pb-6', format === 'stories' ? 'gap-4' : 'gap-3']">
-        <p class="text-sm font-semibold tracking-[0.16em] text-gray-600 uppercase">
+      <footer :class="['flex flex-col items-center pb-10', format === 'stories' ? 'gap-3' : 'gap-3']">
+        <p class="text-xs font-semibold tracking-[0.14em] text-gray-600 uppercase">
           {{ format === 'stories' ? 'Partner, Unterstützer und Förderer' : 'Der WVV bedankt sich bei seinen Sponsoren' }}
         </p>
         <div :class="['flex items-center justify-center', format === 'stories' ? 'gap-12' : 'gap-8']">

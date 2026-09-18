@@ -187,12 +187,12 @@ const previousSlide = () => {
                   ],
                 )
               " :id="slide.slideId" :season="props.season" :match-day="props.season.weekends[slide.weekendIndex].matchDays[
-                  slide.matchDayOriginalIndex ?? 0
-                  ]
-                  " :format="props.format" />
+                slide.matchDayOriginalIndex ?? 0
+              ]
+                " :format="props.format" />
               <SlideMatchday v-else :id="slide.slideId" :season="props.season" :match-day="props.season.weekends[slide.weekendIndex].matchDays[
                 slide.matchDayOriginalIndex ?? 0
-                ]
+              ]
                 " :format="props.format" />
             </div>
           </div>
@@ -208,12 +208,7 @@ const previousSlide = () => {
     </div>
     <div v-if="expandedSlide" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
       <div class="relative max-h-[95vh] max-w-[95vw] overflow-auto rounded-3xl bg-white p-4 shadow-2xl">
-        <button type="button"
-          class="absolute right-3 top-3 z-10 rounded-full bg-white/90 px-3 py-1 text-sm font-semibold text-gray-700 shadow hover:bg-white"
-          @click="closeExpandedPreview">
-          Schließen
-        </button>
-        <div class="flex">
+        <div class="flex" @click.self="closeExpandedPreview">
           <button class="bg-gray-50 hover:bg-gray-200 p-2" @click="previousSlide">‹</button>
 
           <div class="flex gap-1 overflow-hidden border border-gray-200 bg-white shadow-sm"
@@ -231,12 +226,12 @@ const previousSlide = () => {
                   ],
                 )
               " :id="expandedSlide.slideId" :season="props.season" :match-day="props.season.weekends[expandedSlide.weekendIndex].matchDays[
-                  expandedSlide.matchDayOriginalIndex ?? 0
-                  ]
-                  " :format="props.format" />
+                expandedSlide.matchDayOriginalIndex ?? 0
+              ]
+                " :format="props.format" />
               <SlideMatchday v-else :id="expandedSlide.slideId" :season="props.season" :match-day="props.season.weekends[expandedSlide.weekendIndex].matchDays[
                 expandedSlide.matchDayOriginalIndex ?? 0
-                ]
+              ]
                 " :format="props.format" />
             </div>
           </div>

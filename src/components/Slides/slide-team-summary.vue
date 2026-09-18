@@ -105,14 +105,10 @@ const opponentLogoSize = computed(() => {
   <SharedContainer :id="id" :styles="summaryStyles" :slide-title="slideTitle" :format="format">
     <template v-if="format === 'stories'">
       <div class="relative z-10 flex min-h-0 flex-1 flex-col justify-between gap-6">
-        <article
-          v-for="fixture in storyFixtures"
-          :key="fixture.matchDay.date"
-          class="relative flex min-h-0 flex-1 flex-col justify-center overflow-visible rounded-[28px] border-2 border-[#6A2C68]/55 bg-white/80 px-8 py-5 shadow-[0_18px_40px_rgba(55,26,54,0.12)] backdrop-blur-[3px]"
-        >
+        <article v-for="fixture in storyFixtures" :key="fixture.matchDay.date"
+          class="relative flex min-h-0 flex-1 flex-col justify-center overflow-visible rounded-[28px] border-2 border-[#6A2C68]/55 bg-white/80 px-8 py-5 shadow-[0_18px_40px_rgba(55,26,54,0.12)] backdrop-blur-[3px]">
           <div
-            class="absolute -left-3 -top-4 flex items-center gap-2 rounded-full bg-[#6A2C68] px-5 py-2 text-sm font-black uppercase tracking-[0.16em] text-white shadow-lg"
-          >
+            class="absolute -left-3 -top-4 flex items-center gap-2 rounded-full bg-[#6A2C68] px-5 py-2 text-sm font-black uppercase tracking-[0.16em] text-white shadow-lg">
             <Home v-if="fixture.matchDay.home" :size="17" :stroke-width="2.5" />
             <Car v-else :size="17" :stroke-width="2.5" />
             <span>{{ fixture.matchDay.home ? 'Heimspiel' : 'Auswärtsspiel' }}</span>
@@ -120,7 +116,7 @@ const opponentLogoSize = computed(() => {
 
           <div class="flex items-center justify-center gap-3 pt-2">
             <div class="h-px flex-1 bg-[#6A2C68]/20" />
-            <span class="text-[11px] font-bold uppercase tracking-[0.28em] text-[#6A2C68]/75">
+            <span class="text-sm font-bold uppercase tracking-[0.28em] text-[#6A2C68]/75">
               Matchday
             </span>
             <div class="h-px flex-1 bg-[#6A2C68]/20" />
@@ -128,19 +124,17 @@ const opponentLogoSize = computed(() => {
 
           <div class="mt-3 flex min-h-0 flex-1 items-center justify-between gap-3">
             <div class="flex min-w-0 flex-1 flex-col items-center justify-center gap-2 text-center">
-              <TeamLogo
-                :team-name="fixture.matchDay.home ? clubName : fixture.opponents[0] ?? clubName"
-                :theme-team-name="fixture.matchDay.home ? teamName : undefined"
-                size-class="h-24 w-24"
-              />
-              <span class="max-w-[220px] text-lg font-black leading-[1.05] text-slate-900">
+              <TeamLogo :team-name="fixture.matchDay.home ? clubName : fixture.opponents[0] ?? clubName"
+                :theme-team-name="fixture.matchDay.home ? teamName : undefined" size-class="h-24 w-24" />
+              <span class="max-w-[220px] text-xl font-black leading-[1.05] text-slate-900">
                 {{ fixture.matchDay.home ? teamName : fixture.opponents.join(' / ') }}
               </span>
             </div>
 
             <div class="flex w-20 shrink-0 flex-col items-center gap-2">
               <div class="h-6 w-px bg-[#6A2C68]/20" />
-              <span class="flex h-11 w-11 items-center justify-center rounded-full bg-[#6A2C68] text-xs font-black tracking-[0.12em] text-white shadow-md">
+              <span
+                class="flex h-11 w-11 items-center justify-center rounded-full bg-[#6A2C68] text-xs font-black tracking-[0.12em] text-white shadow-md">
                 VS
               </span>
               <div class="h-6 w-px bg-[#6A2C68]/20" />
@@ -148,13 +142,10 @@ const opponentLogoSize = computed(() => {
 
             <div class="flex min-w-0 flex-1 flex-col items-center justify-center gap-2 text-center">
               <div class="flex items-center justify-center gap-1">
-                <TeamLogo
-                  v-for="opponent in fixture.matchDay.home ? fixture.opponents : [teamName]"
-                  :key="opponent"
+                <TeamLogo v-for="opponent in fixture.matchDay.home ? fixture.opponents : [teamName]" :key="opponent"
                   :team-name="!fixture.matchDay.home && opponent === teamName ? clubName : opponent"
                   :theme-team-name="!fixture.matchDay.home && opponent === teamName ? teamName : undefined"
-                  size-class="h-24 w-24"
-                />
+                  size-class="h-24 w-24" />
               </div>
               <span class="max-w-[220px] text-lg font-black leading-[1.05] text-slate-900">
                 {{ fixture.matchDay.home ? fixture.opponents.join(' / ') : teamName }}
@@ -164,7 +155,8 @@ const opponentLogoSize = computed(() => {
 
           <div class="mt-4 flex items-center gap-3">
             <div class="h-px flex-1 bg-[#6A2C68]/20" />
-            <div class="flex items-center gap-2 rounded-full bg-[#6A2C68]/10 px-5 py-2 text-lg font-black tracking-wide text-[#6A2C68]">
+            <div
+              class="flex items-center gap-2 rounded-full bg-[#6A2C68]/10 px-5 py-2 text-lg font-black tracking-wide text-[#6A2C68]">
               <Calendar :size="20" />
               <span>{{ fixture.matchDay.date }}</span>
             </div>
@@ -237,13 +229,13 @@ const opponentLogoSize = computed(() => {
             </div>
             <div :class="[
               'flex items-center rounded-full bg-[#6A2C68]/10 px-4 py-1.5 font-black tracking-tight',
-              isDenseSummary ? 'gap-1 text-xs' : 'gap-2',
+              isDenseSummary ? 'gap-1 text-sm' : 'gap-2',
               md.home
                 ? isDenseSummary
                   ? ['text-sm', teamColors.colorScheme.value.primaryDark]
                   : ['text-lg', teamColors.colorScheme.value.primaryDark]
                 : isDenseSummary
-                  ? 'text-xs text-slate-700'
+                  ? 'text-sm text-slate-700'
                   : 'text-base text-slate-700',
             ]">
               <Calendar :size="isDenseSummary ? 13 : md.home ? 19 : 17"

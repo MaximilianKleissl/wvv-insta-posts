@@ -36,6 +36,18 @@ const { styles } = useSlideDensity(
   }),
 );
 
+const matchdayStyles = computed(() =>
+  props.format === 'square'
+    ? {
+      ...styles.value,
+      cardPadding: 'p-4',
+      cardRadius: 'rounded-2xl',
+      logoSize: 'w-16 h-16',
+      textSize: 'text-xl',
+    }
+    : styles.value,
+);
+
 // Computed properties
 const matches = computed(() => sortMatches(props.matchDay));
 
@@ -53,7 +65,8 @@ const matchDayMeta = computed<MatchDayMetaData>(() => ({
 
 <template>
   <SharedContainer :id="id" :styles="styles" :slide-title="slideTitle" :match-day="matchDayMeta" :format="format">
-    <Cell v-for="(m, idx) in matches" :key="idx" :styles="styles" :border-color="teamColors.getHomeBorderColor('60')"
+    <Cell v-for="(m, idx) in matches" :key="idx" :styles="matchdayStyles"
+      :border-color="teamColors.getHomeBorderColor('60')" :compact="format === 'square'"
       :class="format === 'stories' ? 'flex-1 min-h-0' : undefined">
       <template #left_part>
         <Clock :class="['w-6 h-6 mb-1 shrink-0', teamColors.getHomeIconColor()]" />
@@ -61,12 +74,15 @@ const matchDayMeta = computed<MatchDayMetaData>(() => ({
           m.time
         }}</span>
         <span :class="[
-          'text-lg font-bold text-muted uppercase tracking-wider mt-0.5',
+          'text-xl font-bold text-muted uppercase tracking-wider mt-0.5',
           teamColors.getHomeIconColor(),
         ]">Uhr</span>
       </template>
 
-      <div class="flex-1 flex items-center justify-between gap-4 px-2">
+      <div :class="[
+        'flex min-w-0 flex-1 items-center justify-between px-1',
+        format === 'stories' ? 'gap-4' : 'gap-1',
+      ]">
         <div class="flex-1 flex flex-col items-center text-center gap-2 min-w-0">
           <TeamLogo :team-name="m.home" :theme-team-name="isHomeClub(m.home) ? props.matchDay.team : undefined"
             :size-class="styles.logoSize" />
