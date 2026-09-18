@@ -11,14 +11,18 @@ import TeamLogo from '@/components/Slides/subComponents/TeamLogo.vue';
 import { useTeamHighlight } from '@/composables/useTeamHighlight';
 import { useTeamColors } from '@/composables/useTeamColors';
 import type { SlideTitle, MatchDayMetaData } from '@/lib/slide-types';
+import type { SlideFormatMode } from '@/lib/slide-format';
 
 interface SlideMatchdayProps {
   id: string;
   season: SeasonData;
   matchDay: MatchDay;
+  format?: SlideFormatMode;
 }
 
-const props = defineProps<SlideMatchdayProps>();
+const props = withDefaults(defineProps<SlideMatchdayProps>(), {
+  format: 'square',
+});
 
 // Composables
 const { getTeamTextColor, isHomeClub } = useTeamHighlight(props.season, props.matchDay.team);
@@ -48,75 +52,50 @@ const matchDayMeta = computed<MatchDayMetaData>(() => ({
 </script>
 
 <template>
-  <SharedContainer :id="id" :styles="styles" :slide-title="slideTitle" :match-day="matchDayMeta">
-    <Cell
-      v-for="(m, idx) in matches"
-      :key="idx"
-      :styles="styles"
-      :border-color="teamColors.getHomeBorderColor('60')"
-    >
+  <SharedContainer :id="id" :styles="styles" :slide-title="slideTitle" :match-day="matchDayMeta" :format="format">
+    <Cell v-for="(m, idx) in matches" :key="idx" :styles="styles" :border-color="teamColors.getHomeBorderColor('60')"
+      :class="format === 'stories' ? 'flex-1 min-h-0' : undefined">
       <template #left_part>
         <Clock :class="['w-6 h-6 mb-1 shrink-0', teamColors.getHomeIconColor()]" />
         <span :class="['text-3xl font-bold tracking-tighter', teamColors.getHomeIconColor()]">{{
           m.time
         }}</span>
-        <span
-          :class="[
-            'text-lg font-bold text-muted uppercase tracking-wider mt-0.5',
-            teamColors.getHomeIconColor(),
-          ]"
-          >Uhr</span
-        >
+        <span :class="[
+          'text-lg font-bold text-muted uppercase tracking-wider mt-0.5',
+          teamColors.getHomeIconColor(),
+        ]">Uhr</span>
       </template>
 
       <div class="flex-1 flex items-center justify-between gap-4 px-2">
         <div class="flex-1 flex flex-col items-center text-center gap-2 min-w-0">
-          <TeamLogo
-            :team-name="m.home"
-            :theme-team-name="isHomeClub(m.home) ? props.matchDay.team : undefined"
-            :size-class="styles.logoSize"
-          />
-          <span
-            class="font-black leading-tight wrap w-full"
-            :class="[styles.textSize, getTeamTextColor(m.home)]"
-          >
+          <TeamLogo :team-name="m.home" :theme-team-name="isHomeClub(m.home) ? props.matchDay.team : undefined"
+            :size-class="styles.logoSize" />
+          <span class="font-black leading-tight wrap w-full" :class="[styles.textSize, getTeamTextColor(m.home)]">
             {{ m.home }}
           </span>
         </div>
 
         <!-- Result -->
-        <div
-          v-if="m.result"
-          :class="[
-            'flex items-center gap-3 px-5 py-2 rounded-2xl shadow-lg',
-            teamColors.getResultBgColor(),
-          ]"
-        >
+        <div v-if="m.result" :class="[
+          'flex items-center gap-3 px-5 py-2 rounded-2xl shadow-lg',
+          teamColors.getResultBgColor(),
+        ]">
           <span class="text-6xl font-black text-white leading-none">{{ m.result.home }}</span>
           <span :class="['text-3xl font-black', teamColors.getAccentColor()]"> : </span>
           <span class="text-6xl font-black text-white leading-none">{{ m.result.away }}</span>
         </div>
 
-        <VsBadge
-          v-else
-          :border-color="teamColors.getHomeBorderColor('20')"
-          :bg-color="teamColors.getHomeBgColor()"
-          :text-color="teamColors.getHomeIconColor()"
-        />
+        <VsBadge v-else :border-color="teamColors.getHomeBorderColor('20')" :bg-color="teamColors.getHomeBgColor()"
+          :text-color="teamColors.getHomeIconColor()" />
 
         <div class="flex-1 flex flex-col items-center text-center gap-2 min-w-0">
-          <TeamLogo
-            :team-name="m.away"
-            :theme-team-name="isHomeClub(m.away) ? props.matchDay.team : undefined"
-            :size-class="styles.logoSize"
-          />
-          <span
-            :class="[
-              styles.textSize,
-              'font-black leading-tight wrap w-full',
-              getTeamTextColor(m.away),
-            ]"
-          >
+          <TeamLogo :team-name="m.away" :theme-team-name="isHomeClub(m.away) ? props.matchDay.team : undefined"
+            :size-class="styles.logoSize" />
+          <span :class="[
+            styles.textSize,
+            'font-black leading-tight wrap w-full',
+            getTeamTextColor(m.away),
+          ]">
             {{ m.away }}
           </span>
         </div>

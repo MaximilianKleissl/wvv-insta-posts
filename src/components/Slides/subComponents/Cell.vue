@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex items-center gap-6 border border-border/40 shadow-sm"
+    class="flex items-center gap-6 border border-[#6A2C68]/15 bg-white/70 shadow-[0_10px_24px_rgba(55,26,54,0.08)] backdrop-blur-[2px]"
     :class="[styles.cardPadding, styles.cardRadius]"
   >
     <div
