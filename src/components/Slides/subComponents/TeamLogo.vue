@@ -10,7 +10,6 @@
       preserveAspectRatio="xMidYMid meet"
     >
       <defs>
-        <!-- Default SVG mask type is luminance: white pixels -> opaque, black -> transparent -->
         <mask :id="whiteMaskId">
           <image
             :href="logoUrl"
@@ -22,7 +21,6 @@
           />
         </mask>
 
-        <!-- Same image, colors inverted: original black becomes white -> opaque here -->
         <mask :id="tintMaskId">
           <image
             :href="logoUrl"
@@ -39,6 +37,9 @@
       <rect width="100" height="100" fill="#ffffff" :mask="`url(#${whiteMaskId})`" />
       <rect width="100" height="100" :fill="tintColor" :mask="`url(#${tintMaskId})`" />
     </svg>
+
+    <!-- Untheme: original colors as-is -->
+    <img v-else-if="imageLoaded" :src="logoUrl" :alt="teamName" :class="[sizeClass, 'object-contain shrink-0']" />
   </div>
 
   <div v-else :class="[sizeClass, fallbackClass]">
@@ -73,7 +74,6 @@ const tintColor = computed(() => teamColors.colorScheme.value.imageTint);
 const imageError = ref(false);
 const imageLoaded = ref(false);
 
-// Unique per-instance IDs so multiple logos on one page don't collide on url(#id)
 const uid = Math.random().toString(36).slice(2, 10);
 const whiteMaskId = `logo-white-mask-${uid}`;
 const tintMaskId = `logo-tint-mask-${uid}`;
