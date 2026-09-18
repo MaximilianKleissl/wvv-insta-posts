@@ -4,7 +4,7 @@
     <img :src="logoUrl" class="hidden" @error="handleImageError" @load="handleImageLoad" />
 
     <svg
-      v-if="imageLoaded"
+      v-if="imageLoaded && themeTeamName"
       :class="[sizeClass, 'block']"
       viewBox="0 0 100 100"
       preserveAspectRatio="xMidYMid meet"
@@ -60,8 +60,10 @@ interface TeamLogoProps {
 }
 
 const props = withDefaults(defineProps<TeamLogoProps>(), {
+  themeTeamName: undefined,
   sizeClass: 'w-12 h-12',
-  fallbackClass: 'flex items-center justify-center bg-muted rounded-full border border-border',
+  fallbackClass:
+    'flex items-center justify-center bg-muted rounded-full border border-border',
 });
 
 const { getLogoUrl } = useLogo();

@@ -62,29 +62,30 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { MapPin, Calendar } from 'lucide-vue-next';
 import { germanWeekdayName } from '@/lib/grouping';
-import { TEAM_ACTION_IMAGE_MAP, ACTION_IMAGES } from '@/lib/slide-constants';
 import type { SlideTitle, MatchDayMetaData } from '@/lib/slide-types';
 import { useTeamColors } from '@/composables/useTeamColors';
+import { useActionImages } from '@/composables/useActionImages';
 
 const props = defineProps<{
   slideTitle: SlideTitle;
   matchDay?: MatchDayMetaData;
 }>();
 const teamColors = useTeamColors(props.slideTitle.subtitle);
+const { loadActionImages, getActionImagesForTeam } = useActionImages();
+
+onMounted(() => {
+  void loadActionImages();
+});
 
 const actionImage = computed(() => {
   const images = getActionImagesForTeam(props.slideTitle.subtitle);
   const hash = simpleHash(props.slideTitle.label);
   const index = hash % images.length;
-  return `./action-images/${images[index]}`;
+  return `https://maximiliankleissl.github.io/wvv-posts-config/Action_Images/${images[index]}`;
 });
-
-function getActionImagesForTeam(teamName: string): readonly string[] {
-  return TEAM_ACTION_IMAGE_MAP[teamName] ?? ACTION_IMAGES.DEFAULT;
-}
 
 function simpleHash(str: string): number {
   let hash = 0;
