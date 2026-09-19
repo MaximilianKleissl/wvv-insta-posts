@@ -1,12 +1,12 @@
 <template>
   <div
+    class='rounded-full flex items-center justify-center shrink-0 shadow-inner w-12 h-12',
     :class="[
-      'rounded-full flex items-center justify-center shrink-0 shadow-inner w-12 h-12',
       borderColor,
       bgColor,
     ]"
   >
-    <span :class="['block leading-none text-xl font-black tracking-tight', textColor]"> VS </span>
+    <span class="block leading-none text-xl font-black tracking-tight" :class="[textColor]"> VS </span>
   </div>
 </template>
 

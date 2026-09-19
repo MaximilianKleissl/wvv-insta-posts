@@ -31,11 +31,7 @@ export function getSlideBoxStyle(mode: SlideFormatMode = 'square') {
   } as const;
 }
 
-export function getSlideScale(
-  mode: SlideFormatMode = 'square',
-  maxWidth = 216,
-  maxHeight = 216,
-) {
+export function getSlideScale(mode: SlideFormatMode = 'square', maxWidth = 216, maxHeight = 216) {
   const { width, height } = getSlideDimensions(mode);
   return Math.min(maxWidth / width, maxHeight / height);
 }

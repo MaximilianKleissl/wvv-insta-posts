@@ -11,6 +11,7 @@ import { useTeamColors } from '@/composables/useTeamColors';
 import type { SlideTitle } from '@/lib/slide-types';
 
 import type { SlideFormatMode } from '@/lib/slide-format';
+import { getMatchDayKey } from '@/lib/slide-utils';
 
 interface SlideOverviewProps {
   id: string;
@@ -31,15 +32,15 @@ const teamColors = useTeamColors(props.season.club);
 const overviewStyles = computed(() =>
   props.format === 'stories'
     ? {
-      ...styles.value,
-      cardPadding: 'p-4',
-      cardRadius: 'rounded-2xl',
-    }
+        ...styles.value,
+        cardPadding: 'p-4',
+        cardRadius: 'rounded-2xl',
+      }
     : {
-      ...styles.value,
-      cardPadding: 'p-4',
-      cardRadius: 'rounded-2xl',
-    },
+        ...styles.value,
+        cardPadding: 'p-4',
+        cardRadius: 'rounded-2xl',
+      },
 );
 
 // Dynamic grid allocation based on match count to balance empty spaces
@@ -95,9 +96,14 @@ const slideTitle = computed<SlideTitle>(() => ({
 <template>
   <SharedContainer :id="id" :styles="styles" :slide-title="slideTitle" :format="format">
     <div :class="containerGridClass">
-      <Cell v-for="(md, idx) in matchDays" :key="idx" :styles="overviewStyles"
-        :border-color="teamColors.getHomeBorderColor('60')" :compact="format === 'square'"
-        :class="format === 'stories' ? 'min-h-0 overflow-hidden' : 'relative overflow-hidden'">
+      <Cell
+        v-for="md in matchDays"
+        :key="getMatchDayKey(md)"
+        :styles="overviewStyles"
+        :border-color="teamColors.getHomeBorderColor('60')"
+        :compact="format === 'square'"
+        :class="format === 'stories' ? 'min-h-0 overflow-hidden' : 'relative overflow-hidden'"
+      >
         <template #left_part>
           <!-- <div :class="[
             'items-center flex flex-col rounded-lg pt-1 min-w-[90px]',
@@ -113,20 +119,25 @@ const slideTitle = computed<SlideTitle>(() => ({
             </div>
           </div> -->
           <HomeTeamIndication :md="md" />
-
         </template>
 
         <div class="flex-1 min-w-0 z-10 space-y-2 rounded-2xl bg-white/45 px-4 py-3">
-          <h3 :class="[
-            'font-black tracking-tight truncate leading-tight uppercase text-slate-900',
-            format === 'stories' ? 'text-2xl' : '',
-            teamTextSize,
-          ]">
+          <h3
+            :class="[
+              'font-black tracking-tight truncate leading-tight uppercase text-slate-900',
+              format === 'stories' ? 'text-2xl' : '',
+              teamTextSize,
+            ]"
+          >
             {{ md.team }}
           </h3>
 
           <div
-            :class="['flex flex-wrap items-center gap-x-3 gap-y-1 text-slate-500', format === 'stories' ? 'text-base' : metaTextSize]">
+            :class="[
+              'flex flex-wrap items-center gap-x-3 gap-y-1 text-slate-500',
+              format === 'stories' ? 'text-base' : metaTextSize,
+            ]"
+          >
             <span class="flex items-center gap-1.5 font-bold text-slate-800">
               <Calendar :size="16" class="text-slate-400 shrink-0" />
               {{ germanWeekdayName(md.date) }}
@@ -140,17 +151,21 @@ const slideTitle = computed<SlideTitle>(() => ({
         </div>
 
         <div v-if="md.match_day_result" class="flex items-center justify-center shrink-0">
-          <div :class="[
-            'relative flex flex-col items-center justify-center min-w-[92px] px-4 py-2 rounded-2xl shadow-lg overflow-hidden',
-            teamColors.getResultBgColor(),
-          ]">
+          <div
+            :class="[
+              'relative flex flex-col items-center justify-center min-w-[92px] px-4 py-2 rounded-2xl shadow-lg overflow-hidden',
+              teamColors.getResultBgColor(),
+            ]"
+          >
             <!-- subtle highlight -->
             <div :class="['absolute inset-x-0 top-0 h-1', teamColors.getHighlightColor()]" />
 
-            <span :class="[
-              'text-xs uppercase tracking-[0.25em] font-black',
-              teamColors.getAccentColor(),
-            ]">
+            <span
+              :class="[
+                'text-xs uppercase tracking-[0.25em] font-black',
+                teamColors.getAccentColor(),
+              ]"
+            >
               Ergebnis
             </span>
 
@@ -159,7 +174,6 @@ const slideTitle = computed<SlideTitle>(() => ({
             </span>
           </div>
         </div>
-
       </Cell>
     </div>
   </SharedContainer>
