@@ -15,7 +15,7 @@
       format === 'stories' ? 'p-14' : 'p-10',
     ]">
       <div class="max-w-[640px] pt-2">
-        <div class="mb-5 flex items-center gap-4">
+        <div class="mt-5 mb-5 flex items-center gap-4">
           <span class="h-px w-16 bg-white/80" />
           <p class="text-xl font-semibold uppercase tracking-[0.38em] text-white/85">
             {{ slideTitle.subtitle }}
