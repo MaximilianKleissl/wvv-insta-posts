@@ -45,7 +45,7 @@ const props = withDefaults(defineProps<TeamLogoProps>(), {
   themeTeamName: undefined,
   sizeClass: 'w-12 h-12',
   fallbackClass:
-    'flex items-center justify-center bg-muted rounded-full border border-border',
+    'flex items-center justify-center bg-muted rounded-full',
 });
 
 const { getLogoUrl } = useLogo();

@@ -31,10 +31,10 @@ export function useSlideDensity(itemCount: ComputedRef<number> | number) {
           : 'w-18 h-18',
     textSize:
       density.value === 'normal'
-        ? 'text-3xl'
+        ? 'text-4xl'
         : density.value === 'compact'
-          ? 'text-2xl'
-          : 'text-xl',
+          ? 'text-3xl'
+          : 'text-2xl',
   }));
 
   return { density, styles };
