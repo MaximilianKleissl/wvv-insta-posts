@@ -1,9 +1,9 @@
 import { ref, computed } from 'vue';
 import type { Sponsor } from '@/lib/types';
+import { CONFIG_BASE_URL } from '@/lib/config';
 import { seededShuffle } from '@/lib/slide-utils';
 
-const SPONSORS_URL =
-  'https://maximiliankleissl.github.io/wvv-posts-config/Sponsoren/sponsoren_overview.json';
+const SPONSORS_URL = `${CONFIG_BASE_URL}/Sponsoren/sponsoren_overview.json`;
 
 // Shared state across all composable instances
 const sponsors = ref<Sponsor[]>([]);

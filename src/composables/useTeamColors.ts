@@ -1,11 +1,14 @@
 import { computed } from 'vue';
-import { getTeamColorScheme } from '@/lib/team-colors';
+import { getTeamColorScheme, hexToRgba } from '@/lib/team-colors';
 
 export function useTeamColors(teamName: string) {
   const colorScheme = computed(() => getTeamColorScheme(teamName));
 
   const getTeamTextColor = (teamNameToHighlight: string): string =>
     teamNameToHighlight === teamName ? colorScheme.value.primary : 'text-black';
+
+  /** rgba() background for hairline/divider lines (kept as an inline style so Tailwind JIT is irrelevant). */
+  const getHairlineColor = () => hexToRgba(colorScheme.value.imageTint, 0.2);
 
   const getHomeBorderColor = (opacity?: '20' | '60' | '95') => {
     if (opacity === '20') return colorScheme.value.borderOpacity20;
@@ -28,6 +31,7 @@ export function useTeamColors(teamName: string) {
   return {
     colorScheme,
     getTeamTextColor,
+    getHairlineColor,
     getHomeBorderColor,
     getHomeBgColor,
     getHomeIconColor,

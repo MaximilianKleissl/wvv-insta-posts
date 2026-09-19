@@ -26,6 +26,7 @@ import { computed, onMounted } from 'vue';
 import type { SlideTitle } from '@/lib/slide-types';
 import { getFormatClasses, type SlideFormatMode } from '@/lib/slide-format';
 import { hashString } from '@/lib/slide-utils';
+import { CONFIG_BASE_URL } from '@/lib/config';
 import { useActionImages } from '@/composables/useActionImages';
 import { useTeamColors } from '@/composables/useTeamColors';
 
@@ -49,7 +50,7 @@ const actionImage = computed(() => {
   if (images.length === 0) return '';
 
   const index = hashString(props.slideTitle.label) % images.length;
-  return `https://maximiliankleissl.github.io/wvv-posts-config/Action_Images/${images[index]}`;
+  return `${CONFIG_BASE_URL}/Action_Images/${images[index]}`;
 });
 
 const headerClasses = computed(() => [

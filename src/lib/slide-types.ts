@@ -28,3 +28,9 @@ export interface SlideMatchdayProps {
   matchDay: MatchDay;
   format?: SlideFormatMode;
 }
+
+/** A match day paired with its pre-computed, de-duplicated opponent names. */
+export interface MatchDayFixture {
+  matchDay: MatchDay;
+  opponents: string[];
+}

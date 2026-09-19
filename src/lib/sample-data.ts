@@ -1,7 +1,8 @@
 import type { MatchDay, SeasonData } from './types';
 import { buildWeekendsFromMatchDays } from './grouping';
+import { CONFIG_BASE_URL } from './config';
 
-const BASE_URL = 'https://maximiliankleissl.github.io/wvv-posts-config/Spiele';
+const BASE_URL = `${CONFIG_BASE_URL}/Spiele`;
 
 export async function fetchSeasonData(): Promise<SeasonData> {
   // Fetch the file overview to get available files

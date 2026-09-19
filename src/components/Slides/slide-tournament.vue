@@ -48,6 +48,7 @@ const cellClass = computed(() => pickFormatClass(props.format, undefined, 'min-h
         :key="team"
         :styles="styles"
         :border-color="teamColors.getHomeBorderColor('60')"
+        :tint-hex="teamColors.colorScheme.value.imageTint"
         :class="cellClass"
       >
         <template #left_part>

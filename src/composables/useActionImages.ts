@@ -1,7 +1,7 @@
 import { ref } from 'vue';
+import { CONFIG_BASE_URL } from '@/lib/config';
 
-const ACTION_IMAGES_CONFIG_URL =
-  'https://maximiliankleissl.github.io/wvv-posts-config/Action_Images/action_images.json';
+const ACTION_IMAGES_CONFIG_URL = `${CONFIG_BASE_URL}/Action_Images/action_images.json`;
 const DEFAULT_ACTION_IMAGES = ['baumbluetenumzug.jpg'] as const;
 
 const actionImages = ref<Record<string, readonly string[]>>({
