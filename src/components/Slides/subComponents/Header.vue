@@ -24,7 +24,8 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
 import type { SlideTitle } from '@/lib/slide-types';
-import type { SlideFormatMode } from '@/lib/slide-format';
+import { getFormatClasses, type SlideFormatMode } from '@/lib/slide-format';
+import { hashString } from '@/lib/slide-utils';
 import { useActionImages } from '@/composables/useActionImages';
 import { useTeamColors } from '@/composables/useTeamColors';
 
@@ -37,6 +38,7 @@ const props = withDefaults(
 );
 const teamColors = useTeamColors(props.slideTitle.subtitle);
 const { loadActionImages, getActionImagesForTeam } = useActionImages();
+const formatClasses = computed(() => getFormatClasses(props.format));
 
 onMounted(() => {
   void loadActionImages();
@@ -46,26 +48,25 @@ const actionImage = computed(() => {
   const images = getActionImagesForTeam(props.slideTitle.subtitle);
   if (images.length === 0) return '';
 
-  const hash = simpleHash(props.slideTitle.label);
-  const index = hash % images.length;
+  const index = hashString(props.slideTitle.label) % images.length;
   return `https://maximiliankleissl.github.io/wvv-posts-config/Action_Images/${images[index]}`;
 });
 
 const headerClasses = computed(() => [
   'relative w-full shrink-0 overflow-hidden font-sans select-none',
-  props.format === 'stories' ? 'h-[700px]' : 'h-[340px]',
+  formatClasses.value.headerHeight,
 ]);
 const contentClasses = computed(() => [
   'relative z-10 flex h-full flex-col text-white',
-  props.format === 'stories' ? 'p-14' : 'p-10',
+  formatClasses.value.headerPadding,
 ]);
 const titleClasses = computed(() => [
   'mb-4 font-black uppercase leading-[0.88] tracking-[-0.04em]',
-  props.format === 'stories' ? 'text-[80px]' : 'text-[49px]',
+  formatClasses.value.titleSize,
 ]);
 const seasonClasses = computed(() => [
   'w-fit bg-white/95 font-black tracking-tight shadow-xl',
-  props.format === 'stories' ? 'px-9 py-2 text-3xl' : 'px-6 py-2 text-xl',
+  formatClasses.value.seasonClasses,
 ]);
 const schemeColor = computed(() => teamColors.colorScheme.value.imageTint);
 const actionImageStyle = computed(() => ({
@@ -81,12 +82,4 @@ const seasonStyle = computed(() => ({
   color: schemeColor.value,
   clipPath: 'polygon(3% 8%, 96% 0, 100% 78%, 91% 100%, 5% 91%, 0 28%)',
 }));
-
-function simpleHash(str: string): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = (hash * 31 + str.charCodeAt(i)) >>> 0;
-  }
-  return hash;
-}
 </script>

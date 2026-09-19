@@ -27,21 +27,13 @@ const props = withDefaults(defineProps<SlideOverviewProps>(), {
 const weekend = computed(() => props.season.weekends[props.weekendIndex]);
 const matchDays = computed(() => sortedMatchDaysForWeekend(weekend.value));
 
-const { density, styles } = useSlideDensity(matchDays.value.length);
+const { density, styles } = useSlideDensity(computed(() => matchDays.value.length));
 const teamColors = useTeamColors(props.season.club);
-const overviewStyles = computed(() =>
-  props.format === 'stories'
-    ? {
-        ...styles.value,
-        cardPadding: 'p-4',
-        cardRadius: 'rounded-2xl',
-      }
-    : {
-        ...styles.value,
-        cardPadding: 'p-4',
-        cardRadius: 'rounded-2xl',
-      },
-);
+const overviewStyles = computed(() => ({
+  ...styles.value,
+  cardPadding: 'p-4',
+  cardRadius: 'rounded-2xl',
+}));
 
 // Dynamic grid allocation based on match count to balance empty spaces
 const containerGridClass = computed(() => {
@@ -67,14 +59,7 @@ const teamTextSize = computed(() => {
     }
   }
 
-  switch (density.value) {
-    case 'tight':
-      return 'text-2xl md:text-3xl';
-    case 'compact':
-      return 'text-2xl md:text-3xl';
-    default:
-      return 'text-2xl md:text-3xl';
-  }
+  return 'text-2xl md:text-3xl';
 });
 
 const metaTextSize = computed(() => {

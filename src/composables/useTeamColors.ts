@@ -20,12 +20,10 @@ export function useTeamColors(teamName: string) {
   const getBadgeBgColor = () => colorScheme.value.badgeBg;
   const getAccentColor = () => colorScheme.value.accent;
   const getHighlightColor = () => colorScheme.value.highlightBg;
-  const getPrimaryTextColorWithOpacity = (opacity: string) =>
+  const getPrimaryTextColorWithOpacity = (opacity: '80') =>
     opacity === '80' ? colorScheme.value.primaryOpacity80 : colorScheme.value.primary;
   const getDateTextColor = () => colorScheme.value.dateText;
   const getResultBgColor = () => colorScheme.value.resultBg;
-  const getResultBgColorWithOpacity = (opacity: string) =>
-    opacity === '90' ? colorScheme.value.resultBgOpacity : colorScheme.value.resultBg;
 
   return {
     colorScheme,
@@ -40,6 +38,5 @@ export function useTeamColors(teamName: string) {
     getPrimaryTextColorWithOpacity,
     getDateTextColor,
     getResultBgColor,
-    getResultBgColorWithOpacity,
   };
 }

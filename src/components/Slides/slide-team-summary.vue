@@ -13,7 +13,7 @@ import { useTeamColors } from '@/composables/useTeamColors';
 import { BADGE_LABELS } from '@/lib/slide-constants';
 import type { SlideTitle } from '@/lib/slide-types';
 import type { SlideFormatMode } from '@/lib/slide-format';
-import { getMatchDayKey, isClubTeam } from '@/lib/slide-utils';
+import { getMatchDayKey } from '@/lib/slide-utils';
 
 interface SlideTeamSummaryProps {
   id: string;
@@ -29,26 +29,53 @@ const props = withDefaults(defineProps<SlideTeamSummaryProps>(), {
 });
 
 const { clubName } = useHeader();
-const { getTeamTextColor } = useTeamHighlight(props.season, props.teamName);
+const { isHomeClub, getTeamTextColor } = useTeamHighlight(props.season, props.teamName);
 const teamColors = useTeamColors(props.teamName);
-const isHomeClub = (teamName: string) => isClubTeam(teamName, props.season.club);
 const isHomeSlide = computed(() => props.gameType === 'home');
-const isDenseSummary = computed(() => slideMatchDays.value.length > 4);
 
 const slideMatchDays = computed(() =>
   props.matchDays.filter((matchDay) => matchDay.home === isHomeSlide.value),
 );
 
-const totalOpponents = computed(() => {
-  return slideMatchDays.value.reduce((sum, md) => {
-    if (isTournamentMatchDay(md)) {
-      return sum + (md.teams?.length ?? 0);
-    }
-    return sum + (md.matches?.length ?? 0);
-  }, 0);
+const isDenseSummary = computed(() => slideMatchDays.value.length > 4);
+
+const sortedMatchDays = computed(() => {
+  return [...slideMatchDays.value].sort((a, b) => {
+    const aDate = new Date(a.date.split('.').reverse().join('-')).getTime();
+    const bDate = new Date(b.date.split('.').reverse().join('-')).getTime();
+    return aDate - bDate;
+  });
 });
 
-const { density, styles } = useSlideDensity(totalOpponents.value);
+/**
+ * One pass over the slide's match days derives both the unique opponents per
+ * match day (used for rendering) and the pairing count (used for density),
+ * so the participant-filtering logic is not duplicated across templates.
+ */
+const matchDayMetrics = computed(() => {
+  const opponentsByMatchDay = new Map<MatchDay, string[]>();
+  let opponentCount = 0;
+
+  for (const md of slideMatchDays.value) {
+    const participatingTeams = isTournamentMatchDay(md)
+      ? (md.teams ?? [])
+      : (md.matches ?? []).flatMap((match) => [match.home, match.away]);
+
+    const opponents = Array.from(new Set(participatingTeams.filter((team) => !isHomeClub(team))));
+    opponentsByMatchDay.set(md, opponents);
+    opponentCount += isTournamentMatchDay(md) ? (md.teams?.length ?? 0) : (md.matches?.length ?? 0);
+  }
+
+  return { opponentsByMatchDay, opponentCount };
+});
+
+const opponentsByMatchDay = computed(() => matchDayMetrics.value.opponentsByMatchDay);
+const totalOpponents = computed(() => matchDayMetrics.value.opponentCount);
+
+const getOpponents = (matchDay: MatchDay): string[] =>
+  opponentsByMatchDay.value.get(matchDay) ?? [];
+
+const { density, styles } = useSlideDensity(totalOpponents);
 
 const summaryStyles = computed(() => ({
   ...styles.value,
@@ -61,25 +88,6 @@ const slideTitle = computed<SlideTitle>(() => ({
   title: isHomeSlide.value ? 'Heimspiele' : 'Auswärtsspiele',
   label: props.season.season,
 }));
-
-const sortedMatchDays = computed(() => {
-  return [...slideMatchDays.value].sort((a, b) => {
-    const aDate = new Date(a.date.split('.').reverse().join('-')).getTime();
-    const bDate = new Date(b.date.split('.').reverse().join('-')).getTime();
-    return aDate - bDate;
-  });
-});
-
-const getOpponents = (matchDay: MatchDay): string[] => {
-  const participatingTeams = isTournamentMatchDay(matchDay)
-    ? (matchDay.teams ?? [])
-    : (matchDay.matches ?? []).flatMap((match) => [match.home, match.away]);
-
-  const opponents = participatingTeams.filter((team) => !isHomeClub(team));
-
-  // Remove duplicate teams when a match day contains multiple pairings.
-  return Array.from(new Set(opponents));
-};
 
 const storyFixtures = computed(() =>
   sortedMatchDays.value.map((matchDay) => ({
@@ -100,6 +108,11 @@ const opponentLogoSize = computed(() => {
       return 'w-12 h-12';
   }
 });
+
+const homeBadgeTextSize = computed(() => (isDenseSummary.value ? 'text-sm' : 'text-lg'));
+const awayBadgeTextSize = computed(() =>
+  isDenseSummary.value ? 'text-sm text-slate-700' : 'text-base text-slate-700',
+);
 </script>
 
 <template>
@@ -272,12 +285,8 @@ const opponentLogoSize = computed(() => {
                 'flex items-center rounded-full bg-[#6A2C68]/10 px-4 py-1.5 font-black tracking-tight',
                 isDenseSummary ? 'gap-1 text-sm' : 'gap-2',
                 md.home
-                  ? isDenseSummary
-                    ? ['text-sm', teamColors.colorScheme.value.primaryDark]
-                    : ['text-lg', teamColors.colorScheme.value.primaryDark]
-                  : isDenseSummary
-                    ? 'text-sm text-slate-700'
-                    : 'text-base text-slate-700',
+                  ? [homeBadgeTextSize, teamColors.colorScheme.value.primaryDark]
+                  : awayBadgeTextSize,
               ]"
             >
               <Calendar

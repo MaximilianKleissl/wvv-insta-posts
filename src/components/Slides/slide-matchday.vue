@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { SeasonData, MatchDay } from '@/lib/types';
-import { sortMatches, isTournamentMatchDay } from '@/lib/grouping';
+import { sortMatches } from '@/lib/grouping';
 import { Clock } from 'lucide-vue-next';
 import SharedContainer from './sharedContainer.vue';
 import { useSlideDensity } from '@/composables/Slides/useDensity.ts';
@@ -10,16 +9,9 @@ import Cell from '@/components/Slides/subComponents/Cell.vue';
 import TeamLogo from '@/components/Slides/subComponents/TeamLogo.vue';
 import { useTeamHighlight } from '@/composables/useTeamHighlight';
 import { useTeamColors } from '@/composables/useTeamColors';
-import type { SlideTitle } from '@/lib/slide-types';
-import type { SlideFormatMode } from '@/lib/slide-format';
-import { getMatchDaySlideTitle, getMatchKey } from '@/lib/slide-utils';
-
-interface SlideMatchdayProps {
-  id: string;
-  season: SeasonData;
-  matchDay: MatchDay;
-  format?: SlideFormatMode;
-}
+import type { SlideTitle, SlideMatchdayProps } from '@/lib/slide-types';
+import { pickFormatClass } from '@/lib/slide-format';
+import { getMatchDaySlideTitle, getMatchKey, getMatchDayItemCount } from '@/lib/slide-utils';
 
 const props = withDefaults(defineProps<SlideMatchdayProps>(), {
   format: 'square',
@@ -28,14 +20,7 @@ const props = withDefaults(defineProps<SlideMatchdayProps>(), {
 // Composables
 const { getTeamTextColor, isHomeClub } = useTeamHighlight(props.season, props.matchDay.team);
 const teamColors = useTeamColors(props.matchDay.team);
-const { styles } = useSlideDensity(
-  computed(() => {
-    const tournament = isTournamentMatchDay(props.matchDay);
-    const teams = props.matchDay.teams ?? [];
-    const matches = sortMatches(props.matchDay);
-    return tournament ? teams.length : matches.length;
-  }),
-);
+const { styles } = useSlideDensity(computed(() => getMatchDayItemCount(props.matchDay)));
 
 const matchdayStyles = computed(() =>
   props.format === 'square'
@@ -55,6 +40,9 @@ const matches = computed(() => sortMatches(props.matchDay));
 const slideTitle = computed<SlideTitle>(() => ({
   ...getMatchDaySlideTitle(props.matchDay),
 }));
+
+const cellClass = computed(() => pickFormatClass(props.format, '', 'flex-1 min-h-0'));
+const contentGap = computed(() => pickFormatClass(props.format, 'gap-1', 'gap-4'));
 </script>
 
 <template>
@@ -65,7 +53,7 @@ const slideTitle = computed<SlideTitle>(() => ({
       :styles="matchdayStyles"
       :border-color="teamColors.getHomeBorderColor('60')"
       :compact="format === 'square'"
-      :class="format === 'stories' ? 'flex-1 min-h-0' : undefined"
+      :class="cellClass"
     >
       <template #left_part>
         <Clock :class="['w-6 h-6 mb-1 shrink-0', teamColors.getHomeIconColor()]" />
@@ -81,12 +69,7 @@ const slideTitle = computed<SlideTitle>(() => ({
         >
       </template>
 
-      <div
-        :class="[
-          'flex min-w-0 flex-1 items-center justify-between px-1',
-          format === 'stories' ? 'gap-4' : 'gap-1',
-        ]"
-      >
+      <div :class="['flex min-w-0 flex-1 items-center justify-between px-1', contentGap]">
         <div class="flex-1 flex flex-col items-center text-center gap-2 min-w-0">
           <TeamLogo
             :team-name="m.home"

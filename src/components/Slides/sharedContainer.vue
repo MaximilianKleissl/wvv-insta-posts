@@ -53,7 +53,7 @@
       <main
         :class="[
           'flex-1 flex flex-col min-w-0 min-h-0 justify-center p-10 overflow-hidden',
-          format === 'stories' ? 'gap-4' : 'gap-5',
+          formatClasses.mainGap,
         ]"
       >
         <slot />
@@ -71,7 +71,12 @@ import { SlideStyles } from '@/composables/Slides/useDensity.ts';
 import { useSponsors } from '@/composables/useSponsors';
 import { useTeamColors } from '@/composables/useTeamColors';
 import type { SlideTitle } from '@/lib/slide-types';
-import { getSlideBoxStyle, getSlideDimensions, type SlideFormatMode } from '@/lib/slide-format';
+import {
+  getSlideBoxStyle,
+  getSlideDimensions,
+  getFormatClasses,
+  type SlideFormatMode,
+} from '@/lib/slide-format';
 
 const props = withDefaults(
   defineProps<{
@@ -87,6 +92,7 @@ const props = withDefaults(
 
 const { getRandomSponsors } = useSponsors();
 const teamColors = useTeamColors(props.slideTitle.subtitle);
+const formatClasses = computed(() => getFormatClasses(props.format));
 const dimensions = computed(() => getSlideDimensions(props.format));
 const slideBoxStyle = computed(() => getSlideBoxStyle(props.format));
 const backgroundSrc = computed(() =>
@@ -98,7 +104,7 @@ const backgroundImageStyle = computed(() => ({
 }));
 
 const sponsorLogos = computed(() => {
-  const sponsors = getRandomSponsors.value(3, props.slideTitle.subtitle);
+  const sponsors = getRandomSponsors.value(3, props.slideTitle.subtitle, props.id);
   return sponsors.map((sponsor) => ({
     src: `https://maximiliankleissl.github.io/wvv-posts-config/Sponsoren/${sponsor.filename}`,
     alt: sponsor.name,

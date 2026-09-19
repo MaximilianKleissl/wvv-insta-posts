@@ -1,12 +1,11 @@
 <template>
   <div
-    class='rounded-full flex items-center justify-center shrink-0 shadow-inner w-12 h-12',
-    :class="[
-      borderColor,
-      bgColor,
-    ]"
+    class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full shadow-inner"
+    :class="[borderColor, bgColor]"
   >
-    <span class="block leading-none text-xl font-black tracking-tight" :class="[textColor]"> VS </span>
+    <span class="block text-xl font-black leading-none tracking-tight" :class="[textColor]">
+      VS
+    </span>
   </div>
 </template>
 

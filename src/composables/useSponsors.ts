@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue';
 import type { Sponsor } from '@/lib/types';
+import { seededShuffle } from '@/lib/slide-utils';
 
 const SPONSORS_URL =
   'https://maximiliankleissl.github.io/wvv-posts-config/Sponsoren/sponsoren_overview.json';
@@ -30,16 +31,8 @@ export function useSponsors() {
 
   const getAllSponsors = computed(() => sponsors.value);
 
-  const getSponsorsForTeam = computed(() => {
-    return (teamName: string) => {
-      return sponsors.value.filter(
-        (sponsor) => sponsor.teams.includes(teamName) || sponsor.teams.includes(''),
-      );
-    };
-  });
-
   const getRandomSponsors = computed(() => {
-    return (count: number, teamName?: string) => {
+    return (count: number, teamName?: string, seed?: string) => {
       const availableSponsors =
         teamName && sponsors.value.some((sponsor) => sponsor.teams.includes(teamName))
           ? sponsors.value.filter(
@@ -49,7 +42,8 @@ export function useSponsors() {
 
       if (availableSponsors.length === 0) return [];
 
-      const shuffled = [...availableSponsors].sort(() => Math.random() - 0.5);
+      const shuffleSeed = seed ?? teamName ?? 'sponsors';
+      const shuffled = seededShuffle(availableSponsors, shuffleSeed);
       return shuffled.slice(0, Math.min(count, shuffled.length));
     };
   });
@@ -60,7 +54,6 @@ export function useSponsors() {
     error,
     loadSponsors,
     getAllSponsors,
-    getSponsorsForTeam,
     getRandomSponsors,
   };
 }
