@@ -4,6 +4,7 @@ import SlideOverview from '@/components/Slides/slide-overview.vue';
 import SlideMatchday from '@/components/Slides/slide-matchday.vue';
 import SlideTournament from '@/components/Slides/slide-tournament.vue';
 import { isTournamentMatchDay, parseGermanDate } from '@/lib/grouping';
+import { toPng } from 'html-to-image';
 
 import { sortedMatchDaysForWeekend } from '@/lib/grouping';
 import { buildWeekendCaption } from '@/lib/caption';
@@ -146,6 +147,30 @@ const previousSlide = () => {
 
   expandedSlide.value = slides.value[(idx - 1 + slides.value.length) % slides.value.length];
 };
+
+const downloadCurrentSlide = async () => {
+  if (!expandedSlide.value) return;
+
+  const slideId = expandedSlide.value.slideId;
+  const node = document.getElementById(slideId);
+  if (!node) return;
+
+  try {
+    const dataUrl = await toPng(node, {
+      pixelRatio: 2,
+      cacheBust: true,
+    });
+
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = `${slideId}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (error) {
+    console.error('Failed to download slide:', error);
+  }
+};
 </script>
 
 <template>
@@ -247,12 +272,40 @@ const previousSlide = () => {
     <div
       v-if="expandedSlide"
       class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+      @click="closeExpandedPreview"
     >
       <div
         class="relative max-h-[95vh] max-w-[95vw] overflow-auto rounded-3xl bg-white p-4 shadow-2xl"
+        @click.stop
       >
-        <div class="flex" @click.self="closeExpandedPreview">
-          <button class="bg-gray-50 hover:bg-gray-200 p-2" @click="previousSlide">‹</button>
+        <button
+          class="absolute top-2 right-2 z-10 bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg shadow-lg"
+          @click="closeExpandedPreview"
+        >
+          ×
+        </button>
+
+        <div class="flex flex-col pt-8">
+          <div class="flex justify-between items-center mb-4 gap-4">
+            <button
+              class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2"
+              @click="previousSlide"
+            >
+              ‹ Previous
+            </button>
+            <button
+              class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium shadow-md"
+              @click="downloadCurrentSlide"
+            >
+              Download Image
+            </button>
+            <button
+              class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2"
+              @click="nextSlide"
+            >
+              Next ›
+            </button>
+          </div>
 
           <div
             class="flex gap-1 overflow-hidden border border-gray-200 bg-white shadow-sm"
@@ -302,7 +355,6 @@ const previousSlide = () => {
               />
             </div>
           </div>
-          <button class="bg-gray-50 hover:bg-gray-200 p-2" @click="nextSlide">></button>
         </div>
       </div>
     </div>
