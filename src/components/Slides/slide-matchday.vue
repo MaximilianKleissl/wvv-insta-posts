@@ -1,120 +1,92 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { SeasonData, MatchDay } from '@/lib/types';
-import { sortMatches, isTournamentMatchDay } from '@/lib/grouping';
+import { sortMatches } from '@/lib/grouping';
 import { Clock } from 'lucide-vue-next';
 import SharedContainer from './sharedContainer.vue';
-import { useSlideDensity } from '@/composables/Slides/useDensity.ts';
-import VsBadge from '@/components/Slides/subComponents/VsBadge.vue';
 import Cell from '@/components/Slides/subComponents/Cell.vue';
-import TeamLogo from '@/components/Slides/subComponents/TeamLogo.vue';
+import MatchTeam from '@/components/Slides/subComponents/MatchTeam.vue';
+import MatchScore from '@/components/Slides/subComponents/MatchScore.vue';
+import MatchStoryCard from '@/components/Slides/subComponents/MatchStoryCard.vue';
+import { useSlideDensity } from '@/composables/Slides/useDensity.ts';
 import { useTeamHighlight } from '@/composables/useTeamHighlight';
 import { useTeamColors } from '@/composables/useTeamColors';
-import type { SlideTitle, MatchDayMetaData } from '@/lib/slide-types';
-import type { SlideFormatMode } from '@/lib/slide-format';
-
-interface SlideMatchdayProps {
-  id: string;
-  season: SeasonData;
-  matchDay: MatchDay;
-  format?: SlideFormatMode;
-}
+import type { SlideTitle, SlideMatchdayProps } from '@/lib/slide-types';
+import { getMatchDaySlideTitle, getMatchKey, getMatchDayItemCount } from '@/lib/slide-utils';
 
 const props = withDefaults(defineProps<SlideMatchdayProps>(), {
   format: 'square',
 });
 
-// Composables
 const { getTeamTextColor, isHomeClub } = useTeamHighlight(props.season, props.matchDay.team);
 const teamColors = useTeamColors(props.matchDay.team);
-const { styles } = useSlideDensity(
-  computed(() => {
-    const tournament = isTournamentMatchDay(props.matchDay);
-    const teams = props.matchDay.teams ?? [];
-    const matches = sortMatches(props.matchDay);
-    return tournament ? teams.length : matches.length;
-  }),
-);
+const { styles } = useSlideDensity(computed(() => getMatchDayItemCount(props.matchDay)));
 
-const matchdayStyles = computed(() =>
-  props.format === 'square'
-    ? {
-      ...styles.value,
-      cardPadding: 'p-4',
-      cardRadius: 'rounded-2xl',
-      logoSize: 'w-16 h-16',
-      textSize: 'text-xl',
-    }
-    : styles.value,
-);
+const matchdayStyles = computed(() => ({
+  ...styles.value,
+  cardPadding: 'p-4',
+  cardRadius: 'rounded-2xl',
+  logoSize: 'w-16 h-16',
+  textSize: 'text-xl',
+}));
 
-// Computed properties
 const matches = computed(() => sortMatches(props.matchDay));
 
 const slideTitle = computed<SlideTitle>(() => ({
-  subtitle: props.matchDay.team,
-  title: `${props.matchDay.home ? 'Heim' : 'Auswärts'}-Spieltag`,
-  label: props.matchDay.match_day_name ?? props.matchDay.date,
-}));
-
-const matchDayMeta = computed<MatchDayMetaData>(() => ({
-  date: props.matchDay.date,
-  location: props.matchDay.location,
+  ...getMatchDaySlideTitle(props.matchDay),
 }));
 </script>
 
 <template>
-  <SharedContainer :id="id" :styles="styles" :slide-title="slideTitle" :match-day="matchDayMeta" :format="format">
-    <Cell v-for="(m, idx) in matches" :key="idx" :styles="matchdayStyles"
-      :border-color="teamColors.getHomeBorderColor('60')" :compact="format === 'square'"
-      :class="format === 'stories' ? 'flex-1 min-h-0' : undefined">
+  <SharedContainer :id="id" :styles="styles" :slide-title="slideTitle" :format="format">
+    <div v-if="format === 'stories'" class="relative flex min-h-0 flex-1 flex-col gap-6">
+      <MatchStoryCard
+        v-for="m in matches"
+        :key="getMatchKey(m)"
+        :match="m"
+        :match-day="props.matchDay"
+        :season="season"
+      />
+    </div>
+
+    <Cell
+      v-for="m in matches"
+      v-else
+      :key="getMatchKey(m)"
+      :styles="matchdayStyles"
+      :border-color="teamColors.getHomeBorderColor('60')"
+      :tint-hex="teamColors.colorScheme.value.imageTint"
+      compact
+    >
       <template #left_part>
         <Clock :class="['w-6 h-6 mb-1 shrink-0', teamColors.getHomeIconColor()]" />
         <span :class="['text-3xl font-bold tracking-tighter', teamColors.getHomeIconColor()]">{{
           m.time
         }}</span>
-        <span :class="[
-          'text-xl font-bold text-muted uppercase tracking-wider mt-0.5',
-          teamColors.getHomeIconColor(),
-        ]">Uhr</span>
+        <span
+          :class="[
+            'text-xl font-bold text-muted uppercase tracking-wider mt-0.5',
+            teamColors.getHomeIconColor(),
+          ]"
+          >Uhr</span
+        >
       </template>
 
-      <div :class="[
-        'flex min-w-0 flex-1 items-center justify-between px-1',
-        format === 'stories' ? 'gap-4' : 'gap-1',
-      ]">
-        <div class="flex-1 flex flex-col items-center text-center gap-2 min-w-0">
-          <TeamLogo :team-name="m.home" :theme-team-name="isHomeClub(m.home) ? props.matchDay.team : undefined"
-            :size-class="styles.logoSize" />
-          <span class="font-black leading-tight wrap w-full" :class="[styles.textSize, getTeamTextColor(m.home)]">
-            {{ m.home }}
-          </span>
-        </div>
+      <div class="flex min-w-0 flex-1 items-center justify-between gap-1 px-1">
+        <MatchTeam
+          :team-name="m.home"
+          :theme-team-name="isHomeClub(m.home) ? props.matchDay.team : undefined"
+          :logo-size="styles.logoSize"
+          :text-class="[styles.textSize, getTeamTextColor(m.home)]"
+        />
 
-        <!-- Result -->
-        <div v-if="m.result" :class="[
-          'flex items-center gap-3 px-5 py-2 rounded-2xl shadow-lg',
-          teamColors.getResultBgColor(),
-        ]">
-          <span class="text-6xl font-black text-white leading-none">{{ m.result.home }}</span>
-          <span :class="['text-3xl font-black', teamColors.getAccentColor()]"> : </span>
-          <span class="text-6xl font-black text-white leading-none">{{ m.result.away }}</span>
-        </div>
+        <MatchScore :team-name="props.matchDay.team" :result="m.result" />
 
-        <VsBadge v-else :border-color="teamColors.getHomeBorderColor('20')" :bg-color="teamColors.getHomeBgColor()"
-          :text-color="teamColors.getHomeIconColor()" />
-
-        <div class="flex-1 flex flex-col items-center text-center gap-2 min-w-0">
-          <TeamLogo :team-name="m.away" :theme-team-name="isHomeClub(m.away) ? props.matchDay.team : undefined"
-            :size-class="styles.logoSize" />
-          <span :class="[
-            styles.textSize,
-            'font-black leading-tight wrap w-full',
-            getTeamTextColor(m.away),
-          ]">
-            {{ m.away }}
-          </span>
-        </div>
+        <MatchTeam
+          :team-name="m.away"
+          :theme-team-name="isHomeClub(m.away) ? props.matchDay.team : undefined"
+          :logo-size="styles.logoSize"
+          :text-class="[styles.textSize, getTeamTextColor(m.away)]"
+        />
       </div>
     </Cell>
   </SharedContainer>

@@ -1,11 +1,14 @@
 import { computed } from 'vue';
-import { getTeamColorScheme } from '@/lib/team-colors';
+import { getTeamColorScheme, hexToRgba } from '@/lib/team-colors';
 
 export function useTeamColors(teamName: string) {
   const colorScheme = computed(() => getTeamColorScheme(teamName));
 
   const getTeamTextColor = (teamNameToHighlight: string): string =>
     teamNameToHighlight === teamName ? colorScheme.value.primary : 'text-black';
+
+  /** rgba() background for hairline/divider lines (kept as an inline style so Tailwind JIT is irrelevant). */
+  const getHairlineColor = () => hexToRgba(colorScheme.value.imageTint, 0.2);
 
   const getHomeBorderColor = (opacity?: '20' | '60' | '95') => {
     if (opacity === '20') return colorScheme.value.borderOpacity20;
@@ -20,16 +23,15 @@ export function useTeamColors(teamName: string) {
   const getBadgeBgColor = () => colorScheme.value.badgeBg;
   const getAccentColor = () => colorScheme.value.accent;
   const getHighlightColor = () => colorScheme.value.highlightBg;
-  const getPrimaryTextColorWithOpacity = (opacity: string) =>
+  const getPrimaryTextColorWithOpacity = (opacity: '80') =>
     opacity === '80' ? colorScheme.value.primaryOpacity80 : colorScheme.value.primary;
   const getDateTextColor = () => colorScheme.value.dateText;
   const getResultBgColor = () => colorScheme.value.resultBg;
-  const getResultBgColorWithOpacity = (opacity: string) =>
-    opacity === '90' ? colorScheme.value.resultBgOpacity : colorScheme.value.resultBg;
 
   return {
     colorScheme,
     getTeamTextColor,
+    getHairlineColor,
     getHomeBorderColor,
     getHomeBgColor,
     getHomeIconColor,
@@ -40,6 +42,5 @@ export function useTeamColors(teamName: string) {
     getPrimaryTextColorWithOpacity,
     getDateTextColor,
     getResultBgColor,
-    getResultBgColorWithOpacity,
   };
 }

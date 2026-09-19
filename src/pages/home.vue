@@ -137,11 +137,19 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
 
 <template>
   <div class="min-h-screen bg-gray-50 p-6">
-    <PageHeader :exporting="exporting" :export-progress="progress" :weekend-count="weekendCount"
-      :match-day-count="matchDayCount" :match-count="matchCount" @export-all="handleExport">
+    <PageHeader
+      :exporting="exporting"
+      :export-progress="progress"
+      :weekend-count="weekendCount"
+      :match-day-count="matchDayCount"
+      :match-count="matchCount"
+      @export-all="handleExport"
+    >
       <template #extra-actions>
-        <button class="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 transition-colors"
-          @click="router.push('/team-mode')">
+        <button
+          class="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 transition-colors"
+          @click="router.push('/team-mode')"
+        >
           Team-Modus
         </button>
       </template>
@@ -149,7 +157,9 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
 
     <main class="max-w-4xl mx-auto space-y-8">
       <div v-if="loading" class="text-center py-12">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-800"></div>
+        <div
+          class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-800"
+        ></div>
         <p class="mt-4 text-gray-600">Lade Daten...</p>
       </div>
 
@@ -160,34 +170,71 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
       <div v-if="seasonData" class="space-y-4">
         <div class="flex items-center gap-2">
           <span class="text-sm font-medium text-gray-700">Format:</span>
-          <button v-for="mode in ['square', 'stories'] as const" :key="mode" type="button" :class="[
-            'rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
-            exportFormat === mode
-              ? 'border-green-800 bg-green-800 text-white'
-              : 'border-gray-300 bg-white text-gray-700 hover:border-green-700 hover:text-green-700',
-          ]" @click="exportFormat = mode">
+          <button
+            v-for="mode in ['square', 'stories'] as const"
+            :key="mode"
+            type="button"
+            :class="[
+              'rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
+              exportFormat === mode
+                ? 'border-green-800 bg-green-800 text-white'
+                : 'border-gray-300 bg-white text-gray-700 hover:border-green-700 hover:text-green-700',
+            ]"
+            @click="exportFormat = mode"
+          >
             {{ mode === 'square' ? 'Square' : 'Stories' }}
           </button>
         </div>
 
-        <PreviewGallery :season="season" :exporting="exporting" :format="exportFormat"
-          @export-weekend="handleExportSingleWeekend" />
+        <PreviewGallery
+          :season="season"
+          :exporting="exporting"
+          :format="exportFormat"
+          @export-weekend="handleExportSingleWeekend"
+        />
       </div>
     </main>
 
-    <div v-if="seasonData" style="position: absolute; left: -15000px; top: 0; width: 0; height: 0; overflow: hidden">
-      <div v-for="slide in exportSlides" :key="slide.slideId" :ref="registerSlideRef(slide.slideId)" class="absolute"
-        :style="getSlideBoxStyle(exportFormat)">
-        <SlideOverview v-if="slide.kind === 'overview'" :id="slide.slideId" :season="season"
-          :weekend-index="slide.weekendIndex" :format="exportFormat" />
-        <SlideTournament v-else-if="
-          isTournamentMatchDay(
-            season.weekends[slide.weekendIndex].matchDays[slide.matchDayOriginalIndex ?? 0],
-          )
-        " :id="slide.slideId" :season="season" :match-day="season.weekends[slide.weekendIndex].matchDays[slide.matchDayOriginalIndex ?? 0]
-            " :format="exportFormat" />
-        <SlideMatchday v-else :id="slide.slideId" :season="season" :match-day="season.weekends[slide.weekendIndex].matchDays[slide.matchDayOriginalIndex ?? 0]
-          " :format="exportFormat" />
+    <div
+      v-if="seasonData"
+      style="position: absolute; left: -15000px; top: 0; width: 0; height: 0; overflow: hidden"
+    >
+      <div
+        v-for="slide in exportSlides"
+        :key="slide.slideId"
+        :ref="registerSlideRef(slide.slideId)"
+        class="absolute"
+        :style="getSlideBoxStyle(exportFormat)"
+      >
+        <SlideOverview
+          v-if="slide.kind === 'overview'"
+          :id="slide.slideId"
+          :season="season"
+          :weekend-index="slide.weekendIndex"
+          :format="exportFormat"
+        />
+        <SlideTournament
+          v-else-if="
+            isTournamentMatchDay(
+              season.weekends[slide.weekendIndex].matchDays[slide.matchDayOriginalIndex ?? 0],
+            )
+          "
+          :id="slide.slideId"
+          :season="season"
+          :match-day="
+            season.weekends[slide.weekendIndex].matchDays[slide.matchDayOriginalIndex ?? 0]
+          "
+          :format="exportFormat"
+        />
+        <SlideMatchday
+          v-else
+          :id="slide.slideId"
+          :season="season"
+          :match-day="
+            season.weekends[slide.weekendIndex].matchDays[slide.matchDayOriginalIndex ?? 0]
+          "
+          :format="exportFormat"
+        />
       </div>
     </div>
   </div>

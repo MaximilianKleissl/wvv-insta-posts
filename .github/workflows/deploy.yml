@@ -28,6 +28,8 @@ jobs:
         run: npm install
 
       - name: Build
+        env:
+          VITE_CONFIG_BASE_URL: ${{ vars.VITE_CONFIG_BASE_URL || 'https://maximiliankleissl.github.io/wvv-posts-config' }}
         run: npm run build
 
       - name: Upload Pages artifact

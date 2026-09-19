@@ -1,25 +1,26 @@
 <template>
-  <div
-    :class="[
-      'rounded-full flex items-center justify-center shrink-0 shadow-inner w-12 h-12',
-      borderColor,
-      bgColor,
-    ]"
-  >
-    <span :class="['block leading-none text-xl font-black tracking-tight', textColor]"> VS </span>
+  <div class="flex shrink-0 flex-col items-center gap-2">
+    <div class="h-6 w-px" :style="{ backgroundColor: hairlineColor }" />
+    <div
+      class="flex h-11 shrink-0 items-center justify-center rounded-2xl px-2 shadow-md"
+      :class="[bgColor]"
+    >
+      <span class="block text-3xl font-black leading-none tracking-[0.12em] text-white">{{ badgeText }}</span>
+    </div>
+    <div class="h-6 w-px" :style="{ backgroundColor: hairlineColor }" />
   </div>
 </template>
 
 <script setup lang="ts">
 interface VsBadgeProps {
-  borderColor?: string;
   bgColor?: string;
-  textColor?: string;
+  hairlineColor?: string;
+  badgeText?: string;
 }
 
 withDefaults(defineProps<VsBadgeProps>(), {
-  borderColor: 'border-slate-800/20',
   bgColor: 'bg-slate-800/10',
-  textColor: 'text-slate-800',
+  hairlineColor: 'rgba(100, 116, 139, 0.25)',
+  badgeText: 'VS'
 });
 </script>

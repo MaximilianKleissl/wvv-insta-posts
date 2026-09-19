@@ -128,6 +128,11 @@ export function getTeamColorScheme(teamName: string): TeamColorScheme {
   return colorSchemes.find((scheme) => scheme.name === colorName) ?? colorSchemes[0];
 }
 
-export function getTeamColorWithOpacity(teamName: string, opacity: number): string {
-  return `${getTeamColorScheme(teamName).badgeBg}/${opacity}`;
+/** Converts a "#RRGGBB" color to an "rgba(r, g, b, a)" string for inline styles. */
+export function hexToRgba(hex: string, alpha: number): string {
+  const value = hex.replace('#', '');
+  const r = parseInt(value.slice(0, 2), 16);
+  const g = parseInt(value.slice(2, 4), 16);
+  const b = parseInt(value.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
