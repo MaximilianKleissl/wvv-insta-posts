@@ -42,7 +42,7 @@
     <div v-if="md.match_day_result" class="flex items-center justify-center shrink-0">
       <div
         :class="[
-          'relative flex flex-col items-center justify-center min-w-[92px] px-4 py-2 rounded-2xl shadow-lg overflow-hidden',
+          'relative flex flex-col items-center justify-center min-w-23 px-4 py-2 rounded-2xl shadow-lg overflow-hidden',
           teamColors.getResultBgColor(),
         ]"
       >

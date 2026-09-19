@@ -24,7 +24,7 @@
           teamColors.getPrimaryTextColorWithOpacity('80'),
         ]"
       >
-        Matchday
+         Matchday
       </span>
       <div class="h-px flex-1" :style="{ backgroundColor: hairlineColor }" />
     </div>
@@ -36,34 +36,12 @@
           :theme-team-name="homeThemeTeamName"
           size-class="h-24 w-24"
         />
-        <span class="max-w-[220px] text-xl font-black leading-[1.05] text-slate-900">
+        <span class="max-w-55 text-xl font-black leading-[1.05] text-slate-900">
           {{ match.home }}
         </span>
       </div>
 
-      <div v-if="match.result" class="flex w-24 shrink-0 flex-col items-center gap-2">
-        <div class="h-6 w-px" :style="{ backgroundColor: hairlineColor }" />
-        <div
-          :class="[
-            'flex items-center justify-center gap-2 rounded-full px-5 py-2 shadow-md',
-            teamColors.getResultBgColor(),
-          ]"
-        >
-          <span class="text-3xl font-black leading-none text-white">{{ match.result.home }}</span>
-          <span :class="['text-2xl font-black leading-none', teamColors.getAccentColor()]">
-            :
-          </span>
-          <span class="text-3xl font-black leading-none text-white">{{ match.result.away }}</span>
-        </div>
-        <div class="h-6 w-px" :style="{ backgroundColor: hairlineColor }" />
-      </div>
-      <VsBadge
-        v-else
-        :bg-color="teamColors.getBadgeBgColor()"
-        text-color="text-white"
-        :hairline-color="hairlineColor"
-        class="w-24"
-      />
+      <MatchScore :team-name="matchDay.team" :result="match.result" />
 
       <div class="flex min-w-0 flex-1 flex-col items-center justify-center gap-2 text-center">
         <TeamLogo
@@ -71,7 +49,7 @@
           :theme-team-name="awayThemeTeamName"
           size-class="h-24 w-24"
         />
-        <span class="max-w-[220px] text-xl font-black leading-[1.05] text-slate-900">
+        <span class="max-w-55 text-xl font-black leading-[1.05] text-slate-900">
           {{ match.away }}
         </span>
       </div>
@@ -98,7 +76,7 @@
 import { computed } from 'vue';
 import { Clock, Calendar } from 'lucide-vue-next';
 import TeamLogo from './TeamLogo.vue';
-import VsBadge from './VsBadge.vue';
+import MatchScore from './MatchScore.vue';
 import { hexToRgba } from '@/lib/team-colors';
 import type { Match, MatchDay, SeasonData } from '@/lib/types';
 import { useTeamHighlight } from '@/composables/useTeamHighlight';

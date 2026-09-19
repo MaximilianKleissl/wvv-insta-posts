@@ -69,7 +69,7 @@ const metaTextSize = computed(() => {
 const slideTitle = computed<SlideTitle>(() => ({
   subtitle: props.season.club,
   title: 'Spiel\nWochenende',
-  label: weekend.value.dateRange,
+  label: [weekend.value.dateRange],
 }));
 </script>
 

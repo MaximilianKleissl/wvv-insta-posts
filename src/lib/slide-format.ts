@@ -34,6 +34,7 @@ export interface SlideFormatClasses {
   headerPadding: string;
   titleSize: string;
   seasonClasses: string;
+  headerLabelFlexDirection: string;
 }
 
 const FORMAT_CLASSES: Record<SlideFormatMode, SlideFormatClasses> = {
@@ -43,10 +44,11 @@ const FORMAT_CLASSES: Record<SlideFormatMode, SlideFormatClasses> = {
     sponsorLabel: 'Der WVV bedankt sich bei seinen Sponsoren',
     sponsorGap: 'gap-8',
     sponsorLogoHeight: 'h-12',
-    headerHeight: 'h-[340px]',
+    headerHeight: 'h-[300px]',
     headerPadding: 'p-10',
     titleSize: 'text-[49px]',
     seasonClasses: 'px-6 py-2 text-xl',
+    headerLabelFlexDirection: 'flex-row',
   },
   stories: {
     mainGap: 'gap-4',
@@ -58,6 +60,7 @@ const FORMAT_CLASSES: Record<SlideFormatMode, SlideFormatClasses> = {
     headerPadding: 'p-14',
     titleSize: 'text-[80px]',
     seasonClasses: 'px-9 py-2 text-3xl',
+    headerLabelFlexDirection: 'flex-col',
   },
 };
 

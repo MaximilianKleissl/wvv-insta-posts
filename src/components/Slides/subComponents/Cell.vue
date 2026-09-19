@@ -7,7 +7,7 @@
     <div
       class="flex shrink-0 flex-col items-center justify-center border-r"
       :class="[
-        compact ? 'min-w-[96px] px-2' : 'min-w-[130px] px-4',
+        compact ? 'min-w-24 px-2' : 'min-w-32.5 px-4',
         borderColor ?? 'border-border/40',
       ]"
     >

@@ -96,7 +96,7 @@ const opponentLogoSize = computed(() => {
 const slideTitle = computed<SlideTitle>(() => ({
   subtitle: props.teamName,
   title: isHomeSlide.value ? 'Heimspiele' : 'Auswärtsspiele',
-  label: props.season.season,
+  label: [props.season.season],
 }));
 </script>
 

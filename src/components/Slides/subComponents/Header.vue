@@ -3,7 +3,7 @@
     <div class="absolute inset-y-0 right-0 w-[72%] opacity-95" :style="actionImageStyle" />
     <div class="absolute inset-0" :style="gradientStyle" />
     <div :class="contentClasses">
-      <div class="max-w-[640px] pt-2">
+      <div class="max-w-160 pt-2">
         <div class="mt-5 mb-5 flex items-center gap-4">
           <span class="h-px w-16 bg-white/80" />
           <p class="text-xl font-semibold uppercase tracking-[0.38em] text-white/85">
@@ -14,8 +14,15 @@
           {{ slideTitle.title }}
         </h1>
       </div>
-      <div :class="seasonClasses" :style="seasonStyle">
-        {{ slideTitle.label }}
+      <div class="flex flex-col items-start gap-2" :class="formatClasses.headerLabelFlexDirection">
+        <div
+          v-for="label in slideTitle.label"
+          :key="label"
+          :class="seasonClasses"
+          :style="seasonStyle"
+        >
+          {{ label }}
+        </div>
       </div>
     </div>
   </div>
@@ -49,7 +56,7 @@ const actionImage = computed(() => {
   const images = getActionImagesForTeam(props.slideTitle.subtitle);
   if (images.length === 0) return '';
 
-  const index = hashString(props.slideTitle.label) % images.length;
+  const index = hashString(props.slideTitle.label.join(' ')) % images.length;
   return `${CONFIG_BASE_URL}/Action_Images/${images[index]}`;
 });
 

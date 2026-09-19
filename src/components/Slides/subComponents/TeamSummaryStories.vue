@@ -40,7 +40,7 @@
             :theme-team-name="fixture.matchDay.home ? teamName : undefined"
             size-class="h-24 w-24"
           />
-          <span class="max-w-[220px] text-xl font-black leading-[1.05] text-slate-900">
+          <span class="max-w-55 text-xl font-black leading-[1.05] text-slate-900">
             {{ fixture.matchDay.home ? teamName : fixture.opponents.join(' / ') }}
           </span>
         </div>
@@ -64,7 +64,7 @@
               size-class="h-24 w-24"
             />
           </div>
-          <span class="max-w-[220px] text-lg font-black leading-[1.05] text-slate-900">
+          <span class="max-w-55 text-lg font-black leading-[1.05] text-slate-900">
             {{ fixture.matchDay.home ? fixture.opponents.join(' / ') : teamName }}
           </span>
         </div>

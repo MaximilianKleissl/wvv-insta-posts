@@ -27,7 +27,7 @@
       />
       <div
         v-if="format === 'stories'"
-        class="absolute -bottom-24 -left-24 h-72 w-[720px] rotate-[-9deg]"
+        class="absolute -bottom-24 -left-24 h-72 w-180 rotate-[-9deg]"
         :style="{
           backgroundColor: storyTint(0.15),
           clipPath:
@@ -41,7 +41,7 @@
       />
       <div
         v-if="format === 'stories'"
-        class="absolute -bottom-44 -right-36 h-[520px] w-[520px] rounded-full opacity-80"
+        class="absolute -bottom-44 -right-36 h-130 w-130 rounded-full opacity-80"
         :style="{
           border: `18px solid ${storyTint(0.1)}`,
           background: `radial-gradient(circle at 34% 28%, transparent 0 34%, ${storyTint(0.06)} 35% 36%, transparent 37%), linear-gradient(28deg, transparent 46%, ${storyTint(0.12)} 47% 49%, transparent 50%), linear-gradient(-32deg, transparent 49%, ${storyTint(0.1)} 50% 52%, transparent 53%)`,

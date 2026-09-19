@@ -2,10 +2,10 @@
   <div class="flex shrink-0 flex-col items-center gap-2">
     <div class="h-6 w-px" :style="{ backgroundColor: hairlineColor }" />
     <div
-      class="flex h-11 shrink-0 items-center justify-center rounded-2xl px-2 shadow-md"
+      class="flex shrink-0 items-center justify-center rounded-2xl px-4 py-3 shadow-md"
       :class="[bgColor]"
     >
-      <span class="block text-3xl font-black leading-none tracking-[0.12em] text-white">{{ badgeText }}</span>
+      <span class="block text-5xl font-black leading-none tracking-[0.12em] text-white">{{ badgeText }}</span>
     </div>
     <div class="h-6 w-px" :style="{ backgroundColor: hairlineColor }" />
   </div>

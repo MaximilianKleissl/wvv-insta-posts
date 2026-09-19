@@ -9,7 +9,7 @@ import type { SlideFormatMode } from '@/lib/slide-format';
 export interface SlideTitle {
   subtitle: string;
   title: string;
-  label: string;
+  label: string[];
 }
 
 export interface MatchDayMetaData {
