@@ -59,7 +59,7 @@ const cellClass = computed(() => pickFormatClass(props.format, undefined, 'min-h
           />
         </template>
         <span
-          class="font-extrabold leading-snug truncate"
+          class="font-extrabold leading-snug wrap-break-word"
           :class="[styles.textSize, getTeamTextColor(team)]"
         >
           {{ team }}

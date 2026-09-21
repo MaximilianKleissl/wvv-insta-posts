@@ -6,19 +6,18 @@
     ]"
     :style="storyCardStyle"
   >
-    <div
+    <!-- <div
       :class="[
         'absolute -left-3 -top-4 flex items-center gap-2 rounded-full px-5 py-2 text-sm font-black uppercase tracking-[0.16em] text-white shadow-lg',
         teamColors.getBadgeBgColor(),
       ]"
     >
-      <Clock :size="17" :stroke-width="2.5" />
-      <span>{{ match.time }} Uhr</span>
-    </div>
+      Pflichtsieg
+    </div> -->
 
     <div class="flex items-center justify-center gap-3 pt-2">
       <div class="h-px flex-1" :style="{ backgroundColor: hairlineColor }" />
-      <span
+      <!-- <span
         :class="[
           'text-sm font-bold uppercase tracking-[0.28em]',
           teamColors.getPrimaryTextColorWithOpacity('80'),
@@ -26,7 +25,7 @@
       >
          Matchday
       </span>
-      <div class="h-px flex-1" :style="{ backgroundColor: hairlineColor }" />
+      <div class="h-px flex-1" :style="{ backgroundColor: hairlineColor }" /> -->
     </div>
 
     <div class="mt-3 flex min-h-0 flex-1 items-center justify-between gap-3">
@@ -64,8 +63,8 @@
           teamColors.getHomeIconColor(),
         ]"
       >
-        <Calendar :size="20" />
-        <span>{{ matchDay.date }}</span>
+        <Clock :size="20" />
+        <span>{{ match.time }} Uhr</span>
       </div>
       <div class="h-px flex-1" :style="{ backgroundColor: hairlineColor }" />
     </div>

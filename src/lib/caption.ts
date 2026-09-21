@@ -4,7 +4,7 @@ import { germanWeekdayName } from './grouping';
 export function buildWeekendCaption(season: SeasonData, weekendIndex: number): string {
   const weekend = season.weekends[weekendIndex];
   const intro =
-    '🏐 Endlich ist wieder Spielwochenende! Unsere Teams sind bereit, alles auf dem Feld zu geben. Kommt vorbei oder drückt auswärts die Daumen!';
+    '🏐 Endlich ist wieder Volleyballwochenende! Unsere Teams sind bereit, alles auf dem Feld zu geben. Kommt vorbei oder drückt auswärts die Daumen!';
 
   const entries = weekend.matchDays.map((md) => {
     const icon = md.home ? '🏠' : '🚗';
@@ -12,7 +12,7 @@ export function buildWeekendCaption(season: SeasonData, weekendIndex: number): s
   });
 
   return [
-    `🏐 Spielwochenende ${weekend.dateRange}`,
+    `🏐 Volleyballwochenende ${weekend.dateRange}`,
     '',
     intro,
     '',
@@ -21,8 +21,8 @@ export function buildWeekendCaption(season: SeasonData, weekendIndex: number): s
     'Seid dabei, feuert unsere Mannschaften an!',
     '',
     `#${slugifyHashtag(season.club)}`,
+    '#wvv1990',
     '#Volleyball',
-    '#Spielwochenende',
   ].join('\n');
 }
 

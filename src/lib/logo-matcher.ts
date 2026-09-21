@@ -4,5 +4,6 @@ export function normalizeTeamName(name: string): string {
     .replace('/', '')
     .replace(/\s+(?!VV$)[IVX]+$/i, '')
     .normalize('NFD')
+    .replace(/ \(.*\)/, '')
     .replace(/[\u0300-\u036f]/g, ''); // Remove diacritical marks
 }

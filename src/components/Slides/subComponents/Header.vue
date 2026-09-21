@@ -4,7 +4,7 @@
     <div class="absolute inset-0" :style="gradientStyle" />
     <div :class="contentClasses">
       <div class="max-w-160 pt-2">
-        <div class="mt-5 mb-5 flex items-center gap-4">
+        <div class="mt-10 mb-5 flex items-center gap-4">
           <span class="h-px w-16 bg-white/80" />
           <p class="text-xl font-semibold uppercase tracking-[0.38em] text-white/85">
             {{ slideTitle.subtitle }}
