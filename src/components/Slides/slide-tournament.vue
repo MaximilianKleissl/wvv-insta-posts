@@ -12,7 +12,7 @@ import { pickFormatClass } from '@/lib/slide-format';
 import { getMatchDaySlideTitle, getMatchDayItemCount } from '@/lib/slide-utils';
 
 const props = withDefaults(defineProps<SlideMatchdayProps>(), {
-  format: 'square',
+  format: 'portrait_4by5',
 });
 
 // Composables
@@ -27,10 +27,18 @@ const slideTitle = computed<SlideTitle>(() => ({
   ...getMatchDaySlideTitle(props.matchDay),
 }));
 
-const gridClass = computed(() =>
-  pickFormatClass(props.format, 'grid-cols-2', 'grid-cols-1 auto-rows-fr'),
-);
-const cellClass = computed(() => pickFormatClass(props.format, undefined, 'min-h-0'));
+const gridClass = computed(() => {
+  if (props.format === 'square') {
+    return 'grid-cols-2';
+  }
+  return 'grid-cols-1 auto-rows-fr';
+});
+const cellClass = computed(() => {
+  if (props.format === 'square') {
+    return undefined;
+  }
+  return 'min-h-0';
+});
 </script>
 
 <template>

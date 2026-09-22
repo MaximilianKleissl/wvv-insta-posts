@@ -1,24 +1,26 @@
 <template>
   <div class="relative z-10 flex min-h-0 flex-1 flex-col justify-between gap-6">
-    <article
+    <Cell
       v-for="fixture in fixtures"
       :key="fixture.matchDay.date"
-      :class="[
-        'relative flex min-h-0 flex-1 flex-col justify-center overflow-visible rounded-[28px] border-2 bg-white/80 px-8 py-5 backdrop-blur-[3px]',
-        teamColors.getHomeBorderColor('60'),
+      :styles="storyCardStyles"
+      :border-color="teamColors.getHomeBorderColor('60')"
+      :tint-hex="teamColors.colorScheme.value.imageTint"
+      layout="vertical"
+      :show-left-panel="false"
+      background-class="bg-white/80 backdrop-blur-[3px]"
+      custom-class="border-2 overflow-visible justify-center"
+      :show-badge="true"
+      :badge-class="[
+        'absolute -left-3 -top-4 flex items-center gap-2 rounded-full px-5 py-2 text-sm font-black uppercase tracking-[0.16em] text-white shadow-lg',
+        teamColors.getBadgeBgColor(),
       ]"
-      :style="storyCardStyle"
     >
-      <div
-        :class="[
-          'absolute -left-3 -top-4 flex items-center gap-2 rounded-full px-5 py-2 text-sm font-black uppercase tracking-[0.16em] text-white shadow-lg',
-          teamColors.getBadgeBgColor(),
-        ]"
-      >
+      <template #badge>
         <Home v-if="fixture.matchDay.home" :size="17" :stroke-width="2.5" />
         <Car v-else :size="17" :stroke-width="2.5" />
         <span>{{ fixture.matchDay.home ? 'Heimspiel' : 'Auswärtsspiel' }}</span>
-      </div>
+      </template>
 
       <div class="flex items-center justify-center gap-3 pt-2">
         <div class="h-px flex-1" :style="{ backgroundColor: hairlineColor }" />
@@ -84,7 +86,7 @@
         </div>
         <div class="h-px flex-1" :style="{ backgroundColor: hairlineColor }" />
       </div>
-    </article>
+    </Cell>
   </div>
 </template>
 
@@ -93,9 +95,10 @@ import { computed } from 'vue';
 import { Home, Car, Calendar } from 'lucide-vue-next';
 import TeamLogo from './TeamLogo.vue';
 import VsBadge from './VsBadge.vue';
-import { hexToRgba } from '@/lib/team-colors';
+import Cell from './Cell.vue';
 import { useTeamColors } from '@/composables/useTeamColors';
 import type { MatchDayFixture } from '@/lib/slide-types';
+import type { SlideStyles } from '@/composables/Slides/useDensity.ts';
 
 const props = defineProps<{
   fixtures: MatchDayFixture[];
@@ -105,7 +108,12 @@ const props = defineProps<{
 
 const teamColors = useTeamColors(props.teamName);
 const hairlineColor = computed(() => teamColors.getHairlineColor());
-const storyCardStyle = computed(() => ({
-  boxShadow: `0 18px 40px ${hexToRgba(teamColors.colorScheme.value.imageTint, 0.12)}`,
+
+const storyCardStyles = computed<SlideStyles>(() => ({
+  density: 'normal',
+  cardPadding: 'px-8 py-5',
+  cardRadius: 'rounded-[28px]',
+  logoSize: 'h-24 w-24',
+  textSize: 'text-4xl',
 }));
 </script>

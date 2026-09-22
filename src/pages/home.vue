@@ -29,7 +29,7 @@ const { loadSponsors } = useSponsors();
 
 const exporting = ref(false);
 const progress = ref<ExportProgress | null>(null);
-const exportFormat = ref<SlideFormatMode>('square');
+const exportFormat = ref<SlideFormatMode>('portrait_4by5');
 
 const slideNodes = ref<Map<string, HTMLElement>>(new Map());
 
@@ -171,7 +171,7 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
         <div class="flex items-center gap-2">
           <span class="text-sm font-medium text-gray-700">Format:</span>
           <button
-            v-for="mode in ['square', 'stories'] as const"
+            v-for="mode in ['square', 'portrait_4by5', 'stories'] as const"
             :key="mode"
             type="button"
             :class="[
@@ -182,7 +182,7 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
             ]"
             @click="exportFormat = mode"
           >
-            {{ mode === 'square' ? 'Square' : 'Stories' }}
+            {{ mode === 'square' ? 'Square' : mode === 'portrait_4by5' ? 'Portrait 4:5' : 'Stories' }}
           </button>
         </div>
 

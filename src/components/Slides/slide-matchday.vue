@@ -14,7 +14,7 @@ import type { SlideTitle, SlideMatchdayProps } from '@/lib/slide-types';
 import { getMatchDaySlideTitle, getMatchKey, getMatchDayItemCount } from '@/lib/slide-utils';
 
 const props = withDefaults(defineProps<SlideMatchdayProps>(), {
-  format: 'square',
+  format: 'portrait_4by5',
 });
 
 const { getTeamTextColor, isHomeClub } = useTeamHighlight(props.season, props.matchDay.team);
@@ -38,7 +38,7 @@ const slideTitle = computed<SlideTitle>(() => ({
 
 <template>
   <SharedContainer :id="id" :styles="styles" :slide-title="slideTitle" :format="format">
-    <div v-if="format === 'stories'" class="relative flex min-h-0 flex-1 flex-col gap-6">
+    <div v-if="format === 'stories' || format === 'portrait_4by5'" class="relative flex min-h-0 flex-1 flex-col gap-6">
       <MatchStoryCard
         v-for="m in matches"
         :key="getMatchKey(m)"

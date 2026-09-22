@@ -1,4 +1,4 @@
-export type SlideFormatMode = 'square' | 'stories';
+export type SlideFormatMode = 'square' | 'portrait_4by5' | 'stories';
 
 export interface SlideFormatConfig {
   width: number;
@@ -11,6 +11,11 @@ export const SLIDE_FORMATS: Record<SlideFormatMode, SlideFormatConfig> = {
     width: 1080,
     height: 1080,
     label: 'Square',
+  },
+  portrait_4by5: {
+    width: 1080,
+    height: 1350,
+    label: 'Portrait 4:5',
   },
   stories: {
     width: 1080,
@@ -48,6 +53,17 @@ const FORMAT_CLASSES: Record<SlideFormatMode, SlideFormatClasses> = {
     seasonClasses: 'px-6 py-2 text-2xl',
     headerLabelFlexDirection: 'flex-row',
   },
+  portrait_4by5: {
+    mainGap: 'gap-4',
+    footerGap: 'gap-3',
+    sponsorLabel: 'Partner, Unterstützer und Förderer',
+    sponsorGap: 'gap-12',
+    sponsorLogoHeight: 'h-16',
+    headerHeight: 'h-[350px]',
+    headerPadding: 'p-14',
+    seasonClasses: 'px-9 py-2 text-3xl',
+    headerLabelFlexDirection: 'flex-row',
+  },
   stories: {
     mainGap: 'gap-4',
     footerGap: 'gap-3',
@@ -69,9 +85,9 @@ export function getFormatClasses(mode: SlideFormatMode): SlideFormatClasses {
 export function pickFormatClass(
   format: SlideFormatMode,
   square: string | undefined,
-  stories: string,
+  portraitStories: string,
 ): string | undefined {
-  return format === 'stories' ? stories : square;
+  return format === 'square' ? square : portraitStories;
 }
 
 export function getSlideDimensions(mode: SlideFormatMode = 'square'): SlideFormatConfig {

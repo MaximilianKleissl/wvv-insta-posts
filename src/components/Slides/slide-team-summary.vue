@@ -21,7 +21,7 @@ interface SlideTeamSummaryProps {
 }
 
 const props = withDefaults(defineProps<SlideTeamSummaryProps>(), {
-  format: 'square',
+  format: 'portrait_4by5',
 });
 
 const { clubName } = useHeader();
@@ -103,7 +103,7 @@ const slideTitle = computed<SlideTitle>(() => ({
 <template>
   <SharedContainer :id="id" :styles="summaryStyles" :slide-title="slideTitle" :format="format">
     <TeamSummaryStories
-      v-if="format === 'stories'"
+      v-if="format === 'stories' || format === 'portrait_4by5'"
       :fixtures="fixtures"
       :team-name="teamName"
       :club-name="clubName"

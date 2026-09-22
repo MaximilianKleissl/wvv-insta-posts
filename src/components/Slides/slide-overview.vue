@@ -17,7 +17,7 @@ interface SlideOverviewProps {
 }
 
 const props = withDefaults(defineProps<SlideOverviewProps>(), {
-  format: 'square',
+  format: 'portrait_4by5',
 });
 
 const weekend = computed(() => props.season.weekends[props.weekendIndex]);
@@ -32,7 +32,7 @@ const overviewStyles = computed(() => ({
 
 // Dynamic grid allocation based on match count to balance empty spaces
 const containerGridClass = computed(() => {
-  if (props.format === 'stories') {
+  if (props.format === 'stories' || props.format === 'portrait_4by5') {
     return 'grid min-h-0 flex-1 grid-cols-1 auto-rows-fr gap-4 w-full';
   }
 
@@ -43,7 +43,7 @@ const containerGridClass = computed(() => {
 });
 
 const teamTextSize = computed(() => {
-  if (props.format === 'stories') {
+  if (props.format === 'stories' || props.format === 'portrait_4by5') {
     switch (density.value) {
       case 'tight':
         return 'text-xl';
@@ -58,6 +58,10 @@ const teamTextSize = computed(() => {
 });
 
 const metaTextSize = computed(() => {
+  if (props.format === 'stories' || props.format === 'portrait_4by5') {
+    return 'text-base';
+  }
+  
   switch (density.value) {
     case 'tight':
       return 'text-base md:text-lg';
