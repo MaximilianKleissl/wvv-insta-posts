@@ -4,12 +4,9 @@ import type { SeasonData, MatchDay } from '@/lib/types';
 import { isTournamentMatchDay } from '@/lib/grouping';
 import SharedContainer from './sharedContainer.vue';
 import TeamSummaryStories from './subComponents/TeamSummaryStories.vue';
-import TeamSummaryGrid from './subComponents/TeamSummaryGrid.vue';
-import { useSlideDensity } from '@/composables/Slides/useDensity.ts';
 import { useTeamHighlight } from '@/composables/useTeamHighlight';
 import { useHeader } from '@/composables/useHeader';
 import type { SlideTitle, MatchDayFixture } from '@/lib/slide-types';
-import type { SlideFormatMode } from '@/lib/slide-format';
 
 interface SlideTeamSummaryProps {
   id: string;
@@ -103,19 +100,9 @@ const slideTitle = computed<SlideTitle>(() => ({
 <template>
   <SharedContainer :id="id" :styles="summaryStyles" :slide-title="slideTitle" :format="format">
     <TeamSummaryStories
-      v-if="format === 'stories' || format === 'portrait_4by5'"
       :fixtures="fixtures"
       :team-name="teamName"
       :club-name="clubName"
-    />
-    <TeamSummaryGrid
-      v-else
-      :fixtures="fixtures"
-      :season="season"
-      :team-name="teamName"
-      :styles="summaryStyles"
-      :is-dense="isDenseSummary"
-      :opponent-logo-size="opponentLogoSize"
     />
   </SharedContainer>
 </template>

@@ -8,7 +8,6 @@ import TeamLogo from '@/components/Slides/subComponents/TeamLogo.vue';
 import { useTeamHighlight } from '@/composables/useTeamHighlight';
 import { useTeamColors } from '@/composables/useTeamColors';
 import type { SlideTitle, SlideMatchdayProps } from '@/lib/slide-types';
-import { pickFormatClass } from '@/lib/slide-format';
 import { getMatchDaySlideTitle, getMatchDayItemCount } from '@/lib/slide-utils';
 
 const props = withDefaults(defineProps<SlideMatchdayProps>(), {
@@ -27,18 +26,8 @@ const slideTitle = computed<SlideTitle>(() => ({
   ...getMatchDaySlideTitle(props.matchDay),
 }));
 
-const gridClass = computed(() => {
-  if (props.format === 'square') {
-    return 'grid-cols-2';
-  }
-  return 'grid-cols-1 auto-rows-fr';
-});
-const cellClass = computed(() => {
-  if (props.format === 'square') {
-    return undefined;
-  }
-  return 'min-h-0';
-});
+const gridClass = computed(() => 'grid-cols-1 auto-rows-fr');
+const cellClass = computed(() => 'min-h-0');
 </script>
 
 <template>

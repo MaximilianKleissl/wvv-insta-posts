@@ -27,7 +27,7 @@ const props = withDefaults(
     format?: SlideFormatMode;
   }>(),
   {
-    format: 'square',
+    format: 'portrait_4by5',
   },
 );
 
@@ -201,7 +201,7 @@ const downloadCurrentSlide = async () => {
     </div>
 
     <div v-if="selectedWeekend" class="space-y-4">
-      <div class="flex flex-wrap gap-4">
+      <div class="grid grid-cols-3 gap-4">
         <div
           v-for="slide in slides"
           :key="slide.slideId"

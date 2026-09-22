@@ -43,7 +43,7 @@ const props = withDefaults(
     slideTitle: SlideTitle;
     format?: SlideFormatMode;
   }>(),
-  { format: 'square' },
+  { format: 'portrait_4by5' },
 );
 const teamColors = useTeamColors(props.slideTitle.subtitle);
 const { loadActionImages, getActionImagesForTeam } = useActionImages();

@@ -89,7 +89,7 @@ const props = withDefaults(
     format?: SlideFormatMode;
   }>(),
   {
-    format: 'square',
+    format: 'portrait_4by5',
   },
 );
 

@@ -1,4 +1,4 @@
-export type SlideFormatMode = 'square' | 'portrait_4by5' | 'stories';
+export type SlideFormatMode = 'portrait_4by5' | 'stories';
 
 export interface SlideFormatConfig {
   width: number;
@@ -7,11 +7,6 @@ export interface SlideFormatConfig {
 }
 
 export const SLIDE_FORMATS: Record<SlideFormatMode, SlideFormatConfig> = {
-  square: {
-    width: 1080,
-    height: 1080,
-    label: 'Square',
-  },
   portrait_4by5: {
     width: 1080,
     height: 1350,
@@ -42,17 +37,6 @@ export interface SlideFormatClasses {
 }
 
 const FORMAT_CLASSES: Record<SlideFormatMode, SlideFormatClasses> = {
-  square: {
-    mainGap: 'gap-5',
-    footerGap: 'gap-3',
-    sponsorLabel: 'Der WVV bedankt sich bei seinen Sponsoren',
-    sponsorGap: 'gap-8',
-    sponsorLogoHeight: 'h-12',
-    headerHeight: 'h-[300px]',
-    headerPadding: 'p-10',
-    seasonClasses: 'px-6 py-2 text-2xl',
-    headerLabelFlexDirection: 'flex-row',
-  },
   portrait_4by5: {
     mainGap: 'gap-4',
     footerGap: 'gap-3',
@@ -84,17 +68,17 @@ export function getFormatClasses(mode: SlideFormatMode): SlideFormatClasses {
 /** Returns the classes for a given format without cluttering templates with ternaries. */
 export function pickFormatClass(
   format: SlideFormatMode,
-  square: string | undefined,
-  portraitStories: string,
+  portrait: string | undefined,
+  stories: string,
 ): string | undefined {
-  return format === 'square' ? square : portraitStories;
+  return format === 'stories' ? stories : portrait;
 }
 
-export function getSlideDimensions(mode: SlideFormatMode = 'square'): SlideFormatConfig {
+export function getSlideDimensions(mode: SlideFormatMode = 'portrait_4by5'): SlideFormatConfig {
   return SLIDE_FORMATS[mode];
 }
 
-export function getSlideBoxStyle(mode: SlideFormatMode = 'square') {
+export function getSlideBoxStyle(mode: SlideFormatMode = 'portrait_4by5') {
   const { width, height } = getSlideDimensions(mode);
   return {
     width: `${width}px`,
@@ -102,13 +86,13 @@ export function getSlideBoxStyle(mode: SlideFormatMode = 'square') {
   } as const;
 }
 
-export function getSlideScale(mode: SlideFormatMode = 'square', maxWidth = 216, maxHeight = 216) {
+export function getSlideScale(mode: SlideFormatMode = 'portrait_4by5', maxWidth = 216, maxHeight = 216) {
   const { width, height } = getSlideDimensions(mode);
   return Math.min(maxWidth / width, maxHeight / height);
 }
 
 export function getSlidePreviewStyle(
-  mode: SlideFormatMode = 'square',
+  mode: SlideFormatMode = 'portrait_4by5',
   maxWidth = 216,
   maxHeight = 216,
 ) {

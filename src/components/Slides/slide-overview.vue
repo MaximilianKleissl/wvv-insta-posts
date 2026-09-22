@@ -32,42 +32,22 @@ const overviewStyles = computed(() => ({
 
 // Dynamic grid allocation based on match count to balance empty spaces
 const containerGridClass = computed(() => {
-  if (props.format === 'stories' || props.format === 'portrait_4by5') {
-    return 'grid min-h-0 flex-1 grid-cols-1 auto-rows-fr gap-4 w-full';
-  }
-
-  if (matchDays.value.length <= 2 || matchDays.value.length >= 5) {
-    return 'grid grid-cols-1 md:grid-cols-2 gap-6 items-center w-full my-auto';
-  }
-  return 'flex flex-col gap-4 w-full';
+  return 'grid min-h-0 flex-1 grid-cols-1 auto-rows-fr gap-4 w-full';
 });
 
 const teamTextSize = computed(() => {
-  if (props.format === 'stories' || props.format === 'portrait_4by5') {
-    switch (density.value) {
-      case 'tight':
-        return 'text-xl';
-      case 'compact':
-        return 'text-2xl';
-      default:
-        return 'text-3xl';
-    }
+  switch (density.value) {
+    case 'tight':
+      return 'text-xl';
+    case 'compact':
+      return 'text-2xl';
+    default:
+      return 'text-3xl';
   }
-
-  return 'text-2xl md:text-3xl';
 });
 
 const metaTextSize = computed(() => {
-  if (props.format === 'stories' || props.format === 'portrait_4by5') {
-    return 'text-base';
-  }
-  
-  switch (density.value) {
-    case 'tight':
-      return 'text-base md:text-lg';
-    default:
-      return 'text-lg md:text-xl';
-  }
+  return 'text-base';
 });
 
 const slideTitle = computed<SlideTitle>(() => ({
@@ -85,7 +65,7 @@ const slideTitle = computed<SlideTitle>(() => ({
         :key="getMatchDayKey(md)"
         :md="md"
         :styles="overviewStyles"
-        :compact="format === 'square'"
+        :compact="false"
         :format="format"
         :theme-team-name="season.club"
         :team-text-size="teamTextSize"

@@ -158,7 +158,7 @@ const teamPreviewScale = computed(() =>
         <div class="flex items-center gap-2">
           <span class="text-sm font-medium text-gray-700">Format:</span>
           <button
-            v-for="mode in ['square', 'portrait_4by5', 'stories'] as const"
+            v-for="mode in ['portrait_4by5', 'stories'] as const"
             :key="mode"
             type="button"
             :class="[
@@ -169,7 +169,7 @@ const teamPreviewScale = computed(() =>
             ]"
             @click="exportFormat = mode"
           >
-            {{ mode === 'square' ? 'Square' : mode === 'portrait_4by5' ? 'Portrait 4:5' : 'Stories' }}
+            {{ mode === 'portrait_4by5' ? 'Portrait 4:5' : 'Stories' }}
           </button>
         </div>
 
