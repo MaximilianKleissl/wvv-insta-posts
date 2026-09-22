@@ -3,15 +3,20 @@ import { computed } from 'vue';
 import { sortMatches } from '@/lib/grouping';
 import SharedContainer from './sharedContainer.vue';
 import MatchStoryCard from '@/components/Slides/subComponents/MatchStoryCard.vue';
-import { useSlideDensity } from '@/composables/Slides/useDensity.ts';
 import type { SlideTitle, SlideMatchdayProps } from '@/lib/slide-types';
-import { getMatchDaySlideTitle, getMatchKey, getMatchDayItemCount } from '@/lib/slide-utils';
+import { getMatchDaySlideTitle, getMatchKey } from '@/lib/slide-utils';
 
 const props = withDefaults(defineProps<SlideMatchdayProps>(), {
   format: 'portrait_4by5',
 });
 
-const { styles } = useSlideDensity(computed(() => getMatchDayItemCount(props.matchDay)));
+const styles = computed(() => ({
+  density: 'normal' as const,
+  cardPadding: 'p-8',
+  cardRadius: 'rounded-3xl',
+  logoSize: 'w-32 h-32',
+  textSize: 'text-4xl',
+}));
 
 const matches = computed(() => sortMatches(props.matchDay));
 

@@ -4,7 +4,6 @@ import type { SeasonData } from '@/lib/types';
 import { sortedMatchDaysForWeekend } from '@/lib/grouping';
 import SharedContainer from './sharedContainer.vue';
 import OverviewMatchDayCard from './subComponents/OverviewMatchDayCard.vue';
-import { useSlideDensity } from '@/composables/Slides/useDensity.ts';
 import type { SlideTitle } from '@/lib/slide-types';
 import type { SlideFormatMode } from '@/lib/slide-format';
 import { getMatchDayKey } from '@/lib/slide-utils';
@@ -23,11 +22,20 @@ const props = withDefaults(defineProps<SlideOverviewProps>(), {
 const weekend = computed(() => props.season.weekends[props.weekendIndex]);
 const matchDays = computed(() => sortedMatchDaysForWeekend(weekend.value));
 
-const { density, styles } = useSlideDensity(computed(() => matchDays.value.length));
+const styles = computed(() => ({
+  density: 'normal' as const,
+  cardPadding: 'p-8',
+  cardRadius: 'rounded-3xl',
+  logoSize: 'w-32 h-32',
+  textSize: 'text-4xl',
+}));
+
 const overviewStyles = computed(() => ({
-  ...styles.value,
+  density: 'normal' as const,
   cardPadding: 'p-4',
   cardRadius: 'rounded-2xl',
+  logoSize: 'w-16 h-16',
+  textSize: 'text-xl',
 }));
 
 // Dynamic grid allocation based on match count to balance empty spaces
@@ -35,20 +43,8 @@ const containerGridClass = computed(() => {
   return 'grid min-h-0 flex-1 grid-cols-1 auto-rows-fr gap-4 w-full';
 });
 
-const teamTextSize = computed(() => {
-  switch (density.value) {
-    case 'tight':
-      return 'text-xl';
-    case 'compact':
-      return 'text-2xl';
-    default:
-      return 'text-3xl';
-  }
-});
-
-const metaTextSize = computed(() => {
-  return 'text-base';
-});
+const teamTextSize = computed(() => 'text-3xl');
+const metaTextSize = computed(() => 'text-base');
 
 const slideTitle = computed<SlideTitle>(() => ({
   subtitle: props.season.club,
@@ -66,7 +62,6 @@ const slideTitle = computed<SlideTitle>(() => ({
         :md="md"
         :styles="overviewStyles"
         :compact="false"
-        :format="format"
         :theme-team-name="season.club"
         :team-text-size="teamTextSize"
         :meta-text-size="metaTextSize"

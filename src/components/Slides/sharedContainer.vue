@@ -99,7 +99,16 @@ const formatClasses = computed(() => getFormatClasses(props.format));
 const dimensions = computed(() => getSlideDimensions(props.format));
 const slideBoxStyle = computed(() => getSlideBoxStyle(props.format));
 const backgroundSrc = computed(() =>
-  props.format === 'stories' ? 'image_story.png' : 'image.png',
+  (() => {
+    switch(props.format) {
+    case 'stories':
+      return 'image_story.png';
+    case 'portrait_4by5':
+      return 'image.png';
+    default:
+      return 'image.png';
+    }
+  })()
 );
 const backgroundImageStyle = computed(() => ({
   width: `${dimensions.value.width}px`,

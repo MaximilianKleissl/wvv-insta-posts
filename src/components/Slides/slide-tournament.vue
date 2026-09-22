@@ -2,13 +2,12 @@
 import { computed } from 'vue';
 import { Users } from 'lucide-vue-next';
 import SharedContainer from './sharedContainer.vue';
-import { useSlideDensity } from '@/composables/Slides/useDensity.ts';
 import Cell from '@/components/Slides/subComponents/Cell.vue';
 import TeamLogo from '@/components/Slides/subComponents/TeamLogo.vue';
 import { useTeamHighlight } from '@/composables/useTeamHighlight';
 import { useTeamColors } from '@/composables/useTeamColors';
 import type { SlideTitle, SlideMatchdayProps } from '@/lib/slide-types';
-import { getMatchDaySlideTitle, getMatchDayItemCount } from '@/lib/slide-utils';
+import { getMatchDaySlideTitle } from '@/lib/slide-utils';
 
 const props = withDefaults(defineProps<SlideMatchdayProps>(), {
   format: 'portrait_4by5',
@@ -17,7 +16,14 @@ const props = withDefaults(defineProps<SlideMatchdayProps>(), {
 // Composables
 const { getTeamTextColor, isHomeClub } = useTeamHighlight(props.season, props.matchDay.team);
 const teamColors = useTeamColors(props.matchDay.team);
-const { styles } = useSlideDensity(computed(() => getMatchDayItemCount(props.matchDay)));
+
+const styles = computed(() => ({
+  density: 'normal' as const,
+  cardPadding: 'p-8',
+  cardRadius: 'rounded-3xl',
+  logoSize: 'w-32 h-32',
+  textSize: 'text-4xl',
+}));
 
 // Computed properties
 const teams = computed(() => props.matchDay.teams ?? []);

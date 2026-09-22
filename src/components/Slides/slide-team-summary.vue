@@ -14,12 +14,9 @@ interface SlideTeamSummaryProps {
   teamName: string;
   matchDays: MatchDay[];
   gameType: 'home' | 'away';
-  format?: SlideFormatMode;
 }
 
-const props = withDefaults(defineProps<SlideTeamSummaryProps>(), {
-  format: 'portrait_4by5',
-});
+const props = defineProps<SlideTeamSummaryProps>();
 
 const { clubName } = useHeader();
 const { isHomeClub } = useTeamHighlight(props.season, props.teamName);
@@ -66,29 +63,13 @@ const opponentsByMatchDay = computed(() => {
 const getOpponents = (matchDay: MatchDay): string[] =>
   opponentsByMatchDay.value.map.get(matchDay) ?? [];
 
-const totalOpponents = computed(() => opponentsByMatchDay.value.opponentCount);
-const isDenseSummary = computed(() => slideMatchDays.value.length > 4);
-
-const { density, styles } = useSlideDensity(totalOpponents);
-
 const summaryStyles = computed(() => ({
-  ...styles.value,
-  cardPadding: isDenseSummary.value ? 'p-2' : styles.value.cardPadding,
-  cardRadius: isDenseSummary.value ? 'rounded-xl' : styles.value.cardRadius,
+  density: 'normal' as const,
+  cardPadding: 'p-4',
+  cardRadius: 'rounded-2xl',
+  logoSize: 'w-16 h-16',
+  textSize: 'text-xl',
 }));
-
-const opponentLogoSize = computed(() => {
-  if (isDenseSummary.value) return 'w-6 h-6';
-
-  switch (density.value) {
-    case 'tight':
-      return 'w-8 h-8';
-    case 'compact':
-      return 'w-10 h-10';
-    default:
-      return 'w-12 h-12';
-  }
-});
 
 const slideTitle = computed<SlideTitle>(() => ({
   subtitle: props.teamName,
@@ -98,7 +79,7 @@ const slideTitle = computed<SlideTitle>(() => ({
 </script>
 
 <template>
-  <SharedContainer :id="id" :styles="summaryStyles" :slide-title="slideTitle" :format="format">
+  <SharedContainer :id="id" :styles="summaryStyles" :slide-title="slideTitle" :format="'portrait_4by5'">
     <TeamSummaryStories
       :fixtures="fixtures"
       :team-name="teamName"
