@@ -14,7 +14,7 @@
       <h3
         :class="[
           'font-black tracking-tight truncate leading-tight uppercase text-slate-900',
-          format === 'stories' ? 'text-2xl' : '',
+          format === 'stories' ? 'text-3xl' : 'text-3xl',
           teamTextSize,
         ]"
       >

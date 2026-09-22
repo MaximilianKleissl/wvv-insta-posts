@@ -1,16 +1,16 @@
 <template>
-  <div :class="headerClasses" :style="{ backgroundColor: schemeColor }">
+  <div class="relative w-full shrink-0 overflow-hidden font-sans select-none" :class="formatClasses.headerHeight" :style="{ backgroundColor: schemeColor }">
     <div class="absolute inset-y-0 right-0 w-[72%] opacity-95" :style="actionImageStyle" />
     <div class="absolute inset-0" :style="gradientStyle" />
-    <div :class="contentClasses">
+    <div class="relative z-10 flex h-full flex-col text-white" :class="formatClasses.headerPadding">
       <div class="max-w-160 pt-2">
         <div class="mt-10 mb-5 flex items-center gap-4">
           <span class="h-px w-16 bg-white/80" />
-          <p class="text-xl font-semibold uppercase tracking-[0.38em] text-white/85">
+          <p class="text-3xl font-semibold uppercase tracking-[0.38em] text-white/85">
             {{ slideTitle.subtitle }}
           </p>
         </div>
-        <h1 :class="titleClasses">
+        <h1 class="mb-4 font-black uppercase leading-[0.88] tracking-[-0.04em] text-6xl">
           {{ slideTitle.title }}
         </h1>
       </div>
@@ -18,7 +18,8 @@
         <div
           v-for="label in slideTitle.label"
           :key="label"
-          :class="seasonClasses"
+          class="w-fit bg-white/95 font-black tracking-tight shadow-xl"
+          :class="formatClasses.seasonClasses"
           :style="seasonStyle"
         >
           {{ label }}
@@ -60,22 +61,6 @@ const actionImage = computed(() => {
   return `${CONFIG_BASE_URL}/Action_Images/${images[index]}`;
 });
 
-const headerClasses = computed(() => [
-  'relative w-full shrink-0 overflow-hidden font-sans select-none',
-  formatClasses.value.headerHeight,
-]);
-const contentClasses = computed(() => [
-  'relative z-10 flex h-full flex-col text-white',
-  formatClasses.value.headerPadding,
-]);
-const titleClasses = computed(() => [
-  'mb-4 font-black uppercase leading-[0.88] tracking-[-0.04em]',
-  formatClasses.value.titleSize,
-]);
-const seasonClasses = computed(() => [
-  'w-fit bg-white/95 font-black tracking-tight shadow-xl',
-  formatClasses.value.seasonClasses,
-]);
 const schemeColor = computed(() => teamColors.colorScheme.value.imageTint);
 const actionImageStyle = computed(() => ({
   ...(actionImage.value ? { backgroundImage: `url(${actionImage.value})` } : {}),

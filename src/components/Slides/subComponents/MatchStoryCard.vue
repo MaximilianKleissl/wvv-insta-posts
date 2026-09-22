@@ -35,7 +35,7 @@
           :theme-team-name="homeThemeTeamName"
           size-class="h-24 w-24"
         />
-        <span class="max-w-55 text-xl font-black leading-[1.05] text-slate-900">
+        <span class="max-w-55 text-4xl font-black leading-[1.05] text-slate-900">
           {{ match.home }}
         </span>
       </div>
@@ -48,7 +48,7 @@
           :theme-team-name="awayThemeTeamName"
           size-class="h-24 w-24"
         />
-        <span class="max-w-55 text-xl font-black leading-[1.05] text-slate-900">
+        <span class="max-w-55 text-4xl font-black leading-[1.05] text-slate-900">
           {{ match.away }}
         </span>
       </div>
@@ -73,7 +73,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { Clock, Calendar } from 'lucide-vue-next';
+import { Clock } from 'lucide-vue-next';
 import TeamLogo from './TeamLogo.vue';
 import MatchScore from './MatchScore.vue';
 import { hexToRgba } from '@/lib/team-colors';

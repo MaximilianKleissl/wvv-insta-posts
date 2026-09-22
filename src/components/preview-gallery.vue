@@ -194,7 +194,7 @@ const downloadCurrentSlide = async () => {
           class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-900"
           @input="selectedWeekendIndex = Number(($event.target as HTMLInputElement).value)"
         />
-        <span class="text-sm font-medium text-gray-700 min-w-[80px] text-right">
+        <span class="text-sm font-medium text-gray-700 min-w-20 text-right">
           {{ props.season.weekends[selectedWeekendIndex ?? 0]?.dateRangeShort }}
         </span>
       </div>

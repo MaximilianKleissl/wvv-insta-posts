@@ -32,7 +32,6 @@ export interface SlideFormatClasses {
   sponsorLogoHeight: string;
   headerHeight: string;
   headerPadding: string;
-  titleSize: string;
   seasonClasses: string;
   headerLabelFlexDirection: string;
 }
@@ -46,8 +45,7 @@ const FORMAT_CLASSES: Record<SlideFormatMode, SlideFormatClasses> = {
     sponsorLogoHeight: 'h-12',
     headerHeight: 'h-[300px]',
     headerPadding: 'p-10',
-    titleSize: 'text-[49px]',
-    seasonClasses: 'px-6 py-2 text-xl',
+    seasonClasses: 'px-6 py-2 text-2xl',
     headerLabelFlexDirection: 'flex-row',
   },
   stories: {
@@ -58,7 +56,6 @@ const FORMAT_CLASSES: Record<SlideFormatMode, SlideFormatClasses> = {
     sponsorLogoHeight: 'h-16',
     headerHeight: 'h-[700px]',
     headerPadding: 'p-14',
-    titleSize: 'text-[80px]',
     seasonClasses: 'px-9 py-2 text-3xl',
     headerLabelFlexDirection: 'flex-col',
   },
