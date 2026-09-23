@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import SlideOverview from '@/components/Slides/slide-overview.vue';
-import SlideMatchday from '@/components/Slides/slide-matchday.vue';
-import SlideTournament from '@/components/Slides/slide-tournament.vue';
+import SlideOverview from '@/components/Slides/slides/overview.vue';
+import SlideMatchday from '@/components/Slides/slides/matchday.vue';
+import SlideTournament from '@/components/Slides/slides/tournament.vue';
 import { isTournamentMatchDay, parseGermanDate } from '@/lib/grouping';
 import { toPng } from 'html-to-image';
 

@@ -1,16 +1,8 @@
 <template>
-  <Cell
-    :styles="styles"
-    :border-color="teamColors.getHomeBorderColor('60')"
-    :compact="compact"
-    :tint-hex="teamColors.colorScheme.value.imageTint"
-    class="min-h-0 overflow-hidden"
-  >
-    <template #left_part>
-      <HomeTeamIndication :md="md" />
-    </template>
+  <CardFrame :team-name="themeTeamName" :styles="styles" :fill="true">
+    <HomeTeamIndication :md="md" />
 
-    <div class="flex-1 min-w-0 z-10 space-y-2 rounded-2xl bg-white/45 px-4 py-3">
+    <div class="min-w-0 flex-1 space-y-2 rounded-2xl bg-white/45 px-4 py-3">
       <h3
         :class="[
           'font-black tracking-tight truncate leading-tight uppercase text-slate-900',
@@ -20,12 +12,7 @@
         {{ md.team }}
       </h3>
 
-      <div
-        :class="[
-          'flex flex-wrap items-center gap-x-3 gap-y-1 text-slate-500',
-          metaTextSize,
-        ]"
-      >
+      <div :class="['flex flex-wrap items-center gap-x-3 gap-y-1 text-slate-500', metaTextSize]">
         <span class="flex items-center gap-1.5 font-bold text-slate-800">
           <Calendar :size="16" class="text-slate-400 shrink-0" />
           {{ germanWeekdayName(md.date) }}
@@ -58,13 +45,13 @@
         </span>
       </div>
     </div>
-  </Cell>
+  </CardFrame>
 </template>
 
 <script setup lang="ts">
 import { Calendar, MapPin } from 'lucide-vue-next';
-import Cell from './Cell.vue';
-import HomeTeamIndication from './HomeTeamIndication.vue';
+import CardFrame from './CardFrame.vue';
+import HomeTeamIndication from '../parts/HomeTeamIndication.vue';
 import type { MatchDay } from '@/lib/types';
 import type { SlideStyles } from '@/composables/Slides/useDensity';
 import { germanWeekdayName } from '@/lib/grouping';
@@ -73,7 +60,6 @@ import { useTeamColors } from '@/composables/useTeamColors';
 const props = defineProps<{
   md: MatchDay;
   styles: SlideStyles;
-  compact: boolean;
   themeTeamName: string;
   teamTextSize: string;
   metaTextSize: string;

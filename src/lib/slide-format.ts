@@ -34,6 +34,7 @@ export interface SlideFormatClasses {
   headerPadding: string;
   seasonClasses: string;
   headerLabelFlexDirection: string;
+  teamTextSize: string;
 }
 
 const FORMAT_CLASSES: Record<SlideFormatMode, SlideFormatClasses> = {
@@ -47,6 +48,7 @@ const FORMAT_CLASSES: Record<SlideFormatMode, SlideFormatClasses> = {
     headerPadding: 'p-14',
     seasonClasses: 'px-9 py-2 text-3xl',
     headerLabelFlexDirection: 'flex-row',
+    teamTextSize: 'text-3xl',
   },
   stories: {
     mainGap: 'gap-4',
@@ -58,6 +60,7 @@ const FORMAT_CLASSES: Record<SlideFormatMode, SlideFormatClasses> = {
     headerPadding: 'p-14',
     seasonClasses: 'px-9 py-2 text-3xl',
     headerLabelFlexDirection: 'flex-col',
+    teamTextSize: 'text-4xl',
   },
 };
 

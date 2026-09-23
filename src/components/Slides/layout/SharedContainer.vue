@@ -66,8 +66,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import Header from './subComponents/Header.vue';
-import SponsorFooter from './subComponents/SponsorFooter.vue';
+import Header from './Header.vue';
+import SponsorFooter from './SponsorFooter.vue';
 import { SlideStyles } from '@/composables/Slides/useDensity.ts';
 import { useSponsors } from '@/composables/useSponsors';
 import { useTeamColors } from '@/composables/useTeamColors';
@@ -100,15 +100,15 @@ const dimensions = computed(() => getSlideDimensions(props.format));
 const slideBoxStyle = computed(() => getSlideBoxStyle(props.format));
 const backgroundSrc = computed(() =>
   (() => {
-    switch(props.format) {
-    case 'stories':
-      return 'image_story.png';
-    case 'portrait_4by5':
-      return 'image.png';
-    default:
-      return 'image.png';
+    switch (props.format) {
+      case 'stories':
+        return 'image_story.png';
+      case 'portrait_4by5':
+        return 'image_portrait_4by5.png';
+      default:
+        return 'image.png';
     }
-  })()
+  })(),
 );
 const backgroundImageStyle = computed(() => ({
   width: `${dimensions.value.width}px`,

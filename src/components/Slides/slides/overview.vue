@@ -2,8 +2,8 @@
 import { computed } from 'vue';
 import type { SeasonData } from '@/lib/types';
 import { sortedMatchDaysForWeekend } from '@/lib/grouping';
-import SharedContainer from './sharedContainer.vue';
-import OverviewMatchDayCard from './subComponents/OverviewMatchDayCard.vue';
+import SharedContainer from '../layout/SharedContainer.vue';
+import OverviewMatchDayCard from '../cards/OverviewMatchDayCard.vue';
 import type { SlideTitle } from '@/lib/slide-types';
 import type { SlideFormatMode } from '@/lib/slide-format';
 import { getMatchDayKey } from '@/lib/slide-utils';
@@ -48,7 +48,7 @@ const metaTextSize = computed(() => 'text-base');
 
 const slideTitle = computed<SlideTitle>(() => ({
   subtitle: props.season.club,
-  title: matchDays.value.some(md => md.match_day_result) ? 'Ergebnisse' : 'Volleyballwochenende',
+  title: matchDays.value.some((md) => md.match_day_result) ? 'Ergebnisse' : 'Volleyballwochenende',
   label: [weekend.value.dateRange],
 }));
 </script>
@@ -61,7 +61,6 @@ const slideTitle = computed<SlideTitle>(() => ({
         :key="getMatchDayKey(md)"
         :md="md"
         :styles="overviewStyles"
-        :compact="false"
         :theme-team-name="season.club"
         :team-text-size="teamTextSize"
         :meta-text-size="metaTextSize"

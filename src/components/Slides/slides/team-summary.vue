@@ -2,8 +2,8 @@
 import { computed } from 'vue';
 import type { SeasonData, MatchDay } from '@/lib/types';
 import { isTournamentMatchDay } from '@/lib/grouping';
-import SharedContainer from './sharedContainer.vue';
-import TeamSummaryStories from './subComponents/TeamSummaryStories.vue';
+import SharedContainer from '../layout/SharedContainer.vue';
+import TeamSummaryCard from '../cards/TeamSummaryCard.vue';
 import { useTeamHighlight } from '@/composables/useTeamHighlight';
 import { useHeader } from '@/composables/useHeader';
 import type { SlideTitle, MatchDayFixture } from '@/lib/slide-types';
@@ -79,11 +79,12 @@ const slideTitle = computed<SlideTitle>(() => ({
 </script>
 
 <template>
-  <SharedContainer :id="id" :styles="summaryStyles" :slide-title="slideTitle" :format="'portrait_4by5'">
-    <TeamSummaryStories
-      :fixtures="fixtures"
-      :team-name="teamName"
-      :club-name="clubName"
-    />
+  <SharedContainer
+    :id="id"
+    :styles="summaryStyles"
+    :slide-title="slideTitle"
+    :format="'portrait_4by5'"
+  >
+    <TeamSummaryCard :fixtures="fixtures" :team-name="teamName" :club-name="clubName" />
   </SharedContainer>
 </template>

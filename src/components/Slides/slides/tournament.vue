@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { Users } from 'lucide-vue-next';
-import SharedContainer from './sharedContainer.vue';
-import Cell from '@/components/Slides/subComponents/Cell.vue';
-import TeamLogo from '@/components/Slides/subComponents/TeamLogo.vue';
+import SharedContainer from '../layout/SharedContainer.vue';
+import CardFrame from '../cards/CardFrame.vue';
+import TeamLogo from '../parts/TeamLogo.vue';
 import { useTeamHighlight } from '@/composables/useTeamHighlight';
 import { useTeamColors } from '@/composables/useTeamColors';
 import type { SlideTitle, SlideMatchdayProps } from '@/lib/slide-types';
@@ -33,7 +33,6 @@ const slideTitle = computed<SlideTitle>(() => ({
 }));
 
 const gridClass = computed(() => 'grid-cols-1 auto-rows-fr');
-const cellClass = computed(() => 'min-h-0');
 </script>
 
 <template>
@@ -46,28 +45,27 @@ const cellClass = computed(() => 'min-h-0');
       <span>Teilnehmende Mannschaften</span>
     </div>
     <div :class="['grid gap-4 content-start flex-1 overflow-hidden', gridClass]">
-      <Cell
+      <CardFrame
         v-for="team in teams"
         :key="team"
+        :team-name="props.matchDay.team"
         :styles="styles"
-        :border-color="teamColors.getHomeBorderColor('60')"
-        :tint-hex="teamColors.colorScheme.value.imageTint"
-        :class="cellClass"
+        :fill="true"
       >
-        <template #left_part>
+        <div class="flex w-full min-w-0 flex-col items-center justify-center gap-2 text-center">
           <TeamLogo
             :team-name="team"
             :theme-team-name="isHomeClub(team) ? props.matchDay.team : undefined"
             :size-class="styles.logoSize"
           />
-        </template>
-        <span
-          class="font-extrabold leading-snug wrap-break-word"
-          :class="[styles.textSize, getTeamTextColor(team)]"
-        >
-          {{ team }}
-        </span>
-      </Cell>
+          <span
+            class="font-extrabold leading-snug wrap-break-word"
+            :class="[styles.textSize, getTeamTextColor(team)]"
+          >
+            {{ team }}
+          </span>
+        </div>
+      </CardFrame>
     </div>
   </SharedContainer>
 </template>

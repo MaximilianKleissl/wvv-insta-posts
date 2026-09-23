@@ -5,7 +5,7 @@ import { Download } from 'lucide-vue-next';
 import { useSeasonData } from '@/composables/useSeasonData';
 import { useSponsors } from '@/composables/useSponsors';
 import PageHeader from '@/components/PageHeader.vue';
-import SlideTeamSummary from '@/components/Slides/slide-team-summary.vue';
+import SlideTeamSummary from '@/components/Slides/slides/team-summary.vue';
 import { fetchSeasonData } from '@/lib/sample-data';
 import { groupMatchDaysByTeam, slugify } from '@/lib/grouping';
 import { exportTeamZip, downloadBlob } from '@/lib/export-zip';

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { sortMatches } from '@/lib/grouping';
-import SharedContainer from './sharedContainer.vue';
-import MatchStoryCard from '@/components/Slides/subComponents/MatchStoryCard.vue';
+import SharedContainer from '../layout/SharedContainer.vue';
+import MatchCard from '../cards/MatchCard.vue';
 import type { SlideTitle, SlideMatchdayProps } from '@/lib/slide-types';
 import { getMatchDaySlideTitle, getMatchKey } from '@/lib/slide-utils';
 
@@ -28,12 +28,13 @@ const slideTitle = computed<SlideTitle>(() => ({
 <template>
   <SharedContainer :id="id" :styles="styles" :slide-title="slideTitle" :format="format">
     <div class="relative flex min-h-0 flex-1 flex-col gap-6">
-      <MatchStoryCard
+      <MatchCard
         v-for="m in matches"
         :key="getMatchKey(m)"
         :match="m"
         :match-day="props.matchDay"
         :season="season"
+        :format="format"
       />
     </div>
   </SharedContainer>
