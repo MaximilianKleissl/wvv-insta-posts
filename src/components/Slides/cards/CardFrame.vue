@@ -1,7 +1,8 @@
 <template>
   <div
     :class="[
-      'relative flex min-w-0 flex-col bg-white/80 backdrop-blur-[3px] border-2 overflow-visible justify-center',
+      'relative flex min-w-0 flex-col backdrop-blur-[3px] border-2 overflow-visible justify-center',
+      bgClass,
       styles.cardPadding,
       styles.cardRadius,
       teamColors.getHomeBorderColor('60'),
@@ -43,11 +44,13 @@ const props = withDefaults(
     fill?: boolean;
     badgeClass?: string | string[];
     styles?: SlideStyles;
+    bgClass?: string;
   }>(),
   {
     fill: false,
     badgeClass: undefined,
     styles: () => CARD_FRAME_STYLES,
+    bgClass: 'bg-white/80',
   },
 );
 

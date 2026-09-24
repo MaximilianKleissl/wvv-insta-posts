@@ -26,13 +26,14 @@ const styles = computed(() => ({
 }));
 
 // Computed properties
-const teams = computed(() => props.matchDay.teams ?? []);
+const teams = computed(() => {
+  const allTeams = props.matchDay.teams ?? [];
+  return [...allTeams.filter((team) => !isHomeClub(team)), ...allTeams.filter((team) => isHomeClub(team))]; // sort us to the end
+});
 
 const slideTitle = computed<SlideTitle>(() => ({
   ...getMatchDaySlideTitle(props.matchDay),
 }));
-
-const gridClass = computed(() => 'grid-cols-2 auto-rows-fr');
 
 const isOdd = computed(() => teams.value.length % 2 === 1);
 </script>
@@ -46,7 +47,7 @@ const isOdd = computed(() => teams.value.length % 2 === 1);
       <Users :class="['w-7 h-7', teamColors.getHomeIconColor()]" />
       <span>Teilnehmende Mannschaften</span>
     </div>
-    <div :class="['grid gap-4 content-start flex-1 min-h-0 overflow-hidden', gridClass]">
+    <div class="grid gap-4 content-start flex-1 min-h-0 overflow-hidden grid-cols-2 auto-rows-fr">
       <CardFrame
         v-for="(team, index) in teams"
         :key="team"

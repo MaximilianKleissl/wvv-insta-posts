@@ -1,6 +1,5 @@
 <template>
   <div class="flex shrink-0 flex-col items-center gap-2">
-    <div class="h-6 w-px" :style="{ backgroundColor: hairlineColor }" />
     <div
       class="flex shrink-0 items-center justify-center rounded-2xl px-4 py-3 shadow-md"
       :class="[bgColor]"
@@ -9,7 +8,6 @@
         {{ badgeText }}
       </span>
     </div>
-    <div class="h-6 w-px" :style="{ backgroundColor: hairlineColor }" />
   </div>
 </template>
 
@@ -41,7 +39,6 @@ const bgColor = computed(() => {
   return 'bg-slate-800/10';
 });
 
-const hairlineColor = computed(() => props.hairlineColor ?? 'rgba(100, 116, 139, 0.25)');
 
 const badgeText = computed(() =>
   props.result ? (typeof props.result === 'string' ? props.result : `${props.result.home} : ${props.result.away}`) : 'VS',

@@ -6,6 +6,10 @@ import MatchCard from '../cards/MatchCard.vue';
 import type { SlideTitle, SlideMatchdayProps } from '@/lib/slide-types';
 import { getMatchDaySlideTitle, getMatchKey } from '@/lib/slide-utils';
 
+// Each card (row) may only take at most 33% of the available height, so a
+// match day with only one or two matches doesn't stretch the cards.
+const MATCH_ROW_CLASS = 'min-h-0 max-h-[33.333%]';
+
 const props = withDefaults(defineProps<SlideMatchdayProps>(), {
   format: 'portrait_4by5',
 });
@@ -27,10 +31,11 @@ const slideTitle = computed<SlideTitle>(() => ({
 
 <template>
   <SharedContainer :id="id" :styles="styles" :slide-title="slideTitle" :format="format">
-    <div class="relative flex min-h-0 flex-1 flex-col gap-6">
+    <div class="relative flex min-h-0 flex-1 flex-col justify-center gap-6">
       <MatchCard
         v-for="m in matches"
         :key="getMatchKey(m)"
+        :class="MATCH_ROW_CLASS"
         :match="m"
         :match-day="props.matchDay"
         :season="season"

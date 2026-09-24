@@ -40,10 +40,14 @@ const overviewStyles = computed(() => ({
 
 // Dynamic grid allocation based on match count to balance empty spaces
 const containerGridClass = computed(() => {
-  return 'grid min-h-0 flex-1 grid-cols-1 auto-rows-fr gap-4 w-full';
+  return 'grid min-h-0 flex-1 content-center gap-8 w-full' + (matchDays.value.length < 5 ? ' grid-cols-1' : ' grid-cols-2');
 });
 
-const teamTextSize = computed(() => 'text-3xl');
+// Each row takes at most 33% of the available height, so single or double
+// match day cards don't stretch across the whole slide.
+const gridStyle = computed(() => ({
+  gridAutoRows: 'minmax(0, min(33.333%, 1fr))',
+}));
 
 const slideTitle = computed<SlideTitle>(() => ({
   subtitle: props.season.club,
@@ -54,14 +58,13 @@ const slideTitle = computed<SlideTitle>(() => ({
 
 <template>
   <SharedContainer :id="id" :styles="styles" :slide-title="slideTitle" :format="format">
-    <div :class="containerGridClass">
+    <div :class="containerGridClass" :style="gridStyle">
       <OverviewMatchDayCard
         v-for="md in matchDays"
         :key="getMatchDayKey(md)"
         :md="md"
         :styles="overviewStyles"
         :theme-team-name="season.club"
-        :team-text-size="teamTextSize"
       />
     </div>
   </SharedContainer>

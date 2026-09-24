@@ -3,15 +3,19 @@
     fill
     :team-name="themeTeamName"
     :styles="styles"
-    :badge-class="badgeClass"
+    :badge-class="[
+      'absolute -left-3 -top-4 flex items-center gap-2.5 rounded-full px-6 py-2.5 text-base font-black uppercase tracking-[0.16em] text-white shadow-lg',
+      badgeBgColor,
+    ]"
+    :bg-class="cardBgClass"
   >
     <template #badge>
-      <Calendar :size="17" :stroke-width="2.5" aria-hidden="true" />
+      <Calendar :size="20" :stroke-width="2.5" aria-hidden="true" />
       <span>{{ weekdayLabel }}</span>
       <div class="w-5"></div>
-      <MapPin :size="17" :stroke-width="2.5" aria-hidden="true" />
+      <MapPin :size="20" :stroke-width="2.5" aria-hidden="true" />
       <span
-        class="max-w-[12rem] truncate"
+        class="max-w-[14rem] truncate"
         :title="md.location"
       >
         {{ md.location }}
@@ -23,12 +27,12 @@
       This gives logos/names more room while keeping the VS badge perfectly centered.
     -->
     <div
-      class="grid min-h-0 flex-1 grid-cols-[1fr_auto_1.6fr] items-center gap-5 pt-1"
+      class="grid min-h-0 flex-1 grid-cols-[1fr_auto_1.6fr] items-center gap-10"
     >
       <!-- Left: club team -->
       <h3
-        class="min-w-0 break-words text-center font-black uppercase leading-[1.05] tracking-[-0.035em] text-slate-900"
-        :class="teamTextSize"
+        class="min-w-0 break-words text-center font-black uppercase leading-[1.05] tracking-[-0.035em] text-4xl"
+        :class="teamTextColor"
         :title="md.team"
       >
         {{ md.team }}
@@ -38,6 +42,7 @@
       <div class="flex shrink-0 flex-col items-center justify-center">
         <VsBadge
           :team-name="themeTeamName"
+          :bg-color="badgeBgColor"
           :result="md.match_day_result"
         />
       </div>
@@ -74,7 +79,7 @@
 
       <p
         v-else
-        class="text-center text-[10px] font-bold uppercase tracking-[0.12em] text-slate-300"
+        class="text-center text-[13px] font-bold uppercase tracking-[0.12em] text-slate-300"
       >
         Gegner folgt
       </p>
@@ -94,27 +99,22 @@ import type { MatchDay } from '@/lib/types';
 import TeamLogo from '../parts/TeamLogo.vue';
 import VsBadge from '../parts/VsBadge.vue';
 import CardFrame from './CardFrame.vue';
-import LabelContainer from '../layout/LabelContainer.vue';
 
 const props = defineProps<{
   md: MatchDay;
   styles: SlideStyles;
   themeTeamName: string;
-  teamTextSize: string;
 }>();
-
-const BADGE_BASE_CLASS =
-  'absolute -left-3 -top-4 flex items-center gap-2 rounded-full px-5 py-2 text-sm font-black uppercase tracking-[0.16em] text-white shadow-lg';
 
 // Above this number of opponents, use the compact logo layout.
 const LARGE_LOGO_MAX_COUNT = 3;
 
 const teamColors = useTeamColors(props.themeTeamName);
 
-const badgeClass = computed(() => [
-  BADGE_BASE_CLASS,
-  teamColors.getBadgeBgColor(),
-]);
+const badgeBgColor = computed(() => teamColors.getBadgeBgColor());
+const cardBgClass = computed(() => teamColors.getHomeBgColor());
+
+const teamTextColor = computed(() => teamColors.colorScheme.value.primary);
 
 const weekdayLabel = computed(() => germanWeekdayName(props.md.date));
 
@@ -157,14 +157,14 @@ const opponentLayout = computed(() => {
 
   if (count > LARGE_LOGO_MAX_COUNT) {
     return {
-      logo: 'h-20 w-20 p-1',
-      name: 'max-w-[3.5rem] text-[11px] text-slate-600',
+      logo: 'h-24 w-24 p-1',
+      name: 'max-w-[4rem] text-[12px] text-slate-600',
     };
   }
 
   return {
-    logo: 'h-25 w-25 p-1.5',
-    name: 'max-w-[5rem] text-[11px] text-slate-600',
+    logo: 'h-30 w-30 p-2',
+    name: 'max-w-[5.5rem] text-[13px] text-slate-600',
   };
 });
 </script>
