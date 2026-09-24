@@ -1,8 +1,32 @@
 {
-  "name": "@workspace/werderaner-vv",
-  "version": "0.0.0",
+  "name": "wvv-insta-posts",
+  "version": "1.0.0",
+  "description": "Generates Instagram-ready slides (Portrait 4:5 and Stories) from a volleyball match schedule – with captions and ZIP download.",
   "private": true,
+  "license": "UNLICENSED",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MaximilianKleissl/wvv-insta-posts.git"
+  },
+  "homepage": "https://maximiliankleissl.github.io/wvv-insta-posts",
+  "bugs": {
+    "url": "https://github.com/MaximilianKleissl/wvv-insta-posts/issues"
+  },
+  "keywords": [
+    "vue",
+    "vite",
+    "typescript",
+    "tailwindcss",
+    "volleyball",
+    "instagram",
+    "social-media",
+    "generator"
+  ],
+  "author": "Maximilian Kleissl",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "vite --config vite.config.ts --host 0.0.0.0",
     "build": "vite build --config vite.config.ts",
