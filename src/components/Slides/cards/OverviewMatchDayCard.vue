@@ -3,10 +3,7 @@
     fill
     :team-name="themeTeamName"
     :styles="styles"
-    :badge-class="[
-      'font-black text-white',
-      badgeBgColor,
-    ]"
+    :badge-class="badgeBgColor"
     :bg-class="cardBgClass"
   >
     <template #badge>

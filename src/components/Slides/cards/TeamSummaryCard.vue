@@ -4,15 +4,12 @@
       v-for="fixture in fixtures"
       :key="fixture.matchDay.date"
       :team-name="teamName"
-      :badge-class="[
-        'font-black text-white',
-        teamColors.getBadgeBgColor(),
-      ]"
+      :badge-class="teamColors.getBadgeBgColor()"
     >
       <template #badge>
         <Home v-if="fixture.matchDay.home" :size="17" :stroke-width="2.5" />
         <Car v-else :size="17" :stroke-width="2.5" />
-        <span>{{ fixture.matchDay.home ? 'Heimspiel' : 'Auswärtsspiel' }}</span>
+        <span>{{ homeAwayLabel(fixture.matchDay.home, 'long') }}</span>
       </template>
 
       <CardRow type="label" :team-name="teamName" label="Matchday" class="pt-2" />
@@ -66,6 +63,7 @@ import VsBadge from '../parts/VsBadge.vue';
 import CardRow from '../parts/CardRow.vue';
 import CardFrame from './CardFrame.vue';
 import { useTeamColors } from '@/composables/useTeamColors';
+import { homeAwayLabel } from '@/lib/grouping';
 import type { MatchDayFixture } from '@/lib/slide-types';
 
 const props = defineProps<{

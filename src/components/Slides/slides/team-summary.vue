@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { SeasonData, MatchDay } from '@/lib/types';
-import { isTournamentMatchDay } from '@/lib/grouping';
+import { homeAwayLabel, isTournamentMatchDay } from '@/lib/grouping';
 import SharedContainer from '../layout/SharedContainer.vue';
 import TeamSummaryCard from '../cards/TeamSummaryCard.vue';
 import { useTeamHighlight } from '@/composables/useTeamHighlight';
-import { useHeader } from '@/composables/useHeader';
 import type { SlideTitle, MatchDayFixture } from '@/lib/slide-types';
 
 interface SlideTeamSummaryProps {
@@ -18,7 +17,7 @@ interface SlideTeamSummaryProps {
 
 const props = defineProps<SlideTeamSummaryProps>();
 
-const { clubName } = useHeader();
+const clubName = computed(() => props.season.club);
 const { isHomeClub } = useTeamHighlight(props.season, props.teamName);
 const isHomeSlide = computed(() => props.gameType === 'home');
 
@@ -65,7 +64,7 @@ const getOpponents = (matchDay: MatchDay): string[] =>
 
 const slideTitle = computed<SlideTitle>(() => ({
   subtitle: props.teamName,
-  title: isHomeSlide.value ? 'Heimspiele' : 'Auswärtsspiele',
+  title: homeAwayLabel(isHomeSlide.value, 'plural'),
   label: [props.season.season],
 }));
 </script>

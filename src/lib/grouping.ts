@@ -24,6 +24,16 @@ export function germanWeekdayName(date: string): string {
   return GERMAN_WEEKDAYS[parsed.getDay()];
 }
 
+/** German home/away wording: "Heim"/"Auswärts" (short), "Heimspiel"/"Auswärtsspiel" (long), or their plurals. */
+export function homeAwayLabel(
+  isHome: boolean,
+  variant: 'short' | 'long' | 'plural' = 'short',
+): string {
+  if (variant === 'long') return isHome ? 'Heimspiel' : 'Auswärtsspiel';
+  if (variant === 'plural') return isHome ? 'Heimspiele' : 'Auswärtsspiele';
+  return isHome ? 'Heim' : 'Auswärts';
+}
+
 /** True when a match day only lists participating teams, without known pairings/times (e.g. tournaments). */
 export function isTournamentMatchDay(matchDay: MatchDay): boolean {
   return (

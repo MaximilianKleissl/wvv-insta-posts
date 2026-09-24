@@ -42,14 +42,6 @@ export interface SeasonData {
   weekends: Weekend[];
 }
 
-export type TemplateId = 'classic';
-
-export interface TemplateDefinition {
-  id: TemplateId;
-  name: string;
-  description: string;
-}
-
 export interface Sponsor {
   filename: string;
   name: string;

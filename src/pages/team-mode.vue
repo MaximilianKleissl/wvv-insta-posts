@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { Download } from 'lucide-vue-next';
-import { useSeasonData } from '@/composables/useSeasonData';
-import { useSponsors } from '@/composables/useSponsors';
+import { useSeasonBootstrap } from '@/composables/useSeasonBootstrap';
+import { useSlideRegistry } from '@/composables/useSlideRegistry';
 import PageHeader from '@/components/PageHeader.vue';
 import SlideTeamSummary from '@/components/Slides/slides/team-summary.vue';
-import { fetchSeasonData } from '@/lib/sample-data';
 import { groupMatchDaysByTeam, slugify } from '@/lib/grouping';
 import { exportTeamZip, downloadBlob } from '@/lib/export-zip';
 import type { ExportProgress } from '@/lib/export-zip';
@@ -18,27 +17,15 @@ import {
 } from '@/lib/slide-format';
 
 const router = useRouter();
-const { setSeasonData, seasonData, loading, error } = useSeasonData();
-const { loadSponsors } = useSponsors();
+const { seasonData, loading, error } = useSeasonBootstrap();
+const { registerSlideRef, getSlideElement } = useSlideRegistry();
 
 const exporting = ref(false);
 const progress = ref<ExportProgress | null>(null);
 const selectedTeam = ref<string | null>(null);
 const exportFormat = ref<SlideFormatMode>('portrait_4by5');
 
-const slideNodes = ref<Map<string, HTMLElement>>(new Map());
-
-const registerSlideNode = (id: string, el: HTMLElement | null) => {
-  if (el) slideNodes.value.set(id, el);
-  else slideNodes.value.delete(id);
-};
-
-const registerSlideRef = (slideId: string) => (el: HTMLElement | null) =>
-  registerSlideNode(slideId, el);
-
 const season = computed(() => seasonData.value!);
-
-const getSlideElement = (id: string) => slideNodes.value.get(id) ?? null;
 
 const teamMatchDays = computed(() => {
   if (!seasonData.value) return [];
@@ -49,19 +36,6 @@ const teamCount = computed(() => teamMatchDays.value.length);
 const totalMatchDays = computed(() =>
   teamMatchDays.value.reduce((sum, team) => sum + team.matchDays.length, 0),
 );
-
-onMounted(async () => {
-  loading.value = true;
-  try {
-    await loadSponsors();
-    const data = await fetchSeasonData();
-    setSeasonData(data);
-  } catch (err) {
-    error.value = err instanceof Error ? err.message : 'Fehler beim Laden der Daten';
-  } finally {
-    loading.value = false;
-  }
-});
 
 const exportSlides = computed(() => {
   if (!seasonData.value || !selectedTeam.value) return [];

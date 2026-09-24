@@ -1,15 +1,12 @@
 import type { Match, MatchDay } from '@/lib/types';
 import type { SlideTitle } from '@/lib/slide-types';
-import { isTournamentMatchDay } from '@/lib/grouping';
+import { homeAwayLabel, isTournamentMatchDay } from '@/lib/grouping';
 
 export function getMatchDaySlideTitle(matchDay: MatchDay): SlideTitle {
-  let title = "";
-  if (matchDay.matches?.some((m) => m.result)) {
-    title = 'Ergebnisse vom ';
-  }
+  const hasResults = matchDay.matches?.some((m) => m.result) ?? false;
   return {
     subtitle: matchDay.team,
-    title: title + `${matchDay.home ? 'Heim' : 'Auswärts'}spieltag`,
+    title: `${hasResults ? 'Ergebnisse vom ' : ''}${homeAwayLabel(matchDay.home)}spieltag`,
     label: [matchDay.location, matchDay.match_day_name, matchDay.date].filter(
       (label): label is string => Boolean(label),
     ),

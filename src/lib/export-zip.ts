@@ -6,6 +6,7 @@ import {
   slugify,
   sortedMatchDaysForWeekend,
   isTournamentMatchDay,
+  homeAwayLabel,
   type TeamMatchDays,
 } from './grouping';
 import { buildWeekendCaption } from './caption';
@@ -172,7 +173,7 @@ function buildTeamCaption(season: SeasonData, teamData: TeamMatchDays): string {
   ];
 
   teamData.matchDays.forEach((md) => {
-    lines.push(`- ${md.date}: ${md.home ? 'Heim' : 'Auswärts'} in ${md.location}`);
+    lines.push(`- ${md.date}: ${homeAwayLabel(md.home)} in ${md.location}`);
 
     // Get opponents for this matchday
     const opponents: string[] = [];
