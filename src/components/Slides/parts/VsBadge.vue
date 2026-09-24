@@ -21,7 +21,7 @@ import { useTeamColors } from '@/composables/useTeamColors';
 const props = withDefaults(
   defineProps<{
     teamName?: string;
-    result?: MatchResult;
+    result?: MatchResult | string;
     bgColor?: string;
     hairlineColor?: string;
   }>(),
@@ -44,6 +44,6 @@ const bgColor = computed(() => {
 const hairlineColor = computed(() => props.hairlineColor ?? 'rgba(100, 116, 139, 0.25)');
 
 const badgeText = computed(() =>
-  props.result ? `${props.result.home} : ${props.result.away}` : 'VS',
+  props.result ? (typeof props.result === 'string' ? props.result : `${props.result.home} : ${props.result.away}`) : 'VS',
 );
 </script>

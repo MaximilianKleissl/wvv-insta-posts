@@ -32,8 +32,8 @@ const styles = computed(() => ({
 
 const overviewStyles = computed(() => ({
   density: 'normal' as const,
-  cardPadding: 'p-4',
-  cardRadius: 'rounded-2xl',
+  cardPadding: 'px-6 py-4',
+  cardRadius: 'rounded-[28px]',
   logoSize: 'w-16 h-16',
   textSize: 'text-xl',
 }));
@@ -44,7 +44,6 @@ const containerGridClass = computed(() => {
 });
 
 const teamTextSize = computed(() => 'text-3xl');
-const metaTextSize = computed(() => 'text-base');
 
 const slideTitle = computed<SlideTitle>(() => ({
   subtitle: props.season.club,
@@ -63,7 +62,6 @@ const slideTitle = computed<SlideTitle>(() => ({
         :styles="overviewStyles"
         :theme-team-name="season.club"
         :team-text-size="teamTextSize"
-        :meta-text-size="metaTextSize"
       />
     </div>
   </SharedContainer>

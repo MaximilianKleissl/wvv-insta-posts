@@ -9,38 +9,12 @@
     ]"
     :style="cardStyle"
   >
-    <div v-if="label" class="flex items-center justify-center gap-3 pt-2">
-      <div class="h-px flex-1" :style="{ backgroundColor: hairlineColor }" /> 
-        <span
-          :class="[
-            'text-sm font-bold uppercase tracking-[0.28em]',
-            teamColors.getPrimaryTextColorWithOpacity('80'),
-          ]"
-        >
-          {{ label }}
-        </span>
-        <div class="h-px flex-1" :style="{ backgroundColor: hairlineColor }" />
-    </div>
-
-    <div class="mt-3 flex min-h-0 flex-1 items-center justify-between gap-3">
-      <slot />
-    </div>
-
-    <div v-if="$slots.footer" class="mt-4 flex items-center gap-3">
-      <div class="h-px flex-1" :style="{ backgroundColor: hairlineColor }" />
-      <div
-        :class="[
-          'flex items-center gap-2 rounded-full px-5 py-2 text-lg font-black tracking-wide',
-          teamColors.getHomeBgColor(),
-          teamColors.getHomeIconColor(),
-        ]"
-      >
-        <slot name="footer" />
-      </div>
-      <div class="h-px flex-1" :style="{ backgroundColor: hairlineColor }" />
-    </div>
-
-    <div v-if="hasBadge" :class="['absolute z-10', badgeClass]">
+    <slot />
+    <div
+      v-if="hasBadge"
+      class="z-6 absolute -left-3 -top-4 flex items-center gap-2 rounded-full px-5 py-2 uppercase tracking-[0.16em] shadow-lg"
+      :class="badgeClass"
+    >
       <slot name="badge" />
     </div>
   </div>
@@ -66,13 +40,11 @@ import { useTeamColors } from '@/composables/useTeamColors';
 const props = withDefaults(
   defineProps<{
     teamName: string;
-    label?: string;
     fill?: boolean;
     badgeClass?: string | string[];
     styles?: SlideStyles;
   }>(),
   {
-    label: undefined,
     fill: false,
     badgeClass: undefined,
     styles: () => CARD_FRAME_STYLES,
@@ -82,7 +54,6 @@ const props = withDefaults(
 const slots = useSlots();
 const teamColors = useTeamColors(props.teamName);
 
-const hairlineColor = computed(() => teamColors.getHairlineColor());
 const hasBadge = computed(() => Boolean(slots.badge));
 
 const cardStyle = computed(() => ({

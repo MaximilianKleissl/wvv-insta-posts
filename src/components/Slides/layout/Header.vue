@@ -1,5 +1,9 @@
 <template>
-  <div class="relative w-full shrink-0 overflow-hidden font-sans select-none" :class="formatClasses.headerHeight" :style="{ backgroundColor: schemeColor }">
+  <div
+    class="relative w-full shrink-0 overflow-hidden font-sans select-none"
+    :class="formatClasses.headerHeight"
+    :style="{ backgroundColor: schemeColor }"
+  >
     <div class="absolute inset-y-0 right-0 w-[72%] opacity-95" :style="actionImageStyle" />
     <div class="absolute inset-0" :style="gradientStyle" />
     <div class="relative z-10 flex h-full flex-col text-white" :class="formatClasses.headerPadding">
@@ -14,17 +18,12 @@
           {{ slideTitle.title }}
         </h1>
       </div>
-      <div class="flex flex-col items-start gap-2" :class="formatClasses.headerLabelFlexDirection">
-        <div
-          v-for="label in slideTitle.label"
-          :key="label"
-          class="w-fit bg-white/95 font-black tracking-tight shadow-xl"
-          :class="formatClasses.seasonClasses"
-          :style="seasonStyle"
-        >
-          {{ label }}
-        </div>
-      </div>
+      <LabelContainer
+        :labels="slideTitle.label"
+        :color="schemeColor"
+        :flex-direction="formatClasses.headerLabelFlexDirection"
+        :chip-classes="formatClasses.seasonClasses"
+      />
     </div>
   </div>
 </template>
@@ -37,6 +36,7 @@ import { hashString } from '@/lib/slide-utils';
 import { CONFIG_BASE_URL } from '@/lib/config';
 import { useActionImages } from '@/composables/useActionImages';
 import { useTeamColors } from '@/composables/useTeamColors';
+import LabelContainer from './LabelContainer.vue';
 
 const props = withDefaults(
   defineProps<{
@@ -70,9 +70,5 @@ const actionImageStyle = computed(() => ({
 }));
 const gradientStyle = computed(() => ({
   background: `linear-gradient(90deg, ${schemeColor.value} 0%, ${schemeColor.value}e6 55%, transparent 100%)`,
-}));
-const seasonStyle = computed(() => ({
-  color: schemeColor.value,
-  clipPath: 'polygon(3% 8%, 96% 0, 100% 78%, 91% 100%, 5% 91%, 0 28%)',
 }));
 </script>

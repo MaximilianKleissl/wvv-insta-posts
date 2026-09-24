@@ -1,69 +1,170 @@
 <template>
-  <CardFrame :team-name="themeTeamName" :styles="styles" :fill="true">
-    <HomeTeamIndication :md="md" />
+  <CardFrame
+    fill
+    :team-name="themeTeamName"
+    :styles="styles"
+    :badge-class="badgeClass"
+  >
+    <template #badge>
+      <Calendar :size="17" :stroke-width="2.5" aria-hidden="true" />
+      <span>{{ weekdayLabel }}</span>
+      <div class="w-5"></div>
+      <MapPin :size="17" :stroke-width="2.5" aria-hidden="true" />
+      <span
+        class="max-w-[12rem] truncate"
+        :title="md.location"
+      >
+        {{ md.location }}
+      </span>
+    </template>
 
-    <div class="min-w-0 flex-1 space-y-2 rounded-2xl bg-white/45 px-4 py-3">
+    <!--
+      The opponent column is intentionally wider than the team column.
+      This gives logos/names more room while keeping the VS badge perfectly centered.
+    -->
+    <div
+      class="grid min-h-0 flex-1 grid-cols-[1fr_auto_1.6fr] items-center gap-5 pt-1"
+    >
+      <!-- Left: club team -->
       <h3
-        :class="[
-          'font-black tracking-tight truncate leading-tight uppercase text-slate-900',
-          teamTextSize,
-        ]"
+        class="min-w-0 break-words text-center font-black uppercase leading-[1.05] tracking-[-0.035em] text-slate-900"
+        :class="teamTextSize"
+        :title="md.team"
       >
         {{ md.team }}
       </h3>
 
-      <div :class="['flex flex-wrap items-center gap-x-3 gap-y-1 text-slate-500', metaTextSize]">
-        <span class="flex items-center gap-1.5 font-bold text-slate-800">
-          <Calendar :size="16" class="text-slate-400 shrink-0" />
-          {{ germanWeekdayName(md.date) }}
-        </span>
-        <span class="hidden sm:inline w-1 h-1 rounded-full bg-slate-300" />
-        <span class="flex items-center gap-1.5 font-medium truncate">
-          <MapPin :size="16" class="text-slate-400 shrink-0" />
-          {{ md.location }}
-        </span>
+      <!-- Middle: VS badge or result -->
+      <div class="flex shrink-0 flex-col items-center justify-center">
+        <VsBadge
+          :team-name="themeTeamName"
+          :result="md.match_day_result"
+        />
       </div>
+
+      <!-- Right: opponents -->
+      <ul
+  v-if="opponents.length"
+  class="grid min-w-0 grid-flow-col auto-cols-fr items-start gap-2"
+>
+  <li
+    v-for="opponent in opponents"
+    :key="opponent"
+    class="flex min-w-0 flex-col items-center gap-1.5"
+    :title="opponent"
+  >
+    <div
+      class="relative flex shrink-0 items-center justify-center"
+      :class="opponentLayout.logo"
+    >
+      <TeamLogo
+        :team-name="opponent"
+        size-class="h-full w-full"
+      />
     </div>
 
-    <div v-if="md.match_day_result" class="flex items-center justify-center shrink-0">
-      <div
-        :class="[
-          'relative flex flex-col items-center justify-center min-w-23 px-4 py-2 rounded-2xl shadow-lg overflow-hidden',
-          teamColors.getResultBgColor(),
-        ]"
+    <span
+      class="max-w-full break-words text-center font-extrabold leading-tight"
+      :class="opponentLayout.name"
+    >
+      {{ opponent }}
+    </span>
+  </li>
+</ul>
+
+      <p
+        v-else
+        class="text-center text-[10px] font-bold uppercase tracking-[0.12em] text-slate-300"
       >
-        <div :class="['absolute inset-x-0 top-0 h-1', teamColors.getHighlightColor()]" />
-
-        <span
-          :class="['text-xs uppercase tracking-[0.25em] font-black', teamColors.getAccentColor()]"
-        >
-          Ergebnis
-        </span>
-
-        <span class="text-5xl leading-none font-black text-white tracking-tight">
-          {{ md.match_day_result }}
-        </span>
-      </div>
+        Gegner folgt
+      </p>
     </div>
   </CardFrame>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import { Calendar, MapPin } from 'lucide-vue-next';
-import CardFrame from './CardFrame.vue';
-import HomeTeamIndication from '../parts/HomeTeamIndication.vue';
-import type { MatchDay } from '@/lib/types';
+
 import type { SlideStyles } from '@/composables/Slides/useDensity';
-import { germanWeekdayName } from '@/lib/grouping';
 import { useTeamColors } from '@/composables/useTeamColors';
+import { germanWeekdayName, isTournamentMatchDay } from '@/lib/grouping';
+import type { MatchDay } from '@/lib/types';
+
+import TeamLogo from '../parts/TeamLogo.vue';
+import VsBadge from '../parts/VsBadge.vue';
+import CardFrame from './CardFrame.vue';
+import LabelContainer from '../layout/LabelContainer.vue';
 
 const props = defineProps<{
   md: MatchDay;
   styles: SlideStyles;
   themeTeamName: string;
   teamTextSize: string;
-  metaTextSize: string;
 }>();
 
+const BADGE_BASE_CLASS =
+  'absolute -left-3 -top-4 flex items-center gap-2 rounded-full px-5 py-2 text-sm font-black uppercase tracking-[0.16em] text-white shadow-lg';
+
+// Above this number of opponents, use the compact logo layout.
+const LARGE_LOGO_MAX_COUNT = 3;
+
 const teamColors = useTeamColors(props.themeTeamName);
+
+const badgeClass = computed(() => [
+  BADGE_BASE_CLASS,
+  teamColors.getBadgeBgColor(),
+]);
+
+const weekdayLabel = computed(() => germanWeekdayName(props.md.date));
+
+function getParticipatingTeams(md: MatchDay): string[] {
+  if (isTournamentMatchDay(md)) {
+    return md.teams ?? [];
+  }
+
+  return (md.matches ?? []).flatMap(({ home, away }) => [home, away]);
+}
+
+const opponents = computed(() => {
+  const clubName = props.themeTeamName.trim();
+  const ownTeam = props.md.team.trim();
+
+  if (!clubName && !ownTeam) {
+    return [];
+  }
+
+  const isOwnTeam = (teamName: string) => {
+    const name = teamName.trim();
+
+    return (
+      name === ownTeam ||
+      name === clubName ||
+      name.startsWith(`${clubName} `)
+    );
+  };
+
+  const others = getParticipatingTeams(props.md)
+    .map((name) => name.trim())
+    .filter(Boolean)
+    .filter((name) => !isOwnTeam(name));
+
+  return [...new Set(others)];
+});
+
+const opponentLayout = computed(() => {
+  const count = opponents.value.length;
+
+  if (count > LARGE_LOGO_MAX_COUNT) {
+    return {
+      logo: 'h-20 w-20 p-1',
+      name: 'max-w-[3.5rem] text-[11px] text-slate-600',
+    };
+  }
+
+  return {
+    logo: 'h-25 w-25 p-1.5',
+    name: 'max-w-[5rem] text-[11px] text-slate-600',
+  };
+});
 </script>

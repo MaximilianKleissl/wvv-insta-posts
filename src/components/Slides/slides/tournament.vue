@@ -19,10 +19,10 @@ const teamColors = useTeamColors(props.matchDay.team);
 
 const styles = computed(() => ({
   density: 'normal' as const,
-  cardPadding: 'p-8',
-  cardRadius: 'rounded-3xl',
-  logoSize: 'w-32 h-32',
-  textSize: 'text-4xl',
+  cardPadding: 'px-6 py-4',
+  cardRadius: 'rounded-[28px]',
+  logoSize: 'w-28 h-28',
+  textSize: 'text-3xl',
 }));
 
 // Computed properties
@@ -32,7 +32,9 @@ const slideTitle = computed<SlideTitle>(() => ({
   ...getMatchDaySlideTitle(props.matchDay),
 }));
 
-const gridClass = computed(() => 'grid-cols-1 auto-rows-fr');
+const gridClass = computed(() => 'grid-cols-2 auto-rows-fr');
+
+const isOdd = computed(() => teams.value.length % 2 === 1);
 </script>
 
 <template>
@@ -44,15 +46,18 @@ const gridClass = computed(() => 'grid-cols-1 auto-rows-fr');
       <Users :class="['w-7 h-7', teamColors.getHomeIconColor()]" />
       <span>Teilnehmende Mannschaften</span>
     </div>
-    <div :class="['grid gap-4 content-start flex-1 overflow-hidden', gridClass]">
+    <div :class="['grid gap-4 content-start flex-1 min-h-0 overflow-hidden', gridClass]">
       <CardFrame
-        v-for="team in teams"
+        v-for="(team, index) in teams"
         :key="team"
         :team-name="props.matchDay.team"
         :styles="styles"
         :fill="true"
+        :class="isOdd && index === teams.length - 1 ? 'col-span-2' : ''"
       >
-        <div class="flex w-full min-w-0 flex-col items-center justify-center gap-2 text-center">
+        <div
+          class="flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-3 text-center"
+        >
           <TeamLogo
             :team-name="team"
             :theme-team-name="isHomeClub(team) ? props.matchDay.team : undefined"
