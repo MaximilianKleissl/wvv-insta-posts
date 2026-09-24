@@ -3,8 +3,6 @@
 [![Live demo](https://img.shields.io/badge/live-demo-green)](https://maximiliankleissl.github.io/wvv-insta-posts)
 [![Checks](https://github.com/MaximilianKleissl/wvv-insta-posts/actions/workflows/checks.yml/badge.svg)](https://github.com/MaximilianKleissl/wvv-insta-posts/actions/workflows/checks.yml)
 
-![Screenshot](docs/screenshot.png)
-
 Vue 3 app that turns a volleyball match schedule into Instagram-ready slides. It generates
 Portrait 4:5 and Story slides for match weekends (overview, matchdays, tournaments) and
 per-team season summaries, packs them with ready-to-paste captions into a ZIP, and downloads
