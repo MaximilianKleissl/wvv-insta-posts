@@ -100,9 +100,9 @@ const backgroundSrc = computed(() =>
   (() => {
     switch (props.format) {
       case 'stories':
-        return 'image_story.png';
+        return 'image_story.webp';
       case 'portrait_4by5':
-        return 'image_portrait_4by5.png';
+        return 'image_portrait_4by5.webp';
       default:
         return 'image.png';
     }

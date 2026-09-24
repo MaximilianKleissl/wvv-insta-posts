@@ -9,4 +9,4 @@ const DEFAULT_CONFIG_BASE_URL = 'https://maximiliankleissl.github.io/wvv-posts-c
  */
 export const CONFIG_BASE_URL = import.meta.env.DEV
   ? '/config'
-  : (import.meta.env.VITE_CONFIG_BASE_URL || DEFAULT_CONFIG_BASE_URL);
+  : import.meta.env.VITE_CONFIG_BASE_URL || DEFAULT_CONFIG_BASE_URL;
