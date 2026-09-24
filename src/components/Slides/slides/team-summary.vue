@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { SeasonData, MatchDay } from '@/lib/types';
-import { homeAwayLabel, isTournamentMatchDay } from '@/lib/grouping';
+import { homeAwayLabel, isTournamentMatchDay, sortMatchDays } from '@/lib/grouping';
 import SharedContainer from '../layout/SharedContainer.vue';
 import TeamSummaryCard from '../cards/TeamSummaryCard.vue';
 import { useTeamHighlight } from '@/composables/useTeamHighlight';
 import type { SlideTitle, MatchDayFixture } from '@/lib/slide-types';
+import type { SlideFormatMode } from '@/lib/slide-format';
 
 interface SlideTeamSummaryProps {
   id: string;
@@ -13,9 +14,12 @@ interface SlideTeamSummaryProps {
   teamName: string;
   matchDays: MatchDay[];
   gameType: 'home' | 'away';
+  format?: SlideFormatMode;
 }
 
-const props = defineProps<SlideTeamSummaryProps>();
+const props = withDefaults(defineProps<SlideTeamSummaryProps>(), {
+  format: 'portrait_4by5',
+});
 
 const clubName = computed(() => props.season.club);
 const { isHomeClub } = useTeamHighlight(props.season, props.teamName);
@@ -26,11 +30,7 @@ const slideMatchDays = computed(() =>
 );
 
 const fixtures = computed<MatchDayFixture[]>(() => {
-  const sorted = [...slideMatchDays.value].sort((a, b) => {
-    const aDate = new Date(a.date.split('.').reverse().join('-')).getTime();
-    const bDate = new Date(b.date.split('.').reverse().join('-')).getTime();
-    return aDate - bDate;
-  });
+  const sorted = sortMatchDays(slideMatchDays.value);
 
   return sorted.map((matchDay) => ({
     matchDay,
@@ -70,7 +70,7 @@ const slideTitle = computed<SlideTitle>(() => ({
 </script>
 
 <template>
-  <SharedContainer :id="id" :slide-title="slideTitle" :format="'portrait_4by5'">
+  <SharedContainer :id="id" :slide-title="slideTitle" :format="format">
     <TeamSummaryCard :fixtures="fixtures" :team-name="teamName" :club-name="clubName" />
   </SharedContainer>
 </template>

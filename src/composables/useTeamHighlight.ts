@@ -3,7 +3,6 @@
  * Provides consistent highlighting of the home club across slide components
  */
 
-import { computed } from 'vue';
 import type { SeasonData } from '@/lib/types';
 import { useTeamColors } from './useTeamColors';
 
@@ -24,14 +23,8 @@ export function useTeamHighlight(season: SeasonData, themeTeamName = season.club
     return isHomeClub(teamName) ? teamColors.getHomeIconColor() : 'text-black';
   };
 
-  /**
-   * Computed version of text color for reactive usage
-   */
-  const teamTextColor = (teamName: string) => computed(() => getTeamTextColor(teamName));
-
   return {
     isHomeClub,
     getTeamTextColor,
-    teamTextColor,
   };
 }

@@ -1,11 +1,5 @@
 <template>
-  <CardFrame
-    fill
-    :team-name="themeTeamName"
-    :styles="styles"
-    :badge-class="badgeBgColor"
-    :bg-class="cardBgClass"
-  >
+  <CardFrame fill :team-name="themeTeamName" :badge-class="badgeBgColor">
     <template #badge>
       <Calendar :size="20" :stroke-width="2.5" aria-hidden="true" />
       <span>{{ weekdayLabel }}</span>
@@ -77,7 +71,6 @@
 import { computed } from 'vue';
 import { Calendar, MapPin } from 'lucide-vue-next';
 
-import type { SlideStyles } from '@/composables/Slides/useDensity';
 import { useTeamColors } from '@/composables/useTeamColors';
 import { germanWeekdayName, isTournamentMatchDay } from '@/lib/grouping';
 import type { MatchDay } from '@/lib/types';
@@ -88,17 +81,15 @@ import CardFrame from './CardFrame.vue';
 
 const props = defineProps<{
   md: MatchDay;
-  styles: SlideStyles;
   themeTeamName: string;
 }>();
 
-// Above this number of opponents, use the compact logo layout.
+// Above this number of opponents, use the logo layout.
 const LARGE_LOGO_MAX_COUNT = 3;
 
 const teamColors = useTeamColors(props.themeTeamName);
 
 const badgeBgColor = computed(() => teamColors.getBadgeBgColor());
-const cardBgClass = computed(() => teamColors.getHomeBgColor());
 
 const teamTextColor = computed(() => teamColors.colorScheme.value.primary);
 

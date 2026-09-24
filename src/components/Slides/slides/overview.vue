@@ -22,11 +22,6 @@ const props = withDefaults(defineProps<SlideOverviewProps>(), {
 const weekend = computed(() => props.season.weekends[props.weekendIndex]);
 const matchDays = computed(() => sortedMatchDaysForWeekend(weekend.value));
 
-const overviewStyles = computed(() => ({
-  cardPadding: 'px-6 py-4',
-  cardRadius: 'rounded-[28px]',
-}));
-
 // Dynamic grid allocation based on match count to balance empty spaces
 const containerGridClass = computed(() => {
   return (
@@ -55,7 +50,6 @@ const slideTitle = computed<SlideTitle>(() => ({
         v-for="md in matchDays"
         :key="getMatchDayKey(md)"
         :md="md"
-        :styles="overviewStyles"
         :theme-team-name="season.club"
       />
     </div>

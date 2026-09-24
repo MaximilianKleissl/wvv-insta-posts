@@ -6,7 +6,7 @@ import CardFrame from '../cards/CardFrame.vue';
 import TeamLogo from '../parts/TeamLogo.vue';
 import { useTeamHighlight } from '@/composables/useTeamHighlight';
 import { useTeamColors } from '@/composables/useTeamColors';
-import type { SlideTitle, SlideMatchdayProps } from '@/lib/slide-types';
+import type { SlideMatchdayProps } from '@/lib/slide-types';
 import { getMatchDaySlideTitle } from '@/lib/slide-utils';
 
 const props = withDefaults(defineProps<SlideMatchdayProps>(), {
@@ -18,8 +18,6 @@ const { getTeamTextColor, isHomeClub } = useTeamHighlight(props.season, props.ma
 const teamColors = useTeamColors(props.matchDay.team);
 
 const styles = computed(() => ({
-  cardPadding: 'px-6 py-4',
-  cardRadius: 'rounded-[28px]',
   logoSize: 'w-28 h-28',
   textSize: 'text-3xl',
 }));
@@ -33,9 +31,7 @@ const teams = computed(() => {
   ]; // sort us to the end
 });
 
-const slideTitle = computed<SlideTitle>(() => ({
-  ...getMatchDaySlideTitle(props.matchDay),
-}));
+const slideTitle = computed(() => getMatchDaySlideTitle(props.matchDay));
 
 const isOdd = computed(() => teams.value.length % 2 === 1);
 </script>
@@ -54,7 +50,6 @@ const isOdd = computed(() => teams.value.length % 2 === 1);
         v-for="(team, index) in teams"
         :key="team"
         :team-name="props.matchDay.team"
-        :styles="styles"
         :fill="true"
         :class="isOdd && index === teams.length - 1 ? 'col-span-2' : ''"
       >

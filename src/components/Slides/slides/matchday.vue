@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import { sortMatches } from '@/lib/grouping';
 import SharedContainer from '../layout/SharedContainer.vue';
 import MatchCard from '../cards/MatchCard.vue';
-import type { SlideTitle, SlideMatchdayProps } from '@/lib/slide-types';
+import type { SlideMatchdayProps } from '@/lib/slide-types';
 import { getMatchDaySlideTitle, getMatchKey } from '@/lib/slide-utils';
 
 // Each card (row) may only take at most 33% of the available height, so a
@@ -16,9 +16,7 @@ const props = withDefaults(defineProps<SlideMatchdayProps>(), {
 
 const matches = computed(() => sortMatches(props.matchDay));
 
-const slideTitle = computed<SlideTitle>(() => ({
-  ...getMatchDaySlideTitle(props.matchDay),
-}));
+const slideTitle = computed(() => getMatchDaySlideTitle(props.matchDay));
 </script>
 
 <template>

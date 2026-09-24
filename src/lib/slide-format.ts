@@ -37,28 +37,26 @@ export interface SlideFormatClasses {
   teamTextSize: string;
 }
 
+const SHARED_FORMAT_CLASSES = {
+  mainGap: 'gap-4',
+  footerGap: 'gap-3',
+  sponsorLabel: 'Partner, Unterstützer und Förderer',
+  sponsorGap: 'gap-12',
+  sponsorLogoHeight: 'h-16',
+  headerPadding: 'p-14',
+  seasonClasses: 'px-9 py-2 text-3xl',
+};
+
 const FORMAT_CLASSES: Record<SlideFormatMode, SlideFormatClasses> = {
   portrait_4by5: {
-    mainGap: 'gap-4',
-    footerGap: 'gap-3',
-    sponsorLabel: 'Partner, Unterstützer und Förderer',
-    sponsorGap: 'gap-12',
-    sponsorLogoHeight: 'h-16',
+    ...SHARED_FORMAT_CLASSES,
     headerHeight: 'h-[350px]',
-    headerPadding: 'p-14',
-    seasonClasses: 'px-9 py-2 text-3xl',
     headerLabelFlexDirection: 'flex-row',
     teamTextSize: 'text-3xl',
   },
   stories: {
-    mainGap: 'gap-4',
-    footerGap: 'gap-3',
-    sponsorLabel: 'Partner, Unterstützer und Förderer',
-    sponsorGap: 'gap-12',
-    sponsorLogoHeight: 'h-16',
+    ...SHARED_FORMAT_CLASSES,
     headerHeight: 'h-[700px]',
-    headerPadding: 'p-14',
-    seasonClasses: 'px-9 py-2 text-3xl',
     headerLabelFlexDirection: 'flex-col',
     teamTextSize: 'text-4xl',
   },
@@ -66,15 +64,6 @@ const FORMAT_CLASSES: Record<SlideFormatMode, SlideFormatClasses> = {
 
 export function getFormatClasses(mode: SlideFormatMode): SlideFormatClasses {
   return FORMAT_CLASSES[mode];
-}
-
-/** Returns the classes for a given format without cluttering templates with ternaries. */
-export function pickFormatClass(
-  format: SlideFormatMode,
-  portrait: string | undefined,
-  stories: string,
-): string | undefined {
-  return format === 'stories' ? stories : portrait;
 }
 
 export function getSlideDimensions(mode: SlideFormatMode = 'portrait_4by5'): SlideFormatConfig {
@@ -89,7 +78,11 @@ export function getSlideBoxStyle(mode: SlideFormatMode = 'portrait_4by5') {
   } as const;
 }
 
-export function getSlideScale(mode: SlideFormatMode = 'portrait_4by5', maxWidth = 216, maxHeight = 216) {
+export function getSlideScale(
+  mode: SlideFormatMode = 'portrait_4by5',
+  maxWidth = 216,
+  maxHeight = 216,
+) {
   const { width, height } = getSlideDimensions(mode);
   return Math.min(maxWidth / width, maxHeight / height);
 }
