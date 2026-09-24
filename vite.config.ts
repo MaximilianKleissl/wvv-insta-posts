@@ -7,10 +7,12 @@ import tailwindcss from '@tailwindcss/vite';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const DEFAULT_CONFIG_BASE_URL = 'https://maximiliankleissl.github.io/wvv-posts-config';
+const DEFAULT_WRITER_URL = 'https://gateway.wvv-insta-config-editor-api.workers.dev';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, path.resolve(__dirname));
   const configBaseUrl = env.VITE_CONFIG_BASE_URL || DEFAULT_CONFIG_BASE_URL;
+  const writerBaseUrl = env.VITE_WRITER_URL || DEFAULT_WRITER_URL;
 
   return {
     base: '/wvv-insta-posts/',
@@ -40,6 +42,13 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: true,
           rewrite: (path) => path.replace(/^\/config/, ''),
+        },
+        // Proxy write-gateway requests in dev to avoid CORS.
+        '/writer': {
+          target: writerBaseUrl,
+          changeOrigin: true,
+          secure: true,
+          rewrite: (path) => path.replace(/^\/writer/, ''),
         },
       },
     },

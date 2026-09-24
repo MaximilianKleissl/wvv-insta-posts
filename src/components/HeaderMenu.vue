@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import type { ExportProgress } from '@/lib/export-zip';
 
 const props = defineProps<{
@@ -14,6 +15,8 @@ const emit = defineEmits<{
   exportAll: [];
   openDocumentation: [];
 }>();
+
+const router = useRouter();
 
 const isOpen = ref(false);
 const activeMenu = ref<string | null>(null);
@@ -64,6 +67,13 @@ defineExpose({
         @click="toggleMenu('stats')"
       >
         #
+      </button>
+      <button
+        class="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-sm font-semibold text-white hover:bg-white/30 transition"
+        title="Config-Editor öffnen"
+        @click="router.push('/editor')"
+      >
+        ✎
       </button>
       <button
         class="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-sm font-semibold text-white hover:bg-white/30 transition"
