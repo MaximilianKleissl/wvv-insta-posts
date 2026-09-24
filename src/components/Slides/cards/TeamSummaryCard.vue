@@ -30,7 +30,7 @@
         </div>
 
         <div class="flex w-20 shrink-0 flex-col items-center">
-          <VsBadge :bg-color="teamColors.getBadgeBgColor()" :hairline-color="hairlineColor" />
+          <VsBadge :bg-color="teamColors.getBadgeBgColor()" />
         </div>
 
         <div class="flex min-w-0 flex-1 flex-col items-center justify-center gap-2 text-center">
@@ -60,7 +60,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
 import { Home, Car, Calendar } from 'lucide-vue-next';
 import TeamLogo from '../parts/TeamLogo.vue';
 import VsBadge from '../parts/VsBadge.vue';
@@ -76,5 +75,4 @@ const props = defineProps<{
 }>();
 
 const teamColors = useTeamColors(props.teamName);
-const hairlineColor = computed(() => teamColors.getHairlineColor());
 </script>

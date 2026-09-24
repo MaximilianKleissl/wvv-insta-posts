@@ -71,11 +71,7 @@ const slideTitle = computed<SlideTitle>(() => ({
 </script>
 
 <template>
-  <SharedContainer
-    :id="id"
-    :slide-title="slideTitle"
-    :format="'portrait_4by5'"
-  >
+  <SharedContainer :id="id" :slide-title="slideTitle" :format="'portrait_4by5'">
     <TeamSummaryCard :fixtures="fixtures" :team-name="teamName" :club-name="clubName" />
   </SharedContainer>
 </template>

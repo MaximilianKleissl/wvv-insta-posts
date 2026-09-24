@@ -14,10 +14,7 @@
       <span>{{ weekdayLabel }}</span>
       <div class="w-5"></div>
       <MapPin :size="20" :stroke-width="2.5" aria-hidden="true" />
-      <span
-        class="max-w-[14rem] truncate"
-        :title="md.location"
-      >
+      <span class="max-w-[14rem] truncate" :title="md.location">
         {{ md.location }}
       </span>
     </template>
@@ -26,9 +23,7 @@
       The opponent column is intentionally wider than the team column.
       This gives logos/names more room while keeping the VS badge perfectly centered.
     -->
-    <div
-      class="grid min-h-0 flex-1 grid-cols-[1fr_auto_1.6fr] items-center gap-10"
-    >
+    <div class="grid min-h-0 flex-1 grid-cols-[1fr_auto_1.6fr] items-center gap-10">
       <!-- Left: club team -->
       <h3
         class="min-w-0 break-words text-center font-black uppercase leading-[1.05] tracking-[-0.035em] text-4xl"
@@ -48,34 +43,28 @@
       </div>
 
       <!-- Right: opponents -->
-      <ul
-  v-if="opponents.length"
-  class="grid min-w-0 grid-flow-col auto-cols-fr items-start gap-2"
->
-  <li
-    v-for="opponent in opponents"
-    :key="opponent"
-    class="flex min-w-0 flex-col items-center gap-1.5"
-    :title="opponent"
-  >
-    <div
-      class="relative flex shrink-0 items-center justify-center"
-      :class="opponentLayout.logo"
-    >
-      <TeamLogo
-        :team-name="opponent"
-        size-class="h-full w-full"
-      />
-    </div>
+      <ul v-if="opponents.length" class="grid min-w-0 grid-flow-col auto-cols-fr items-start gap-2">
+        <li
+          v-for="opponent in opponents"
+          :key="opponent"
+          class="flex min-w-0 flex-col items-center gap-1.5"
+          :title="opponent"
+        >
+          <div
+            class="relative flex shrink-0 items-center justify-center"
+            :class="opponentLayout.logo"
+          >
+            <TeamLogo :team-name="opponent" size-class="h-full w-full" />
+          </div>
 
-    <span
-      class="max-w-full break-words text-center font-extrabold leading-tight"
-      :class="opponentLayout.name"
-    >
-      {{ opponent }}
-    </span>
-  </li>
-</ul>
+          <span
+            class="max-w-full break-words text-center font-extrabold leading-tight"
+            :class="opponentLayout.name"
+          >
+            {{ opponent }}
+          </span>
+        </li>
+      </ul>
 
       <p
         v-else
@@ -137,11 +126,7 @@ const opponents = computed(() => {
   const isOwnTeam = (teamName: string) => {
     const name = teamName.trim();
 
-    return (
-      name === ownTeam ||
-      name === clubName ||
-      name.startsWith(`${clubName} `)
-    );
+    return name === ownTeam || name === clubName || name.startsWith(`${clubName} `);
   };
 
   const others = getParticipatingTeams(props.md)

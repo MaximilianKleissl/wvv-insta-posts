@@ -5,7 +5,7 @@
       bgClass,
       styles.cardPadding,
       styles.cardRadius,
-      teamColors.getHomeBorderColor('60'),
+      teamColors.getHomeBorderColor(),
       fill ? 'flex-1 min-h-0' : '',
     ]"
     :style="cardStyle"
@@ -25,11 +25,8 @@
 import type { SlideStyles } from '@/composables/Slides/useDensity';
 
 const CARD_FRAME_STYLES: SlideStyles = {
-  density: 'normal',
   cardPadding: 'px-8 py-5',
   cardRadius: 'rounded-[28px]',
-  logoSize: 'h-24 w-24',
-  textSize: 'text-4xl',
 };
 </script>
 

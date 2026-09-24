@@ -16,10 +16,6 @@ export function getMatchDaySlideTitle(matchDay: MatchDay): SlideTitle {
   };
 }
 
-export function isClubTeam(teamName: string, clubName: string): boolean {
-  return teamName.startsWith(clubName);
-}
-
 export function getMatchDayKey(matchDay: MatchDay): string {
   return `${matchDay.date}-${matchDay.team}-${matchDay.location}`;
 }

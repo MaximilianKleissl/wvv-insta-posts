@@ -21,13 +21,11 @@ const props = withDefaults(
     teamName?: string;
     result?: MatchResult | string;
     bgColor?: string;
-    hairlineColor?: string;
   }>(),
   {
     teamName: undefined,
     result: undefined,
     bgColor: undefined,
-    hairlineColor: undefined,
   },
 );
 
@@ -39,8 +37,11 @@ const bgColor = computed(() => {
   return 'bg-slate-800/10';
 });
 
-
 const badgeText = computed(() =>
-  props.result ? (typeof props.result === 'string' ? props.result : `${props.result.home} : ${props.result.away}`) : 'VS',
+  props.result
+    ? typeof props.result === 'string'
+      ? props.result
+      : `${props.result.home} : ${props.result.away}`
+    : 'VS',
 );
 </script>

@@ -23,16 +23,16 @@ const weekend = computed(() => props.season.weekends[props.weekendIndex]);
 const matchDays = computed(() => sortedMatchDaysForWeekend(weekend.value));
 
 const overviewStyles = computed(() => ({
-  density: 'normal' as const,
   cardPadding: 'px-6 py-4',
   cardRadius: 'rounded-[28px]',
-  logoSize: 'w-16 h-16',
-  textSize: 'text-xl',
 }));
 
 // Dynamic grid allocation based on match count to balance empty spaces
 const containerGridClass = computed(() => {
-  return 'grid min-h-0 flex-1 content-center gap-8 w-full' + (matchDays.value.length < 5 ? ' grid-cols-1' : ' grid-cols-2');
+  return (
+    'grid min-h-0 flex-1 content-center gap-8 w-full' +
+    (matchDays.value.length < 5 ? ' grid-cols-1' : ' grid-cols-2')
+  );
 });
 
 // Each row takes at most 33% of the available height, so single or double

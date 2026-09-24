@@ -18,7 +18,6 @@ const { getTeamTextColor, isHomeClub } = useTeamHighlight(props.season, props.ma
 const teamColors = useTeamColors(props.matchDay.team);
 
 const styles = computed(() => ({
-  density: 'normal' as const,
   cardPadding: 'px-6 py-4',
   cardRadius: 'rounded-[28px]',
   logoSize: 'w-28 h-28',
@@ -28,7 +27,10 @@ const styles = computed(() => ({
 // Computed properties
 const teams = computed(() => {
   const allTeams = props.matchDay.teams ?? [];
-  return [...allTeams.filter((team) => !isHomeClub(team)), ...allTeams.filter((team) => isHomeClub(team))]; // sort us to the end
+  return [
+    ...allTeams.filter((team) => !isHomeClub(team)),
+    ...allTeams.filter((team) => isHomeClub(team)),
+  ]; // sort us to the end
 });
 
 const slideTitle = computed<SlideTitle>(() => ({
