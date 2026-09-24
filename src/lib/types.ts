@@ -50,17 +50,6 @@ export interface TemplateDefinition {
   description: string;
 }
 
-export interface GeneratedSlide {
-  id: string;
-  weekendIndex: number;
-  kind: 'overview' | 'matchday';
-  matchDayIndex?: number;
-  title: string;
-  caption: string;
-  /** file name (without extension) used for export */
-  fileName: string;
-}
-
 export interface Sponsor {
   filename: string;
   name: string;

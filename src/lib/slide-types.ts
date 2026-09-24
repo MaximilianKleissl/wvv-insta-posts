@@ -17,10 +17,6 @@ export interface MatchDayMetaData {
   location: string;
 }
 
-export interface SlideProps {
-  id: string;
-}
-
 /** Common props for slides rendering a single match day (matchday + tournament). */
 export interface SlideMatchdayProps {
   id: string;

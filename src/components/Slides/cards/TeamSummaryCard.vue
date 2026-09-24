@@ -5,7 +5,7 @@
       :key="fixture.matchDay.date"
       :team-name="teamName"
       :badge-class="[
-        'absolute -left-3 -top-4 flex items-center gap-2 rounded-full px-5 py-2 text-sm font-black uppercase tracking-[0.16em] text-white shadow-lg',
+        'font-black text-white',
         teamColors.getBadgeBgColor(),
       ]"
     >

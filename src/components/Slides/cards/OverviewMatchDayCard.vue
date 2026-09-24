@@ -4,7 +4,7 @@
     :team-name="themeTeamName"
     :styles="styles"
     :badge-class="[
-      'absolute -left-3 -top-4 flex items-center gap-2.5 rounded-full px-6 py-2.5 text-base font-black uppercase tracking-[0.16em] text-white shadow-lg',
+      'font-black text-white',
       badgeBgColor,
     ]"
     :bg-class="cardBgClass"

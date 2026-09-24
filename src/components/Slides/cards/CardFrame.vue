@@ -13,7 +13,7 @@
     <slot />
     <div
       v-if="hasBadge"
-      class="z-6 absolute -left-3 -top-4 flex items-center gap-2 rounded-full px-5 py-2 uppercase tracking-[0.16em] shadow-lg"
+      class="z-6 absolute -left-3 -top-4 flex items-center gap-2 rounded-full px-5 py-2 uppercase tracking-[0.16em] shadow-lg text-base"
       :class="badgeClass"
     >
       <slot name="badge" />
