@@ -10,6 +10,7 @@ import SlideTournament from '@/components/Slides/slides/tournament.vue';
 import PreviewGallery from '@/components/preview-gallery.vue';
 import { sortedMatchDaysForWeekend, slugify } from '@/lib/grouping';
 import { exportSeasonZip, downloadBlob, seasonZipFileName } from '@/lib/export-zip';
+import { useToast } from '@/composables/useToast';
 import { getSlideBoxStyle, type SlideFormatMode } from '@/lib/slide-format';
 import type { ExportProgress } from '@/lib/export-zip';
 import { isTournamentMatchDay } from '@/lib/grouping';
@@ -29,6 +30,7 @@ const { registerSlideRef, getSlideElement } = useSlideRegistry();
 const exporting = ref(false);
 const progress = ref<ExportProgress | null>(null);
 const exportFormat = ref<SlideFormatMode>('portrait_4by5');
+const { toast } = useToast();
 
 const season = computed(() => seasonData.value!);
 
@@ -79,9 +81,12 @@ const handleExport = async () => {
       progress.value = p;
     });
     downloadBlob(blob, seasonZipFileName(seasonData.value));
-    alert('ZIP erstellt - Der Download hat begonnen.');
+    toast('ZIP erstellt – der Download hat begonnen.');
   } catch (err) {
-    alert(`Export fehlgeschlagen: ${err instanceof Error ? err.message : 'Unbekannter Fehler'}`);
+    toast(
+      `Export fehlgeschlagen: ${err instanceof Error ? err.message : 'Unbekannter Fehler'}`,
+      'error',
+    );
   } finally {
     exporting.value = false;
     progress.value = null;
@@ -99,9 +104,12 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
     const weekend = seasonData.value.weekends[weekendIndex];
     const fileName = `${slugify(seasonData.value.club)}_${weekend.dateRange.replace(/\s+/g, '_')}.zip`;
     downloadBlob(blob, fileName);
-    alert('ZIP erstellt - Der Download hat begonnen.');
+    toast('ZIP erstellt – der Download hat begonnen.');
   } catch (err) {
-    alert(`Export fehlgeschlagen: ${err instanceof Error ? err.message : 'Unbekannter Fehler'}`);
+    toast(
+      `Export fehlgeschlagen: ${err instanceof Error ? err.message : 'Unbekannter Fehler'}`,
+      'error',
+    );
   } finally {
     exporting.value = false;
     progress.value = null;

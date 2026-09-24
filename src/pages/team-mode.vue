@@ -9,6 +9,7 @@ import SlideTeamSummary from '@/components/Slides/slides/team-summary.vue';
 import { groupMatchDaysByTeam, slugify } from '@/lib/grouping';
 import { exportTeamZip, downloadBlob } from '@/lib/export-zip';
 import type { ExportProgress } from '@/lib/export-zip';
+import { useToast } from '@/composables/useToast';
 import {
   getSlideBoxStyle,
   getSlidePreviewStyle,
@@ -24,6 +25,7 @@ const exporting = ref(false);
 const progress = ref<ExportProgress | null>(null);
 const selectedTeam = ref<string | null>(null);
 const exportFormat = ref<SlideFormatMode>('portrait_4by5');
+const { toast } = useToast();
 
 const season = computed(() => seasonData.value!);
 
@@ -71,9 +73,12 @@ const handleExport = async () => {
     });
     const fileName = `${slugify(seasonData.value.club)}_${slugify(selectedTeam.value)}_saison.zip`;
     downloadBlob(blob, fileName);
-    alert('ZIP erstellt - Der Download hat begonnen.');
+    toast('ZIP erstellt – der Download hat begonnen.');
   } catch (err) {
-    alert(`Export fehlgeschlagen: ${err instanceof Error ? err.message : 'Unbekannter Fehler'}`);
+    toast(
+      `Export fehlgeschlagen: ${err instanceof Error ? err.message : 'Unbekannter Fehler'}`,
+      'error',
+    );
   } finally {
     exporting.value = false;
     progress.value = null;
