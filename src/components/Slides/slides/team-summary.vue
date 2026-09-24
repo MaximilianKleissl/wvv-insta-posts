@@ -63,14 +63,6 @@ const opponentsByMatchDay = computed(() => {
 const getOpponents = (matchDay: MatchDay): string[] =>
   opponentsByMatchDay.value.map.get(matchDay) ?? [];
 
-const summaryStyles = computed(() => ({
-  density: 'normal' as const,
-  cardPadding: 'p-4',
-  cardRadius: 'rounded-2xl',
-  logoSize: 'w-16 h-16',
-  textSize: 'text-xl',
-}));
-
 const slideTitle = computed<SlideTitle>(() => ({
   subtitle: props.teamName,
   title: isHomeSlide.value ? 'Heimspiele' : 'Auswärtsspiele',
@@ -81,7 +73,6 @@ const slideTitle = computed<SlideTitle>(() => ({
 <template>
   <SharedContainer
     :id="id"
-    :styles="summaryStyles"
     :slide-title="slideTitle"
     :format="'portrait_4by5'"
   >

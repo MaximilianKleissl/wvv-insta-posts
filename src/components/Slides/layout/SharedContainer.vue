@@ -68,7 +68,6 @@
 import { computed } from 'vue';
 import Header from './Header.vue';
 import SponsorFooter from './SponsorFooter.vue';
-import { SlideStyles } from '@/composables/Slides/useDensity.ts';
 import { useSponsors } from '@/composables/useSponsors';
 import { useTeamColors } from '@/composables/useTeamColors';
 import { CONFIG_BASE_URL } from '@/lib/config';
@@ -85,7 +84,6 @@ const props = withDefaults(
   defineProps<{
     id: string;
     slideTitle: SlideTitle;
-    styles: SlideStyles;
     format?: SlideFormatMode;
   }>(),
   {

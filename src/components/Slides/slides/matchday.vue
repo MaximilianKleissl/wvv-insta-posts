@@ -14,14 +14,6 @@ const props = withDefaults(defineProps<SlideMatchdayProps>(), {
   format: 'portrait_4by5',
 });
 
-const styles = computed(() => ({
-  density: 'normal' as const,
-  cardPadding: 'p-8',
-  cardRadius: 'rounded-3xl',
-  logoSize: 'w-32 h-32',
-  textSize: 'text-4xl',
-}));
-
 const matches = computed(() => sortMatches(props.matchDay));
 
 const slideTitle = computed<SlideTitle>(() => ({
@@ -30,7 +22,7 @@ const slideTitle = computed<SlideTitle>(() => ({
 </script>
 
 <template>
-  <SharedContainer :id="id" :styles="styles" :slide-title="slideTitle" :format="format">
+  <SharedContainer :id="id" :slide-title="slideTitle" :format="format">
     <div class="relative flex min-h-0 flex-1 flex-col justify-center gap-6">
       <MatchCard
         v-for="m in matches"

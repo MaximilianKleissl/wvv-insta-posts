@@ -39,7 +39,7 @@ const isOdd = computed(() => teams.value.length % 2 === 1);
 </script>
 
 <template>
-  <SharedContainer :id="id" :styles="styles" :slide-title="slideTitle" :format="format">
+  <SharedContainer :id="id" :slide-title="slideTitle" :format="format">
     <div
       class="flex items-center gap-3 text-2xl font-bold mb-2"
       :class="[teamColors.getPrimaryTextColorWithOpacity('80')]"

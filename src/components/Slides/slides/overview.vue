@@ -22,14 +22,6 @@ const props = withDefaults(defineProps<SlideOverviewProps>(), {
 const weekend = computed(() => props.season.weekends[props.weekendIndex]);
 const matchDays = computed(() => sortedMatchDaysForWeekend(weekend.value));
 
-const styles = computed(() => ({
-  density: 'normal' as const,
-  cardPadding: 'p-8',
-  cardRadius: 'rounded-3xl',
-  logoSize: 'w-32 h-32',
-  textSize: 'text-4xl',
-}));
-
 const overviewStyles = computed(() => ({
   density: 'normal' as const,
   cardPadding: 'px-6 py-4',
@@ -57,7 +49,7 @@ const slideTitle = computed<SlideTitle>(() => ({
 </script>
 
 <template>
-  <SharedContainer :id="id" :styles="styles" :slide-title="slideTitle" :format="format">
+  <SharedContainer :id="id" :slide-title="slideTitle" :format="format">
     <div :class="containerGridClass" :style="gridStyle">
       <OverviewMatchDayCard
         v-for="md in matchDays"
