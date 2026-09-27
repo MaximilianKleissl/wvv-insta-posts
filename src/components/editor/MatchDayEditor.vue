@@ -40,12 +40,26 @@ function clone(value: MatchDay): MatchDay {
   return JSON.parse(JSON.stringify(value)) as MatchDay;
 }
 
+let emitting = false;
+
 watch(
   () => props.modelValue,
-  (value) => Object.assign(local, clone(value)),
+  (value) => {
+    if (emitting) return;
+    Object.assign(local, clone(value));
+  },
 );
 
-watch(local, () => emit('update:modelValue', clone(local)), { deep: true });
+watch(
+  local,
+  () => {
+    if (emitting) return;
+    emitting = true;
+    emit('update:modelValue', clone(local));
+    queueMicrotask(() => (emitting = false));
+  },
+  { deep: true },
+);
 
 /** Teams of this matchday that need a logo – those in the `teams` or `matches` array. */
 const teamParticipants = computed(() => {

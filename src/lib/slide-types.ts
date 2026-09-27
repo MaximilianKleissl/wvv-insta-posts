@@ -10,6 +10,7 @@ export interface SlideTitle {
   subtitle: string;
   title: string;
   label: string[];
+  result?: string;
 }
 
 /** Common props for slides rendering a single match day (matchday + tournament). */

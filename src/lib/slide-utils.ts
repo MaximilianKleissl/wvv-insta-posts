@@ -10,6 +10,7 @@ export function getMatchDaySlideTitle(matchDay: MatchDay): SlideTitle {
     label: [matchDay.location, matchDay.match_day_name, matchDay.date].filter(
       (label): label is string => Boolean(label),
     ),
+    result: matchDay.match_day_result,
   };
 }
 

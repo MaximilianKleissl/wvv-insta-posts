@@ -18,12 +18,14 @@
           {{ slideTitle.title }}
         </h1>
       </div>
-      <LabelContainer
+      <div class="flex mt-2 gap-4">
+        <LabelContainer
         :labels="slideTitle.label"
         :color="schemeColor"
         :flex-direction="formatClasses.headerLabelFlexDirection"
         :chip-classes="formatClasses.seasonClasses"
-      />
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -66,9 +68,9 @@ const actionImageStyle = computed(() => ({
   ...(actionImage.value ? { backgroundImage: `url(${actionImage.value})` } : {}),
   backgroundPosition: 'center top',
   backgroundSize: 'cover',
-  maskImage: 'linear-gradient(90deg, transparent 10%, black 15%, black 95%, transparent 100%)',
+  maskImage: 'linear-gradient(90deg, transparent 0%, black 10%, black 75%, transparent 100%)',
 }));
 const gradientStyle = computed(() => ({
-  background: `linear-gradient(90deg, ${schemeColor.value} 0%, ${schemeColor.value}e6 55%, transparent 100%)`,
+  background: `linear-gradient(90deg, ${schemeColor.value} 0%, ${schemeColor.value}b6 55%, transparent 100%)`,
 }));
 </script>
