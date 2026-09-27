@@ -20,10 +20,10 @@
       </div>
       <div class="flex mt-2 gap-4">
         <LabelContainer
-        :labels="slideTitle.label"
-        :color="schemeColor"
-        :flex-direction="formatClasses.headerLabelFlexDirection"
-        :chip-classes="formatClasses.seasonClasses"
+          :labels="slideTitle.label"
+          :color="schemeColor"
+          :flex-direction="formatClasses.headerLabelFlexDirection"
+          :chip-classes="formatClasses.seasonClasses"
         />
       </div>
     </div>
