@@ -94,18 +94,18 @@ export function useConfigEditor() {
 
       const loadedFiles: Record<string, MatchDay[]> = {};
       const baseline: Record<string, string> = {
-        'File_Overview.json': JSON.stringify(['metadata.json', ...files], null, 2),
-        'metadata.json': JSON.stringify(meta, null, 2),
+        'Spiele/File_Overview.json': JSON.stringify(['metadata.json', ...files], null, 2),
+        'Spiele/metadata.json': JSON.stringify(meta, null, 2),
       };
       for (const file of files) {
         try {
           const data = await fetchJson<MatchDay[]>(`${CONFIG_BASE_URL}/Spiele/${file}`);
           loadedFiles[file] = data;
-          baseline[file] = JSON.stringify(data, null, 2);
+          baseline[`Spiele/${file}`] = JSON.stringify(data, null, 2);
         } catch (err) {
           console.warn(`Failed to load ${file}`, err);
           loadedFiles[file] = [];
-          baseline[file] = '[]';
+          baseline[`Spiele/${file}`] = '[]';
         }
       }
 
@@ -151,14 +151,14 @@ export function useConfigEditor() {
   /** Every config JSON as it would be published right now. */
   function buildCurrentFiles(): Record<string, string> {
     const files: Record<string, string> = {};
-    files['File_Overview.json'] = JSON.stringify(
+    files['Spiele/File_Overview.json'] = JSON.stringify(
       ['metadata.json', ...Object.keys(matchdayFiles.value)],
       null,
       2,
     );
-    files['metadata.json'] = JSON.stringify(metadata.value, null, 2);
+    files['Spiele/metadata.json'] = JSON.stringify(metadata.value, null, 2);
     for (const [name, matchDays] of Object.entries(matchdayFiles.value)) {
-      files[name] = JSON.stringify(matchDays, null, 2);
+      files[`Spiele/${name}`] = JSON.stringify(matchDays, null, 2);
     }
     files['Sponsoren/sponsoren_overview.json'] = JSON.stringify(
       cleanSponsors(sponsors.value),
