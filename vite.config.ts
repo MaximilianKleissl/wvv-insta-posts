@@ -3,11 +3,9 @@ import vue from '@vitejs/plugin-vue';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import tailwindcss from '@tailwindcss/vite';
+import { DEFAULT_CONFIG_BASE_URL, DEFAULT_WRITER_URL } from './src/lib/config-defaults';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const DEFAULT_CONFIG_BASE_URL = 'https://maximiliankleissl.github.io/wvv-posts-config';
-const DEFAULT_WRITER_URL = 'https://gateway.wvv-insta-config-editor-api.workers.dev';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, path.resolve(__dirname));

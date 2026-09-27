@@ -24,31 +24,31 @@ async function fetchJsonFile<T>(url: string, label: string): Promise<T> {
 }
 
 export async function fetchSeasonData(): Promise<SeasonData> {
-  // The file overview lists which matchday files exist for this season.
-  const files = await fetchJsonFile<string[]>(
-    `${BASE_URL}/File_Overview.json`,
-    'Spielplan-Übersicht',
+  // The file overview lists which matchday files exist for this season. Both
+  // requests are independent, and the config host is not a CDN, so they run
+  // concurrently along with the matchday files below.
+  const [files, metadata] = await Promise.all([
+    fetchJsonFile<string[]>(`${BASE_URL}/File_Overview.json`, 'Spielplan-Übersicht'),
+    fetchJsonFile<{ season: string; club: string }>(
+      `${BASE_URL}/metadata.json`,
+      'Saison-Metadaten',
+    ),
+  ]);
+
+  const matchDayFiles = files.filter(
+    (file) => file !== 'metadata.json' && file !== 'File_Overview.json',
   );
 
-  const metadata = await fetchJsonFile<{ season: string; club: string }>(
-    `${BASE_URL}/metadata.json`,
-    'Saison-Metadaten',
+  // A single unreadable matchday file must not hide the rest of the season.
+  const perFile = await Promise.all(
+    matchDayFiles.map((file) =>
+      fetchJsonFile<MatchDay[]>(`${BASE_URL}/${file}`, `Spieltag-Datei ${file}`).catch((err) => {
+        console.warn(`Failed to fetch ${file}`, err);
+        return null;
+      }),
+    ),
   );
-
-  const matchDays: MatchDay[] = [];
-  for (const file of files) {
-    if (file === 'metadata.json' || file === 'File_Overview.json') continue;
-
-    // A single unreadable matchday file must not hide the rest of the season.
-    try {
-      const data = await fetchJsonFile<MatchDay[]>(`${BASE_URL}/${file}`, `Spieltag-Datei ${file}`);
-      if (Array.isArray(data)) {
-        matchDays.push(...data);
-      }
-    } catch (err) {
-      console.warn(`Failed to fetch ${file}`, err);
-    }
-  }
+  const matchDays = perFile.flatMap((data) => (Array.isArray(data) ? data : []));
 
   return {
     season: metadata.season,

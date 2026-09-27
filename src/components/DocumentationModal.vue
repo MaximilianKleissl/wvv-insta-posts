@@ -145,8 +145,8 @@ defineExpose({
         <ul class="list-disc pl-5">
           <li>Änderungen erst im Reiter <strong>Veröffentlichen</strong> wirksam machen.</li>
           <li>
-            Nach dem Veröffentlichen dauert es etwa eine Minute, bis die Startseite die neuen Daten
-            lädt.
+            Danach sind sie sofort sichtbar – die Startseite liest ihre Daten direkt aus dem
+            Repository. Zeigt sie noch den alten Stand, aktualisiere die Seite einmal neu.
           </li>
           <li>
             Der Reiter <strong>Veröffentlichen</strong> warnt vor fehlenden Logos, Sponsoren ohne
@@ -160,9 +160,10 @@ defineExpose({
 
         <h3 class="mt-4 text-lg font-semibold text-gray-900">Woher kommen die Daten?</h3>
         <p>
-          Spielplan, Logos, Sponsoren und Aktionsbilder liegen in einem Konfigurations-Repository,
-          das als statische Website ausgeliefert wird. Alles wird im Browser verarbeitet, es wird
-          nichts auf einem Server zusammengebaut.
+          Spielplan, Logos, Sponsoren und Aktionsbilder liegen in einem Konfigurations-Repository
+          auf GitHub. Die Startseite liest die Dateien direkt von dort, ohne Umweg über eine
+          Website. Alles wird im Browser verarbeitet, es wird nichts auf einem Server
+          zusammengebaut.
         </p>
 
         <h3 class="mt-4 text-lg font-semibold text-gray-900">Symbole in der Kopfzeile</h3>

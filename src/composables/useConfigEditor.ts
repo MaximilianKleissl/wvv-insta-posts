@@ -86,58 +86,60 @@ export function useConfigEditor() {
     loading.value = true;
     error.value = null;
     try {
-      const overview = await fetchJson<string[]>(`${CONFIG_BASE_URL}/Spiele/File_Overview.json`);
-      const meta = await fetchJson<{ season: string; club: string }>(
-        `${CONFIG_BASE_URL}/Spiele/metadata.json`,
-      );
+      // The config host is not a CDN, so the independent files are fetched
+      // concurrently instead of one round-trip after another.
+      const [overview, meta, sp, ai] = await Promise.all([
+        fetchJson<string[]>(`${CONFIG_BASE_URL}/Spiele/File_Overview.json`),
+        fetchJson<{ season: string; club: string }>(`${CONFIG_BASE_URL}/Spiele/metadata.json`),
+        fetchJson<Sponsor[]>(`${CONFIG_BASE_URL}/Sponsoren/sponsoren_overview.json`).catch(
+          (err) => {
+            console.warn('Failed to load sponsors', err);
+            return null;
+          },
+        ),
+        fetchJson<ActionImageConfig>(`${CONFIG_BASE_URL}/Action_Images/action_images.json`).catch(
+          (err) => {
+            console.warn('Failed to load action images', err);
+            return null;
+          },
+        ),
+      ]);
       const files = overview.filter((f) => f !== 'metadata.json' && f !== 'File_Overview.json');
+
+      const perFile = await Promise.all(
+        files.map(async (file) => {
+          try {
+            return { file, data: await fetchJson<MatchDay[]>(`${CONFIG_BASE_URL}/Spiele/${file}`) };
+          } catch (err) {
+            // One broken file must not block editing the rest of the season.
+            console.warn(`Failed to load ${file}`, err);
+            return { file, data: [] as MatchDay[] };
+          }
+        }),
+      );
 
       const loadedFiles: Record<string, MatchDay[]> = {};
       const baseline: Record<string, string> = {
         'Spiele/File_Overview.json': JSON.stringify(['metadata.json', ...files], null, 2),
         'Spiele/metadata.json': JSON.stringify(meta, null, 2),
       };
-      for (const file of files) {
-        try {
-          const data = await fetchJson<MatchDay[]>(`${CONFIG_BASE_URL}/Spiele/${file}`);
-          loadedFiles[file] = data;
-          baseline[`Spiele/${file}`] = JSON.stringify(data, null, 2);
-        } catch (err) {
-          console.warn(`Failed to load ${file}`, err);
-          loadedFiles[file] = [];
-          baseline[`Spiele/${file}`] = '[]';
-        }
+      for (const { file, data } of perFile) {
+        loadedFiles[file] = data;
+        baseline[`Spiele/${file}`] = JSON.stringify(data, null, 2);
       }
 
-      const defaultBaseline = (path: string, value: unknown) => {
-        baseline[path] = JSON.stringify(value, null, 2);
-      };
-
-      let sp: Sponsor[] = [];
-      let ai: ActionImageConfig = { default: [], teams: {} };
-      try {
-        sp = cleanSponsors(
-          await fetchJson<Sponsor[]>(`${CONFIG_BASE_URL}/Sponsoren/sponsoren_overview.json`),
-        );
-      } catch (err) {
-        console.warn('Failed to load sponsors', err);
-      }
-      try {
-        ai = cleanActionImages(
-          await fetchJson<ActionImageConfig>(`${CONFIG_BASE_URL}/Action_Images/action_images.json`),
-        );
-      } catch (err) {
-        console.warn('Failed to load action images', err);
-      }
-      defaultBaseline('Sponsoren/sponsoren_overview.json', sp);
-      defaultBaseline('Action_Images/action_images.json', ai);
+      const cleanedSponsors = sp ? cleanSponsors(sp) : [];
+      const cleanedActionImages = ai ? cleanActionImages(ai) : { default: [], teams: {} };
+      baseline['Sponsoren/sponsoren_overview.json'] = JSON.stringify(cleanedSponsors, null, 2);
+      baseline['Action_Images/action_images.json'] = JSON.stringify(cleanedActionImages, null, 2);
 
       metadata.value = meta;
       matchdayFiles.value = loadedFiles;
-      sponsors.value = sp;
-      actionImages.value = ai;
+      sponsors.value = cleanedSponsors;
+      actionImages.value = cleanedActionImages;
       loadedJson.value = baseline;
       binaryFiles.value = {};
+
       baseSha.value = await fetchSha();
       lastPublishedSha.value = baseSha.value;
       loaded.value = true;

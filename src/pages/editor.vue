@@ -61,8 +61,8 @@ const activeTab = ref<TabId>('spieltage');
       <div class="mb-6 space-y-3">
         <SectionInfo title="Hier änderst du die Daten hinter den Bildern">
           Jeder Reiter erklärt oben, was er tut. Änderungen werden erst im Reiter
-          <strong>Veröffentlichen</strong> wirksam – danach dauert es etwa eine Minute, bis die
-          Startseite die neuen Daten lädt.
+          <strong>Veröffentlichen</strong> wirksam. Die Startseite liest die Daten direkt aus dem
+          Konfigurations-Repository und zeigt sie danach sofort an.
         </SectionInfo>
         <div
           v-if="changeCount > 0"

@@ -31,8 +31,20 @@ https://maximiliankleissl.github.io/wvv-insta-posts
 
 ## Data source
 
-The app loads a static JSON config from a base URL (teams, schedules, logos, sponsors,
-action images):
+The app reads the config straight from the `wvv-posts-config` repository via
+`raw.githubusercontent.com`, pinned to a branch ref:
+
+```
+https://raw.githubusercontent.com/<owner>/wvv-posts-config/main
+```
+
+That host serves `Access-Control-Allow-Origin: *`, so the browser can read both the JSON
+and the logo images directly. Compared to reaching the repo through GitHub Pages it
+removes the build and CDN propagation delay after a publish: a commit becomes readable
+within seconds. The trade-off is that raw is not a CDN, so the many small config files
+are fetched concurrently rather than in sequence.
+
+Override the host with:
 
 ```bash
 VITE_CONFIG_BASE_URL=https://example.com/path-to-config

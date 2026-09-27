@@ -248,7 +248,6 @@ const expandedSlidePosition = computed(() => {
           Bilder werden erzeugt – bitte den Tab nicht wechseln.
         </p>
       </div>
-      
     </div>
 
     <StatusPanel
@@ -352,8 +351,6 @@ const expandedSlidePosition = computed(() => {
           </div>
           <p class="text-sm text-gray-700 whitespace-pre-line">{{ caption }}</p>
         </div>
-
-        
       </div>
     </template>
 

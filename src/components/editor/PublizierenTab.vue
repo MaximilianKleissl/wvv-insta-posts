@@ -100,9 +100,10 @@ async function onPublish() {
       Alle Änderungen werden als einzelner Commit in das Konfigurations-Repository (<span
         class="font-mono"
         >wvv-posts-config</span
-      >) geschrieben und benötigen das Editor-Passwort. Nach dem Speichern dauert es ca. 1 Minute,
-      bis GitHub Pages die neue Konfiguration ausliefert. Der baseSha stellt sicher, dass keine
-      zwischenzeitlichen Änderungen überschrieben werden.
+      >) geschrieben und benötigen das Editor-Passwort. Die Startseite liest ihre Daten direkt aus
+      diesem Repository, die Änderungen sind also sofort sichtbar – siehst du noch den alten Stand,
+      lade die Seite einmal neu. Der baseSha stellt sicher, dass keine zwischenzeitlichen Änderungen
+      überschrieben werden.
     </SectionInfo>
 
     <div v-if="warnings.length > 0" class="rounded-lg border border-amber-200 bg-amber-50 p-4">
