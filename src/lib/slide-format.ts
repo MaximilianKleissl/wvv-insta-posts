@@ -4,6 +4,8 @@ export interface SlideFormatConfig {
   width: number;
   height: number;
   label: string;
+  /** Short explanation of where the format is used, shown next to the selector. */
+  hint: string;
 }
 
 export const SLIDE_FORMATS: Record<SlideFormatMode, SlideFormatConfig> = {
@@ -11,13 +13,17 @@ export const SLIDE_FORMATS: Record<SlideFormatMode, SlideFormatConfig> = {
     width: 1080,
     height: 1350,
     label: 'Portrait 4:5',
+    hint: 'Feed-Beitrag',
   },
   stories: {
     width: 1080,
     height: 1920,
     label: 'Stories',
+    hint: 'Story & Reel',
   },
 } as const;
+
+export const SLIDE_FORMAT_MODES = Object.keys(SLIDE_FORMATS) as SlideFormatMode[];
 
 /**
  * Tailwind class fragments (and a few strings) shared across slide components,

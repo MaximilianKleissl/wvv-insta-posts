@@ -15,19 +15,6 @@ function isoDate(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
-/** Saturday + Sunday of the coming weekend (or the current one if we are in it). */
-function upcomingWeekend(): { from: string; to: string } {
-  const now = new Date();
-  const daysUntilSaturday = (6 - now.getDay() + 7) % 7;
-  const saturday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilSaturday);
-  const sunday = new Date(saturday.getFullYear(), saturday.getMonth(), saturday.getDate() + 1);
-  return { from: isoDate(saturday), to: isoDate(sunday) };
-}
-
-const weekendDefault = upcomingWeekend();
-const dateFrom = ref(weekendDefault.from);
-const dateTo = ref(weekendDefault.to);
-
 /** Monday-to-Sunday week range (0 = current week, 1 = next week). */
 function weekRange(offset: 0 | 1): { from: string; to: string } {
   const now = new Date();
@@ -39,6 +26,12 @@ function weekRange(offset: 0 | 1): { from: string; to: string } {
   const sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6);
   return { from: isoDate(monday), to: isoDate(sunday) };
 }
+
+// Opens on the current week: that is what an editor almost always wants to see
+// first, and it keeps the "Diese Woche" button shown as already active.
+const initialWeek = weekRange(0);
+const dateFrom = ref(initialWeek.from);
+const dateTo = ref(initialWeek.to);
 
 const setThisWeek = () => {
   const range = weekRange(0);
@@ -82,6 +75,17 @@ function toMidnight(iso: string): number | null {
 
 const isFilterActive = () =>
   teamFilter.value !== '' || dateFrom.value !== '' || dateTo.value !== '';
+
+/** Human-readable range of the active date filter, e.g. "15.09.2026 – 21.09.2026". */
+const activeRangeLabel = computed(() => {
+  if (!dateFrom.value && !dateTo.value) return '';
+  const format = (iso: string) => {
+    const ts = toMidnight(iso);
+    return ts === null ? '' : new Date(ts).toLocaleDateString('de-DE');
+  };
+  if (dateFrom.value && dateTo.value) return `${format(dateFrom.value)} – ${format(dateTo.value)}`;
+  return dateFrom.value ? `ab ${format(dateFrom.value)}` : `bis ${format(dateTo.value)}`;
+});
 
 function matchesFilter(matchDay: MatchDay): boolean {
   if (teamFilter.value === TEAM_FILTER_NONE) {
@@ -182,6 +186,11 @@ function totalMatchDays(): number {
         </span>
       </div>
 
+      <p v-if="activeRangeLabel" class="mt-2 text-xs text-gray-500">
+        Angezeigt werden nur Spieltage von {{ activeRangeLabel }}. Über „Filter zurücksetzen" siehst
+        du alle {{ totalMatchDays() }} Spieltage.
+      </p>
+
       <div class="mt-3 flex flex-wrap items-center gap-1.5 border-t border-gray-100 pt-3">
         <span class="text-xs text-gray-500">Mannschaft:</span>
         <button
@@ -250,6 +259,7 @@ function totalMatchDays(): number {
       </template>
       <div v-else-if="isFilterActive()" class="text-sm text-gray-500">
         Keine Spieltage entsprechen den Filtern.
+        <button class="editor-add ml-2" @click="resetFilters">Filter zurücksetzen</button>
       </div>
       <div v-else class="text-sm text-gray-500">Noch keine Spieltage vorhanden.</div>
     </div>

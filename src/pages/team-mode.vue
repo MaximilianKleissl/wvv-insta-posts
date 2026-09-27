@@ -5,10 +5,11 @@ import { Download } from 'lucide-vue-next';
 import { useSeasonBootstrap } from '@/composables/useSeasonBootstrap';
 import { useSlideRegistry } from '@/composables/useSlideRegistry';
 import PageHeader from '@/components/PageHeader.vue';
+import FormatToggle from '@/components/FormatToggle.vue';
+import StatusPanel from '@/components/StatusPanel.vue';
 import SlideTeamSummary from '@/components/Slides/slides/team-summary.vue';
 import { groupMatchDaysByTeam, slugify } from '@/lib/grouping';
 import { exportTeamZip, downloadBlob } from '@/lib/export-zip';
-import type { ExportProgress } from '@/lib/export-zip';
 import { useToast } from '@/composables/useToast';
 import {
   getSlideBoxStyle,
@@ -16,13 +17,13 @@ import {
   getSlideScale,
   type SlideFormatMode,
 } from '@/lib/slide-format';
+import type { StatEntry } from '@/components/HeaderMenu.vue';
 
 const router = useRouter();
-const { seasonData, loading, error } = useSeasonBootstrap();
+const { seasonData, loading, error, reload } = useSeasonBootstrap();
 const { registerSlideRef, getSlideElement } = useSlideRegistry();
 
 const exporting = ref(false);
-const progress = ref<ExportProgress | null>(null);
 const selectedTeam = ref<string | null>(null);
 const exportFormat = ref<SlideFormatMode>('portrait_4by5');
 const { toast } = useToast();
@@ -34,10 +35,28 @@ const teamMatchDays = computed(() => {
   return groupMatchDaysByTeam(seasonData.value);
 });
 
-const teamCount = computed(() => teamMatchDays.value.length);
 const totalMatchDays = computed(() =>
   teamMatchDays.value.reduce((sum, team) => sum + team.matchDays.length, 0),
 );
+
+const totalMatches = computed(() =>
+  teamMatchDays.value.reduce(
+    (sum, team) =>
+      sum +
+      team.matchDays.reduce(
+        (mdSum, md) => mdSum + (md.matches?.length ?? md.teams?.length ?? 0),
+        0,
+      ),
+    0,
+  ),
+);
+
+// Labelled for this view: the counts are per team, not per weekend.
+const stats = computed<StatEntry[]>(() => [
+  { label: 'Mannschaften', value: teamMatchDays.value.length },
+  { label: 'Spieltage', value: totalMatchDays.value },
+  { label: 'Spiele', value: totalMatches.value },
+]);
 
 const exportSlides = computed(() => {
   if (!seasonData.value || !selectedTeam.value) return [];
@@ -63,14 +82,11 @@ const exportSlides = computed(() => {
 const handleExport = async () => {
   if (!seasonData.value || !selectedTeam.value) return;
   exporting.value = true;
-  progress.value = null;
   try {
     const teamData = teamMatchDays.value.find((t) => t.teamName === selectedTeam.value);
     if (!teamData) throw new Error('Team nicht gefunden');
 
-    const blob = await exportTeamZip(seasonData.value, teamData, getSlideElement, (p) => {
-      progress.value = p;
-    });
+    const blob = await exportTeamZip(seasonData.value, teamData, getSlideElement);
     const fileName = `${slugify(seasonData.value.club)}_${slugify(selectedTeam.value)}_saison.zip`;
     downloadBlob(blob, fileName);
     toast('ZIP erstellt – der Download hat begonnen.');
@@ -81,7 +97,6 @@ const handleExport = async () => {
     );
   } finally {
     exporting.value = false;
-    progress.value = null;
   }
 };
 
@@ -103,14 +118,7 @@ const teamPreviewScale = computed(() =>
 
 <template>
   <div class="min-h-screen bg-gray-50 p-6">
-    <PageHeader
-      :exporting="exporting"
-      :export-progress="progress"
-      :weekend-count="teamCount"
-      :match-day-count="totalMatchDays"
-      :match-count="0"
-      @export-all="handleExport"
-    >
+    <PageHeader :club="seasonData?.club" :season="seasonData?.season" :stats="stats">
       <template #extra-actions>
         <button
           class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
@@ -122,40 +130,45 @@ const teamPreviewScale = computed(() =>
     </PageHeader>
 
     <main class="max-w-4xl mx-auto space-y-8">
-      <div v-if="loading" class="text-center py-12">
-        <div
-          class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-800"
-        ></div>
-        <p class="mt-4 text-gray-600">Lade Daten...</p>
-      </div>
+      <StatusPanel
+        v-if="loading"
+        variant="loading"
+        title="Spielplan wird geladen…"
+        message="Daten kommen vom Konfigurationsserver."
+      />
 
-      <div v-else-if="error" class="p-4 bg-red-50 border border-red-200 rounded-lg text-red-600">
-        {{ error }}
-      </div>
+      <StatusPanel
+        v-else-if="error"
+        variant="error"
+        title="Spielplan konnte nicht geladen werden"
+        :message="error"
+        action-label="Erneut laden"
+        @action="reload"
+      />
 
       <div v-else-if="seasonData" class="space-y-4">
-        <div class="flex items-center gap-2">
-          <span class="text-sm font-medium text-gray-700">Format:</span>
-          <button
-            v-for="mode in ['portrait_4by5', 'stories'] as const"
-            :key="mode"
-            type="button"
-            :class="[
-              'rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
-              exportFormat === mode
-                ? 'border-green-800 bg-green-800 text-white'
-                : 'border-gray-300 bg-white text-gray-700 hover:border-green-700 hover:text-green-700',
-            ]"
-            @click="exportFormat = mode"
-          >
-            {{ mode === 'portrait_4by5' ? 'Portrait 4:5' : 'Stories' }}
-          </button>
-        </div>
+        <FormatToggle v-model="exportFormat" />
 
         <!-- Team Selection -->
         <div v-if="!selectedTeam" class="space-y-4">
-          <h2 class="text-2xl font-bold text-gray-800">Wähle ein Team</h2>
-          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-800">Wähle ein Team</h2>
+            <p class="mt-1 text-sm text-gray-600">
+              Für jede Mannschaft gibt es eine Saison-Übersicht, getrennt nach Heim- und
+              Auswärtsspielen.
+            </p>
+          </div>
+          <div
+            v-if="teamMatchDays.length === 0"
+            class="rounded-lg border border-gray-200 bg-white p-8 text-center"
+          >
+            <p class="text-sm font-medium text-gray-700">Keine Mannschaften gefunden</p>
+            <p class="mt-1 text-sm text-gray-500">
+              Für diese Saison sind noch keine Spieltage eingetragen. Trage sie im Config-Editor
+              unter „Spieltage" ein und veröffentliche sie.
+            </p>
+          </div>
+          <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             <button
               v-for="team in teamMatchDays"
               :key="team.teamName"
@@ -182,11 +195,11 @@ const teamPreviewScale = computed(() =>
               <button
                 :disabled="exporting"
                 class="inline-flex items-center gap-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-                title="Team-ZIP herunterladen"
+                title="Beide Bilder und den Bildtext als ZIP herunterladen"
                 @click="handleExport"
               >
                 <Download class="w-4 h-4" />
-                {{ exporting ? 'Erstelle ZIP...' : 'Download' }}
+                {{ exporting ? 'Exportiere…' : 'Export' }}
               </button>
             </div>
           </div>

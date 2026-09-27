@@ -204,8 +204,16 @@ export function useConfigEditor() {
           baseSha: baseSha.value,
           files: changed,
         }),
+      }).catch(() => {
+        throw new Error(
+          'Keine Verbindung zum Veröffentlichungs-Server. Bitte Internetverbindung prüfen und erneut versuchen.',
+        );
       });
-      const data = (await response.json()) as { ok?: boolean; error?: string; sha?: string };
+      const data = (await response.json().catch(() => ({}))) as {
+        ok?: boolean;
+        error?: string;
+        sha?: string;
+      };
       if (!response.ok || !data.ok) {
         return { ok: false, error: data.error ?? 'Speichern fehlgeschlagen' };
       }
@@ -216,6 +224,8 @@ export function useConfigEditor() {
       lastPublishedSha.value = data.sha ?? baseSha.value;
       baseSha.value = data.sha ?? baseSha.value;
       return { ok: true, sha: data.sha };
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : 'Speichern fehlgeschlagen' };
     } finally {
       saving.value = false;
     }

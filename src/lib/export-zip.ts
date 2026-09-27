@@ -106,11 +106,6 @@ export function downloadBlob(blob: Blob, fileName: string): void {
   URL.revokeObjectURL(url);
 }
 
-export function seasonZipFileName(season: SeasonData): string {
-  const seasonSlug = season.season.replace(/[^0-9a-zA-Z]/g, '-');
-  return `${slugify(season.club)}_${seasonSlug}.zip`;
-}
-
 export async function exportTeamZip(
   season: SeasonData,
   teamData: TeamMatchDays,

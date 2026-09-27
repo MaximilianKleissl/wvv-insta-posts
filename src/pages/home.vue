@@ -4,16 +4,18 @@ import { useRouter } from 'vue-router';
 import { useSeasonBootstrap } from '@/composables/useSeasonBootstrap';
 import { useSlideRegistry } from '@/composables/useSlideRegistry';
 import PageHeader from '@/components/PageHeader.vue';
+import FormatToggle from '@/components/FormatToggle.vue';
+import StatusPanel from '@/components/StatusPanel.vue';
 import SlideOverview from '@/components/Slides/slides/overview.vue';
 import SlideMatchday from '@/components/Slides/slides/matchday.vue';
 import SlideTournament from '@/components/Slides/slides/tournament.vue';
 import PreviewGallery from '@/components/preview-gallery.vue';
 import { sortedMatchDaysForWeekend, slugify } from '@/lib/grouping';
-import { exportSeasonZip, downloadBlob, seasonZipFileName } from '@/lib/export-zip';
+import { exportSeasonZip, downloadBlob } from '@/lib/export-zip';
 import { useToast } from '@/composables/useToast';
 import { getSlideBoxStyle, type SlideFormatMode } from '@/lib/slide-format';
-import type { ExportProgress } from '@/lib/export-zip';
 import { isTournamentMatchDay } from '@/lib/grouping';
+import type { StatEntry } from '@/components/HeaderMenu.vue';
 
 const router = useRouter();
 
@@ -24,11 +26,10 @@ interface SlideRef {
   matchDayOriginalIndex?: number;
 }
 
-const { seasonData, loading, error } = useSeasonBootstrap();
+const { seasonData, loading, error, reload } = useSeasonBootstrap();
 const { registerSlideRef, getSlideElement } = useSlideRegistry();
 
 const exporting = ref(false);
-const progress = ref<ExportProgress | null>(null);
 const exportFormat = ref<SlideFormatMode>('portrait_4by5');
 const { toast } = useToast();
 
@@ -47,6 +48,12 @@ const matchCount = computed(
       0,
     ) ?? 0,
 );
+
+const stats = computed<StatEntry[]>(() => [
+  { label: 'Wochenenden', value: weekendCount.value },
+  { label: 'Spieltage', value: matchDayCount.value },
+  { label: 'Spiele', value: matchCount.value },
+]);
 
 const exportSlides = computed<SlideRef[]>(() => {
   if (!seasonData.value) return [];
@@ -72,35 +79,11 @@ const exportSlides = computed<SlideRef[]>(() => {
   return refs;
 });
 
-const handleExport = async () => {
-  if (!seasonData.value) return;
-  exporting.value = true;
-  progress.value = null;
-  try {
-    const blob = await exportSeasonZip(seasonData.value, undefined, getSlideElement, (p) => {
-      progress.value = p;
-    });
-    downloadBlob(blob, seasonZipFileName(seasonData.value));
-    toast('ZIP erstellt – der Download hat begonnen.');
-  } catch (err) {
-    toast(
-      `Export fehlgeschlagen: ${err instanceof Error ? err.message : 'Unbekannter Fehler'}`,
-      'error',
-    );
-  } finally {
-    exporting.value = false;
-    progress.value = null;
-  }
-};
-
 const handleExportSingleWeekend = async (weekendIndex: number) => {
   if (!seasonData.value) return;
   exporting.value = true;
-  progress.value = null;
   try {
-    const blob = await exportSeasonZip(seasonData.value, [weekendIndex], getSlideElement, (p) => {
-      progress.value = p;
-    });
+    const blob = await exportSeasonZip(seasonData.value, [weekendIndex], getSlideElement);
     const weekend = seasonData.value.weekends[weekendIndex];
     const fileName = `${slugify(seasonData.value.club)}_${weekend.dateRange.replace(/\s+/g, '_')}.zip`;
     downloadBlob(blob, fileName);
@@ -112,21 +95,13 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
     );
   } finally {
     exporting.value = false;
-    progress.value = null;
   }
 };
 </script>
 
 <template>
   <div class="min-h-screen bg-gray-50 p-6">
-    <PageHeader
-      :exporting="exporting"
-      :export-progress="progress"
-      :weekend-count="weekendCount"
-      :match-day-count="matchDayCount"
-      :match-count="matchCount"
-      @export-all="handleExport"
-    >
+    <PageHeader :club="seasonData?.club" :season="seasonData?.season" :stats="stats">
       <template #extra-actions>
         <button
           class="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 transition-colors"
@@ -138,35 +113,24 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
     </PageHeader>
 
     <main class="max-w-4xl mx-auto space-y-8">
-      <div v-if="loading" class="text-center py-12">
-        <div
-          class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-800"
-        ></div>
-        <p class="mt-4 text-gray-600">Lade Daten...</p>
-      </div>
+      <StatusPanel
+        v-if="loading"
+        variant="loading"
+        title="Spielplan wird geladen…"
+        message="Daten kommen vom Konfigurationsserver."
+      />
 
-      <div v-else-if="error" class="p-4 bg-red-50 border border-red-200 rounded-lg text-red-600">
-        {{ error }}
-      </div>
+      <StatusPanel
+        v-else-if="error"
+        variant="error"
+        title="Spielplan konnte nicht geladen werden"
+        :message="error"
+        action-label="Erneut laden"
+        @action="reload"
+      />
 
       <div v-if="seasonData" class="space-y-4">
-        <div class="flex items-center gap-2">
-          <span class="text-sm font-medium text-gray-700">Format:</span>
-          <button
-            v-for="mode in ['portrait_4by5', 'stories'] as const"
-            :key="mode"
-            type="button"
-            :class="[
-              'rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
-              exportFormat === mode
-                ? 'border-green-800 bg-green-800 text-white'
-                : 'border-gray-300 bg-white text-gray-700 hover:border-green-700 hover:text-green-700',
-            ]"
-            @click="exportFormat = mode"
-          >
-            {{ mode === 'portrait_4by5' ? 'Portrait 4:5' : 'Stories' }}
-          </button>
-        </div>
+        <FormatToggle v-model="exportFormat" />
 
         <PreviewGallery
           :season="season"

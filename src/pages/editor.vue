@@ -2,15 +2,17 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useConfigEditor } from '@/composables/useConfigEditor';
+import StatusPanel from '@/components/StatusPanel.vue';
 import SpieltageTab from '@/components/editor/SpieltageTab.vue';
 import MetadataTab from '@/components/editor/MetadataTab.vue';
 import LogoTab from '@/components/editor/LogoTab.vue';
 import SponsorenTab from '@/components/editor/SponsorenTab.vue';
 import AktionsbilderTab from '@/components/editor/AktionsbilderTab.vue';
 import PublizierenTab from '@/components/editor/PublizierenTab.vue';
+import SectionInfo from '@/components/editor/SectionInfo.vue';
 
 const router = useRouter();
-const { metadata, loading, error, loaded, loadAll } = useConfigEditor();
+const { metadata, loading, error, loaded, loadAll, changeCount } = useConfigEditor();
 
 onMounted(() => {
   void loadAll();
@@ -49,26 +51,59 @@ const activeTab = ref<TabId>('spieltage');
         </div>
         <button
           class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 transition hover:bg-gray-100"
+          :disabled="loading"
           @click="loadAll"
         >
           Neu laden
         </button>
       </div>
 
-      <div v-if="loading" class="rounded-lg border border-gray-200 bg-white p-12 text-center">
-        <p class="text-gray-600">Lade Konfiguration…</p>
+      <div class="mb-6 space-y-3">
+        <SectionInfo title="Hier änderst du die Daten hinter den Bildern">
+          Jeder Reiter erklärt oben, was er tut. Änderungen werden erst im Reiter
+          <strong>Veröffentlichen</strong> wirksam – danach dauert es etwa eine Minute, bis die
+          Startseite die neuen Daten lädt.
+        </SectionInfo>
+        <div
+          v-if="changeCount > 0"
+          class="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3"
+          role="status"
+        >
+          <div class="min-w-0">
+            <p class="text-xs font-semibold text-amber-800">
+              {{ changeCount }} ungespeicherte Änderung{{ changeCount === 1 ? '' : 'en' }}
+            </p>
+            <p class="mt-1 text-xs leading-relaxed text-amber-700">
+              Sie greifen erst nach dem Veröffentlichen. Wechsle dazu in den Reiter
+              <strong>Veröffentlichen</strong>.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div v-else-if="error" class="rounded-lg border border-red-200 bg-red-50 p-6 text-red-700">
-        <p class="font-medium">Konfiguration konnte nicht geladen werden</p>
-        <p class="mt-1 text-sm">{{ error }}</p>
-      </div>
+      <StatusPanel
+        v-if="loading"
+        variant="loading"
+        title="Konfiguration wird geladen…"
+        message="Spieltage, Logos, Sponsoren und Aktionsbilder kommen vom Konfigurationsserver."
+      />
+
+      <StatusPanel
+        v-else-if="error"
+        variant="error"
+        title="Konfiguration konnte nicht geladen werden"
+        :message="error"
+        action-label="Erneut laden"
+        @action="loadAll"
+      />
 
       <template v-else-if="loaded">
         <div class="mb-6 flex flex-wrap gap-2">
           <button
             v-for="tab in tabs"
             :key="tab.id"
+            type="button"
+            :aria-current="activeTab === tab.id"
             class="rounded-full px-4 py-2 text-sm font-medium transition"
             :class="
               activeTab === tab.id

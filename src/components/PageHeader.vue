@@ -1,23 +1,21 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, toRef } from 'vue';
 import { useHeader } from '@/composables/useHeader';
 import DocumentationModal from '@/components/DocumentationModal.vue';
 import HeaderMenu from '@/components/HeaderMenu.vue';
-import type { ExportProgress } from '@/lib/export-zip';
+import type { StatEntry } from '@/components/HeaderMenu.vue';
 
-const { clubName, subtitle } = useHeader();
+const props = withDefaults(
+  defineProps<{
+    /** Club name from the loaded config; falls back to a generic label while loading. */
+    club?: string;
+    season?: string;
+    stats?: StatEntry[];
+  }>(),
+  { club: '', season: '', stats: () => [] },
+);
 
-const props = defineProps<{
-  exporting?: boolean;
-  exportProgress?: ExportProgress | null;
-  weekendCount?: number;
-  matchDayCount?: number;
-  matchCount?: number;
-}>();
-
-const emit = defineEmits<{
-  exportAll: [];
-}>();
+const { clubName, subtitle } = useHeader(toRef(props, 'club'), toRef(props, 'season'));
 
 const documentationModal = ref<InstanceType<typeof DocumentationModal> | null>(null);
 
@@ -41,15 +39,7 @@ defineExpose({
       </div>
       <div class="flex items-center gap-3">
         <slot name="extra-actions" />
-        <HeaderMenu
-          :exporting="props.exporting"
-          :export-progress="props.exportProgress"
-          :weekend-count="props.weekendCount"
-          :match-day-count="props.matchDayCount"
-          :match-count="props.matchCount"
-          @export-all="emit('exportAll')"
-          @open-documentation="openDocumentation"
-        />
+        <HeaderMenu :stats="props.stats" @open-documentation="openDocumentation" />
       </div>
     </div>
   </header>

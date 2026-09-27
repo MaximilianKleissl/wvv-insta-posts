@@ -3,23 +3,25 @@ import { useSeasonData } from './useSeasonData';
 import { useSponsors } from './useSponsors';
 import { fetchSeasonData } from '@/lib/sample-data';
 
-/** Loads sponsors + season data once on mount; exposes state for the UI. */
+/** Loads sponsors + season data on mount; exposes state and a retry action. */
 export function useSeasonBootstrap() {
   const { setSeasonData, seasonData, loading, error } = useSeasonData();
   const { loadSponsors } = useSponsors();
 
-  onMounted(async () => {
+  const reload = async () => {
     loading.value = true;
+    error.value = null;
     try {
       await loadSponsors();
-      const data = await fetchSeasonData();
-      setSeasonData(data);
+      setSeasonData(await fetchSeasonData());
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Fehler beim Laden der Daten';
+      error.value = err instanceof Error ? err.message : 'Unbekannter Fehler beim Laden der Daten.';
     } finally {
       loading.value = false;
     }
-  });
+  };
 
-  return { seasonData, loading, error };
+  onMounted(reload);
+
+  return { seasonData, loading, error, reload };
 }
