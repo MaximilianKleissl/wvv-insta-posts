@@ -31,7 +31,8 @@ jobs:
       - name: Format check
         run: npm run format:check
 
+      # No VITE_CONFIG_BASE_URL: the build must succeed against the default from
+      # src/lib/config-defaults.ts, which is what production uses unless the
+      # deploy workflow overrides it.
       - name: Build
-        env:
-          VITE_CONFIG_BASE_URL: 'https://maximiliankleissl.github.io/wvv-posts-config'
         run: npm run build
