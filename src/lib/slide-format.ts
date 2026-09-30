@@ -58,8 +58,7 @@ const FORMAT_CLASSES: Record<SlideFormatMode, SlideFormatClasses> = {
     headerHeight: 'h-[350px]',
     headerLabelFlexDirection: 'flex-row',
     teamTextSize: 'text-3xl',
-      headerPadding: 'p-10',
-
+    headerPadding: 'p-10',
   },
   stories: {
     ...SHARED_FORMAT_CLASSES,

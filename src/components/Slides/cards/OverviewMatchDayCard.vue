@@ -45,7 +45,11 @@
             class="relative flex shrink-0 items-center justify-center"
             :class="opponentLayout.logo"
           >
-            <TeamLogo :team-name="opponent" size-class="h-full w-full" />
+            <TeamLogo
+              :team-name="opponent"
+              :theme-team-name="belongsToClub(opponent) ? themeTeamName : undefined"
+              size-class="h-full w-full"
+            />
           </div>
 
           <span
@@ -103,6 +107,18 @@ function getParticipatingTeams(md: MatchDay): string[] {
   return (md.matches ?? []).flatMap(({ home, away }) => [home, away]);
 }
 
+/**
+ * True for any name of the club itself. The config names our teams
+ * inconsistently ("Werderaner VV 1990", "… 1990 I", "… 1990 II"), so the club
+ * prefix is what tells them apart from a real opponent.
+ */
+function belongsToClub(name: string): boolean {
+  const clubName = props.themeTeamName.trim();
+  if (!clubName) return false;
+
+  return name === clubName || name.startsWith(`${clubName} `);
+}
+
 const opponents = computed(() => {
   const clubName = props.themeTeamName.trim();
   const ownTeam = props.md.team.trim();
@@ -111,16 +127,33 @@ const opponents = computed(() => {
     return [];
   }
 
-  const isOwnTeam = (teamName: string) => {
-    const name = teamName.trim();
+  const ownNames = new Set([ownTeam, clubName].filter(Boolean));
 
-    return name === ownTeam || name === clubName || name.startsWith(`${clubName} `);
-  };
+  if (props.md.matches?.length) {
+    // The pairings tell us which of our teams is actually playing: it is the one
+    // on our side of every match. Removing that name exactly keeps an intra-club
+    // fixture intact, e.g. "… 1990 I" against "… 1990 II".
+    for (const match of props.md.matches) {
+      const ourSide = (props.md.home ? match.home : match.away).trim();
+      if (belongsToClub(ourSide)) {
+        ownNames.add(ourSide);
+      }
+    }
+  } else {
+    // Without pairings our teams cannot be told apart, so treat every name of
+    // the club as ours.
+    for (const name of getParticipatingTeams(props.md)) {
+      const trimmed = name.trim();
+      if (belongsToClub(trimmed)) {
+        ownNames.add(trimmed);
+      }
+    }
+  }
 
   const others = getParticipatingTeams(props.md)
     .map((name) => name.trim())
     .filter(Boolean)
-    .filter((name) => !isOwnTeam(name));
+    .filter((name) => !ownNames.has(name));
 
   return [...new Set(others)];
 });
