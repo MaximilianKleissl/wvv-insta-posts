@@ -278,7 +278,7 @@ const expandedSlidePosition = computed(() => {
       </div>
 
       <div v-if="selectedWeekend" class="space-y-4">
-        <div class="grid grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <button
             v-for="(slide, index) in slides"
             :key="slide.slideId"

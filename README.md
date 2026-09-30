@@ -44,6 +44,13 @@ removes the build and CDN propagation delay after a publish: a commit becomes re
 within seconds. The trade-off is that raw is not a CDN, so the many small config files
 are fetched concurrently rather than in sequence.
 
+The host sends `cache-control: max-age=300`, which on its own would keep a browser
+serving the previous version for up to five minutes. Every request for config data
+therefore goes through `src/lib/config-fetch.ts`, which sets `cache: 'no-cache'`. The
+host honours `If-None-Match`, so unchanged files come back as `304 Not Modified` with an
+empty body: a reload always reflects what is actually published, and unchanged files
+still cost almost nothing.
+
 Override the host with:
 
 ```bash

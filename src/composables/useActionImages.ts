@@ -1,5 +1,6 @@
 import { ref } from 'vue';
 import { CONFIG_BASE_URL } from '@/lib/config';
+import { fetchFresh } from '@/lib/config-fetch';
 
 const ACTION_IMAGES_CONFIG_URL = `${CONFIG_BASE_URL}/Action_Images/action_images.json`;
 const DEFAULT_ACTION_IMAGES = ['baumbluetenumzug.jpg'] as const;
@@ -12,7 +13,7 @@ let actionImagesPromise: Promise<void> | null = null;
 
 async function fetchActionImages(): Promise<void> {
   try {
-    const response = await fetch(ACTION_IMAGES_CONFIG_URL);
+    const response = await fetchFresh(ACTION_IMAGES_CONFIG_URL);
     if (!response.ok) {
       throw new Error(`Failed to fetch action images config: ${response.statusText}`);
     }

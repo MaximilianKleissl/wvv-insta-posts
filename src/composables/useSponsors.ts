@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue';
 import type { Sponsor } from '@/lib/types';
 import { CONFIG_BASE_URL } from '@/lib/config';
+import { fetchFresh } from '@/lib/config-fetch';
 import { seededShuffle } from '@/lib/slide-utils';
 
 const SPONSORS_URL = `${CONFIG_BASE_URL}/Sponsoren/sponsoren_overview.json`;
@@ -15,7 +16,7 @@ export function useSponsors() {
     loading.value = true;
     error.value = null;
     try {
-      const response = await fetch(SPONSORS_URL);
+      const response = await fetchFresh(SPONSORS_URL);
       if (!response.ok) {
         throw new Error(`Failed to fetch sponsors: ${response.statusText}`);
       }

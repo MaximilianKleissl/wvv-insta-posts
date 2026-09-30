@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue';
 import { CONFIG_BASE_URL, WRITER_BASE_URL } from '@/lib/config';
+import { fetchConfigJson, fetchFresh } from '@/lib/config-fetch';
 import type { MatchDay, Sponsor } from '@/lib/types';
 
 export interface ActionImageConfig {
@@ -20,12 +21,6 @@ const EMPTY_MATCHDAY = (): MatchDay => ({
   date: '',
   location: '',
 });
-
-async function fetchJson<T>(url: string): Promise<T> {
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`Konnte ${url} nicht laden (${response.status})`);
-  return (await response.json()) as T;
-}
 
 /** Reads a File object as a base64 string (chunked to avoid stack overflow on large images). */
 export async function fileToBase64(file: File): Promise<string> {
@@ -76,7 +71,9 @@ const loadedJson = ref<Record<string, string>>({});
 
 export function useConfigEditor() {
   async function fetchSha(): Promise<string | null> {
-    const response = await fetch(`${WRITER_BASE_URL}/sha`);
+    // Revalidated too: after publishing, a cached sha would report a phantom
+    // conflict against your own change.
+    const response = await fetchFresh(`${WRITER_BASE_URL}/sha`);
     if (!response.ok) return null;
     const data = (await response.json()) as { sha?: string | null };
     return data.sha ?? null;
@@ -89,27 +86,41 @@ export function useConfigEditor() {
       // The config host is not a CDN, so the independent files are fetched
       // concurrently instead of one round-trip after another.
       const [overview, meta, sp, ai] = await Promise.all([
-        fetchJson<string[]>(`${CONFIG_BASE_URL}/Spiele/File_Overview.json`),
-        fetchJson<{ season: string; club: string }>(`${CONFIG_BASE_URL}/Spiele/metadata.json`),
-        fetchJson<Sponsor[]>(`${CONFIG_BASE_URL}/Sponsoren/sponsoren_overview.json`).catch(
-          (err) => {
-            console.warn('Failed to load sponsors', err);
-            return null;
-          },
+        fetchConfigJson<string[]>(
+          `${CONFIG_BASE_URL}/Spiele/File_Overview.json`,
+          'Spielplan-Übersicht',
         ),
-        fetchJson<ActionImageConfig>(`${CONFIG_BASE_URL}/Action_Images/action_images.json`).catch(
-          (err) => {
-            console.warn('Failed to load action images', err);
-            return null;
-          },
+        fetchConfigJson<{ season: string; club: string }>(
+          `${CONFIG_BASE_URL}/Spiele/metadata.json`,
+          'Saison-Metadaten',
         ),
+        fetchConfigJson<Sponsor[]>(
+          `${CONFIG_BASE_URL}/Sponsoren/sponsoren_overview.json`,
+          'Sponsoren-Übersicht',
+        ).catch((err) => {
+          console.warn('Failed to load sponsors', err);
+          return null;
+        }),
+        fetchConfigJson<ActionImageConfig>(
+          `${CONFIG_BASE_URL}/Action_Images/action_images.json`,
+          'Aktionsbild-Übersicht',
+        ).catch((err) => {
+          console.warn('Failed to load action images', err);
+          return null;
+        }),
       ]);
       const files = overview.filter((f) => f !== 'metadata.json' && f !== 'File_Overview.json');
 
       const perFile = await Promise.all(
         files.map(async (file) => {
           try {
-            return { file, data: await fetchJson<MatchDay[]>(`${CONFIG_BASE_URL}/Spiele/${file}`) };
+            return {
+              file,
+              data: await fetchConfigJson<MatchDay[]>(
+                `${CONFIG_BASE_URL}/Spiele/${file}`,
+                `Spieltag-Datei ${file}`,
+              ),
+            };
           } catch (err) {
             // One broken file must not block editing the rest of the season.
             console.warn(`Failed to load ${file}`, err);
