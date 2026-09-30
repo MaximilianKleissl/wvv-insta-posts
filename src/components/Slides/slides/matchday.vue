@@ -8,7 +8,7 @@ import { getMatchDaySlideTitle, getMatchKey } from '@/lib/slide-utils';
 
 // Each card (row) may only take at most 33% of the available height, so a
 // match day with only one or two matches doesn't stretch the cards.
-const MATCH_ROW_CLASS = 'min-h-0 max-h-[33.333%]';
+const MATCH_ROW_CLASS = 'min-h-0 max-h-[50%]';
 
 const props = withDefaults(defineProps<SlideMatchdayProps>(), {
   format: 'portrait_4by5',

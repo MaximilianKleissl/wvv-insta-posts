@@ -43,26 +43,51 @@ export function isTournamentMatchDay(matchDay: MatchDay): boolean {
   );
 }
 
+/** Earliest kick-off of a match day as "HH:MM"; match days without pairings (e.g. tournaments) sort last. */
+function earliestMatchTime(matchDay: MatchDay): string {
+  if (!matchDay.matches || matchDay.matches.length === 0) return '99:99';
+  return matchDay.matches.reduce(
+    (min, m) => (m.time < min ? m.time : min),
+    matchDay.matches[0].time,
+  );
+}
+
+/** Match day date as a comparable timestamp; unparsable dates sort last. */
+function matchDayTimestamp(matchDay: MatchDay): number {
+  return parseGermanDate(matchDay.date)?.getTime() ?? Number.MAX_SAFE_INTEGER;
+}
+
+/** Decorates each match day with the keys the sort orders use, computed once per comparison-free pass. */
+function withSortKeys(matchDays: MatchDay[]) {
+  return matchDays.map((md) => ({ md, date: matchDayTimestamp(md), time: earliestMatchTime(md) }));
+}
+
 /** Sorts match days: home matches first, then away matches, each group chronological by date then earliest match time. */
 export function sortMatchDays(matchDays: MatchDay[]): MatchDay[] {
-  const earliestTime = (md: MatchDay): string => {
-    if (!md.matches || md.matches.length === 0) return '99:99';
-    return md.matches.reduce((min, m) => (m.time < min ? m.time : min), md.matches[0].time);
-  };
+  return withSortKeys(matchDays)
+    .sort((a, b) => {
+      if (a.md.home !== b.md.home) return a.md.home ? -1 : 1;
+      if (a.date !== b.date) return a.date - b.date;
+      return a.time.localeCompare(b.time);
+    })
+    .map((w) => w.md);
+}
 
-  const withMeta = matchDays.map((md) => ({
-    md,
-    date: parseGermanDate(md.date)?.getTime() ?? Number.MAX_SAFE_INTEGER,
-    time: earliestTime(md),
-  }));
-
-  withMeta.sort((a, b) => {
-    if (a.md.home !== b.md.home) return a.md.home ? -1 : 1;
-    if (a.date !== b.date) return a.date - b.date;
-    return a.time.localeCompare(b.time);
-  });
-
-  return withMeta.map((w) => w.md);
+/**
+ * Sorts match days purely chronologically: by date, then by earliest match
+ * time, and only then home before away as a tie-break within one slot. The
+ * weekend overview uses this, because grouping by home/away would otherwise
+ * push a Saturday match below a Sunday one.
+ */
+export function sortMatchDaysByDate(matchDays: MatchDay[]): MatchDay[] {
+  return withSortKeys(matchDays)
+    .sort((a, b) => {
+      if (a.date !== b.date) return a.date - b.date;
+      if (a.time !== b.time) return a.time.localeCompare(b.time);
+      if (a.md.home !== b.md.home) return a.md.home ? -1 : 1;
+      return 0;
+    })
+    .map((w) => w.md);
 }
 
 export function sortedMatchDaysForWeekend(weekend: Weekend): MatchDay[] {

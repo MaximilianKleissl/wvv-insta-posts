@@ -49,7 +49,6 @@ const SHARED_FORMAT_CLASSES = {
   sponsorLabel: 'Partner, Unterstützer und Förderer',
   sponsorGap: 'gap-12',
   sponsorLogoHeight: 'h-16',
-  headerPadding: 'p-14',
   seasonClasses: 'px-9 py-2 text-3xl',
 };
 
@@ -59,12 +58,15 @@ const FORMAT_CLASSES: Record<SlideFormatMode, SlideFormatClasses> = {
     headerHeight: 'h-[350px]',
     headerLabelFlexDirection: 'flex-row',
     teamTextSize: 'text-3xl',
+      headerPadding: 'p-10',
+
   },
   stories: {
     ...SHARED_FORMAT_CLASSES,
     headerHeight: 'h-[700px]',
     headerLabelFlexDirection: 'flex-col',
     teamTextSize: 'text-4xl',
+    headerPadding: 'p-14',
   },
 };
 

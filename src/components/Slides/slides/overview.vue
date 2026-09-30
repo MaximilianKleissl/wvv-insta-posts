@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { SeasonData } from '@/lib/types';
-import { sortedMatchDaysForWeekend } from '@/lib/grouping';
+import { sortMatchDaysByDate } from '@/lib/grouping';
 import SharedContainer from '../layout/SharedContainer.vue';
 import OverviewMatchDayCard from '../cards/OverviewMatchDayCard.vue';
 import type { SlideTitle } from '@/lib/slide-types';
@@ -20,7 +20,9 @@ const props = withDefaults(defineProps<SlideOverviewProps>(), {
 });
 
 const weekend = computed(() => props.season.weekends[props.weekendIndex]);
-const matchDays = computed(() => sortedMatchDaysForWeekend(weekend.value));
+// Chronological, so a Saturday match never sits below a Sunday one just
+// because it is at home.
+const matchDays = computed(() => sortMatchDaysByDate(weekend.value.matchDays));
 
 // Dynamic grid allocation based on match count to balance empty spaces
 const containerGridClass = computed(() => {
