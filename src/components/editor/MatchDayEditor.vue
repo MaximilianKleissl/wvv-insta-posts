@@ -221,7 +221,9 @@ const valid = () =>
         <input
           :value="local.date"
           class="editor-input"
-          :class="dateInvalid ? '!border-red-500 focus:!shadow-[0_0_0_2px_rgb(239_68_68_/_0.15)]' : ''"
+          :class="
+            dateInvalid ? '!border-red-500 focus:!shadow-[0_0_0_2px_rgb(239_68_68_/_0.15)]' : ''
+          "
           placeholder="26.10.2025"
           inputmode="numeric"
           maxlength="10"

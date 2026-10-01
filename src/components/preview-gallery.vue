@@ -5,12 +5,14 @@ import SlideOverview from '@/components/Slides/slides/overview.vue';
 import SlideMatchday from '@/components/Slides/slides/matchday.vue';
 import SlideTournament from '@/components/Slides/slides/tournament.vue';
 import { isTournamentMatchDay, parseGermanDate } from '@/lib/grouping';
-import { toPng } from 'html-to-image';
-
 import { sortedMatchDaysForWeekend } from '@/lib/grouping';
 import { buildWeekendCaption } from '@/lib/caption';
 import type { SeasonData } from '@/lib/types';
 import { getSlideBoxStyle, getSlidePreviewStyle, getSlideScale } from '@/lib/slide-format';
+import { renderSlideToPng } from '@/lib/render-slide';
+import { describeSaveOutcome } from '@/lib/save-file';
+import { usePendingSave } from '@/composables/usePendingSave';
+import SaveConfirmBar from '@/components/SaveConfirmBar.vue';
 import { useToast } from '@/composables/useToast';
 import StatusPanel from '@/components/StatusPanel.vue';
 
@@ -41,6 +43,17 @@ const emit = defineEmits<{
 }>();
 
 const { toast } = useToast();
+
+const {
+  pendingSave,
+  saving: saving,
+  save,
+  confirmSave,
+  cancelSave,
+} = usePendingSave((outcome, fileName) => {
+  const message = describeSaveOutcome(outcome, fileName);
+  if (message) toast(message, outcome === 'cancelled' ? 'error' : 'success');
+});
 
 const selectedWeekendIndex = ref<number | null>(null);
 const downloadingSlide = ref(false);
@@ -170,17 +183,7 @@ const downloadCurrentSlide = async () => {
 
   downloadingSlide.value = true;
   try {
-    const dataUrl = await toPng(node, {
-      pixelRatio: 2,
-      cacheBust: true,
-    });
-
-    const link = document.createElement('a');
-    link.href = dataUrl;
-    link.download = `${slideId}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    await save(await renderSlideToPng(node), `${slideId}.png`);
   } catch (error) {
     console.error('Failed to download slide:', error);
     toast(
@@ -406,6 +409,16 @@ const expandedSlidePosition = computed(() => {
               Weiter ›
             </button>
           </div>
+
+          <SaveConfirmBar
+            v-if="pendingSave"
+            class="mb-4"
+            :pending="pendingSave"
+            :saving="saving"
+            hint="Zum Speichern antippen – iOS öffnet dann das Teilen-Menü, über das du das Bild in „Fotos“ oder „Dateien“ ablegen kannst."
+            @confirm="confirmSave"
+            @cancel="cancelSave"
+          />
 
           <div
             class="flex gap-1 overflow-hidden border border-gray-200 bg-white shadow-sm"

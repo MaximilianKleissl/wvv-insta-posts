@@ -9,7 +9,10 @@ import FormatToggle from '@/components/FormatToggle.vue';
 import StatusPanel from '@/components/StatusPanel.vue';
 import SlideTeamSummary from '@/components/Slides/slides/team-summary.vue';
 import { groupMatchDaysByTeam, slugify } from '@/lib/grouping';
-import { exportTeamZip, downloadBlob } from '@/lib/export-zip';
+import { exportTeamZip } from '@/lib/export-zip';
+import { describeSaveOutcome } from '@/lib/save-file';
+import { usePendingSave } from '@/composables/usePendingSave';
+import SaveConfirmBar from '@/components/SaveConfirmBar.vue';
 import { useToast } from '@/composables/useToast';
 import {
   getSlideBoxStyle,
@@ -29,6 +32,17 @@ const exportFormat = ref<SlideFormatMode>('portrait_4by5');
 const { toast } = useToast();
 
 const season = computed(() => seasonData.value!);
+
+const {
+  pendingSave,
+  saving: saving,
+  save,
+  confirmSave,
+  cancelSave,
+} = usePendingSave((outcome, fileName) => {
+  const message = describeSaveOutcome(outcome, fileName);
+  if (message) toast(message, outcome === 'cancelled' ? 'error' : 'success');
+});
 
 const teamMatchDays = computed(() => {
   if (!seasonData.value) return [];
@@ -86,10 +100,15 @@ const handleExport = async () => {
     const teamData = teamMatchDays.value.find((t) => t.teamName === selectedTeam.value);
     if (!teamData) throw new Error('Team nicht gefunden');
 
-    const blob = await exportTeamZip(seasonData.value, teamData, getSlideElement);
+    const { blob, failedSlides } = await exportTeamZip(seasonData.value, teamData, getSlideElement);
     const fileName = `${slugify(seasonData.value.club)}_${slugify(selectedTeam.value)}_saison.zip`;
-    downloadBlob(blob, fileName);
-    toast('ZIP erstellt – der Download hat begonnen.');
+    await save(blob, fileName);
+    if (failedSlides.length > 0) {
+      toast(
+        `${failedSlides.length} Bild(er) konnten nicht erzeugt werden: ${failedSlides.join(', ')}`,
+        'error',
+      );
+    }
   } catch (err) {
     toast(
       `Export fehlgeschlagen: ${err instanceof Error ? err.message : 'Unbekannter Fehler'}`,
@@ -183,6 +202,14 @@ const teamPreviewScale = computed(() =>
 
         <!-- Team Summary View -->
         <div v-else class="space-y-4">
+          <SaveConfirmBar
+            v-if="pendingSave"
+            :pending="pendingSave"
+            :saving="saving"
+            @confirm="confirmSave"
+            @cancel="cancelSave"
+          />
+
           <div class="flex items-center justify-between">
             <button
               class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
