@@ -9,8 +9,7 @@ import FormatToggle from '@/components/FormatToggle.vue';
 import StatusPanel from '@/components/StatusPanel.vue';
 import SlideTeamSummary from '@/components/Slides/slides/team-summary.vue';
 import { groupMatchDaysByTeam, slugify } from '@/lib/grouping';
-import { exportTeamZip } from '@/lib/export-zip';
-import { describeSaveOutcome } from '@/lib/save-file';
+import { exportTeamZip, type ExportProgress } from '@/lib/export-zip';
 import { usePendingSave } from '@/composables/usePendingSave';
 import SaveConfirmBar from '@/components/SaveConfirmBar.vue';
 import { useToast } from '@/composables/useToast';
@@ -33,16 +32,9 @@ const { toast } = useToast();
 
 const season = computed(() => seasonData.value!);
 
-const {
-  pendingSave,
-  saving: saving,
-  save,
-  confirmSave,
-  cancelSave,
-} = usePendingSave((outcome, fileName) => {
-  const message = describeSaveOutcome(outcome, fileName);
-  if (message) toast(message, outcome === 'cancelled' ? 'error' : 'success');
-});
+const { pendingSave, saveError, saving: saving, save, confirmSave, cancelSave } = usePendingSave();
+
+const exportProgress = ref<ExportProgress | null>(null);
 
 const teamMatchDays = computed(() => {
   if (!seasonData.value) return [];
@@ -96,23 +88,32 @@ const exportSlides = computed(() => {
 const handleExport = async () => {
   if (!seasonData.value || !selectedTeam.value) return;
   exporting.value = true;
+  exportProgress.value = null;
   try {
     const teamData = teamMatchDays.value.find((t) => t.teamName === selectedTeam.value);
     if (!teamData) throw new Error('Team nicht gefunden');
 
-    const { blob, failedSlides } = await exportTeamZip(seasonData.value, teamData, getSlideElement);
+    const { blob, failedSlides } = await exportTeamZip(
+      seasonData.value,
+      teamData,
+      getSlideElement,
+      (progress) => (exportProgress.value = progress),
+    );
     const fileName = `${slugify(seasonData.value.club)}_${slugify(selectedTeam.value)}_saison.zip`;
     await save(blob, fileName);
     if (failedSlides.length > 0) {
       toast(
-        `${failedSlides.length} Bild(er) konnten nicht erzeugt werden: ${failedSlides.join(', ')}`,
-        'error',
+        `${failedSlides.length} Bild(er) ließen sich nicht erzeugen. Die übrigen liegen im ZIP.`,
+        'warning',
+        `Fehlgeschlagen: ${failedSlides.join(', ')}`,
       );
     }
   } catch (err) {
     toast(
-      `Export fehlgeschlagen: ${err instanceof Error ? err.message : 'Unbekannter Fehler'}`,
+      'Export abgebrochen – es wurde keine Datei erzeugt.',
       'error',
+      `${err instanceof Error ? `${err.name}: ${err.message}` : String(err)}\n` +
+        `Hinweis: Auf iOS muss der Export im Vordergrund bleiben.`,
     );
   } finally {
     exporting.value = false;
@@ -206,6 +207,7 @@ const teamPreviewScale = computed(() =>
             v-if="pendingSave"
             :pending="pendingSave"
             :saving="saving"
+            :error="saveError"
             @confirm="confirmSave"
             @cancel="cancelSave"
           />
@@ -217,17 +219,26 @@ const teamPreviewScale = computed(() =>
             >
               ← Zurück zur Teamauswahl
             </button>
-            <div class="flex items-center gap-4">
-              <h2 class="text-2xl font-bold text-gray-800">{{ selectedTeam }}</h2>
-              <button
-                :disabled="exporting"
-                class="inline-flex items-center gap-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-                title="Beide Bilder und den Bildtext als ZIP herunterladen"
-                @click="handleExport"
-              >
-                <Download class="w-4 h-4" />
-                {{ exporting ? 'Exportiere…' : 'Export' }}
-              </button>
+            <div class="flex flex-col items-end gap-4">
+              <div class="flex items-center gap-4">
+                <h2 class="text-2xl font-bold text-gray-800">{{ selectedTeam }}</h2>
+                <button
+                  :disabled="exporting"
+                  class="inline-flex items-center gap-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                  title="Beide Bilder und den Bildtext als ZIP herunterladen"
+                  @click="handleExport"
+                >
+                  <Download class="w-4 h-4" />
+                  {{ exporting ? 'Exportiere…' : 'Export' }}
+                </button>
+              </div>
+              <p v-if="exporting" class="text-xs text-gray-600">
+                {{
+                  exportProgress
+                    ? `${exportProgress.current} von ${exportProgress.total} – ${exportProgress.label}`
+                    : 'Bilder werden erzeugt …'
+                }}
+              </p>
             </div>
           </div>
 

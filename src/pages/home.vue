@@ -11,8 +11,7 @@ import SlideMatchday from '@/components/Slides/slides/matchday.vue';
 import SlideTournament from '@/components/Slides/slides/tournament.vue';
 import PreviewGallery from '@/components/preview-gallery.vue';
 import { sortedMatchDaysForWeekend, slugify } from '@/lib/grouping';
-import { exportSeasonZip } from '@/lib/export-zip';
-import { describeSaveOutcome } from '@/lib/save-file';
+import { exportSeasonZip, type ExportProgress } from '@/lib/export-zip';
 import { usePendingSave } from '@/composables/usePendingSave';
 import SaveConfirmBar from '@/components/SaveConfirmBar.vue';
 import { useToast } from '@/composables/useToast';
@@ -38,16 +37,9 @@ const { toast } = useToast();
 
 const season = computed(() => seasonData.value!);
 
-const {
-  pendingSave,
-  saving: saving,
-  save,
-  confirmSave,
-  cancelSave,
-} = usePendingSave((outcome, fileName) => {
-  const message = describeSaveOutcome(outcome, fileName);
-  if (message) toast(message, outcome === 'cancelled' ? 'error' : 'success');
-});
+const { pendingSave, saveError, saving: saving, save, confirmSave, cancelSave } = usePendingSave();
+
+const exportProgress = ref<ExportProgress | null>(null);
 
 const weekendCount = computed(() => seasonData.value?.weekends.length ?? 0);
 const matchDayCount = computed(
@@ -96,25 +88,35 @@ const exportSlides = computed<SlideRef[]>(() => {
 const handleExportSingleWeekend = async (weekendIndex: number) => {
   if (!seasonData.value) return;
   exporting.value = true;
+  exportProgress.value = null;
+  let seenTotal = 0;
   try {
     const { blob, failedSlides } = await exportSeasonZip(
       seasonData.value,
       [weekendIndex],
       getSlideElement,
+      (progress) => {
+        seenTotal = progress.total;
+        exportProgress.value = progress;
+      },
     );
     const weekend = seasonData.value.weekends[weekendIndex];
     const fileName = `${slugify(seasonData.value.club)}_${weekend.dateRange.replace(/\s+/g, '_')}.zip`;
     await save(blob, fileName);
     if (failedSlides.length > 0) {
       toast(
-        `${failedSlides.length} Bild(er) konnten nicht erzeugt werden: ${failedSlides.join(', ')}`,
-        'error',
+        `${failedSlides.length} von ${seenTotal} Bildern ließen sich nicht erzeugen. ` +
+          `Die übrigen liegen im ZIP.`,
+        'warning',
+        `Fehlgeschlagen: ${failedSlides.join(', ')}`,
       );
     }
   } catch (err) {
     toast(
-      `Export fehlgeschlagen: ${err instanceof Error ? err.message : 'Unbekannter Fehler'}`,
+      'Export abgebrochen – es wurde keine Datei erzeugt.',
       'error',
+      `${err instanceof Error ? `${err.name}: ${err.message}` : String(err)}\n` +
+        `Hinweis: Auf iOS muss der Export im Vordergrund bleiben.`,
     );
   } finally {
     exporting.value = false;
@@ -159,6 +161,7 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
           v-if="pendingSave"
           :pending="pendingSave"
           :saving="saving"
+          :error="saveError"
           @confirm="confirmSave"
           @cancel="cancelSave"
         />
@@ -166,6 +169,7 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
         <PreviewGallery
           :season="season"
           :exporting="exporting"
+          :export-progress="exportProgress"
           :format="exportFormat"
           @export-weekend="handleExportSingleWeekend"
         />

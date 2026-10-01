@@ -10,7 +10,8 @@ import { buildWeekendCaption } from '@/lib/caption';
 import type { SeasonData } from '@/lib/types';
 import { getSlideBoxStyle, getSlidePreviewStyle, getSlideScale } from '@/lib/slide-format';
 import { renderSlideToPng } from '@/lib/render-slide';
-import { describeSaveOutcome } from '@/lib/save-file';
+import { describeEnvironment } from '@/lib/save-file';
+import type { ExportProgress } from '@/lib/export-zip';
 import { usePendingSave } from '@/composables/usePendingSave';
 import SaveConfirmBar from '@/components/SaveConfirmBar.vue';
 import { useToast } from '@/composables/useToast';
@@ -29,9 +30,11 @@ const props = withDefaults(
   defineProps<{
     season: SeasonData;
     exporting?: boolean;
+    exportProgress?: ExportProgress | null;
     format?: SlideFormatMode;
   }>(),
   {
+    exportProgress: null,
     format: 'portrait_4by5',
   },
 );
@@ -44,16 +47,7 @@ const emit = defineEmits<{
 
 const { toast } = useToast();
 
-const {
-  pendingSave,
-  saving: saving,
-  save,
-  confirmSave,
-  cancelSave,
-} = usePendingSave((outcome, fileName) => {
-  const message = describeSaveOutcome(outcome, fileName);
-  if (message) toast(message, outcome === 'cancelled' ? 'error' : 'success');
-});
+const { pendingSave, saveError, saving: saving, save, confirmSave, cancelSave } = usePendingSave();
 
 const selectedWeekendIndex = ref<number | null>(null);
 const downloadingSlide = ref(false);
@@ -132,6 +126,19 @@ const caption = computed(() => {
 
 const expandedSlide = ref<PreviewSlideRef | null>(null);
 
+// Rendering one slide takes seconds on a phone, so a stuck bar is itself information: say which
+// slide we are on rather than showing an indefinite spinner.
+const exportProgressPercent = computed(() => {
+  const p = props.exportProgress;
+  if (!p || p.total === 0) return 0;
+  return Math.min(100, Math.round((p.current / p.total) * 100));
+});
+
+const exportProgressLabel = computed(() => {
+  const p = props.exportProgress;
+  return p ? `${p.current} von ${p.total} – ${p.label}` : 'Bilder werden erzeugt …';
+});
+
 const openExpandedPreview = (slide: PreviewSlideRef) => {
   expandedSlide.value = slide;
 };
@@ -177,7 +184,11 @@ const downloadCurrentSlide = async () => {
   const slideId = expandedSlide.value.slideId;
   const node = document.getElementById(slideId);
   if (!node) {
-    toast('Bild konnte nicht erzeugt werden. Bitte erneut versuchen.', 'error');
+    toast(
+      'Dieses Bild ist nicht im Dokument – bitte kurz laden/scrollen und erneut versuchen.',
+      'error',
+      `Erwartete Element-ID: ${slideId}`,
+    );
     return;
   }
 
@@ -186,9 +197,14 @@ const downloadCurrentSlide = async () => {
     await save(await renderSlideToPng(node), `${slideId}.png`);
   } catch (error) {
     console.error('Failed to download slide:', error);
+    const name = error instanceof Error ? error.name : 'UnknownError';
     toast(
-      'Bild konnte nicht gespeichert werden. Bitte erneut versuchen oder den Export nutzen.',
+      name === 'NotSupportedError' || String(error).includes('Canvas')
+        ? 'Der Browser konnte das Bild nicht in ein PNG umwandeln – das ist meist ein Speicherproblem. ' +
+            'Der Export mehrerer Bilder nutzt weniger Speicher.'
+        : 'Bild konnte nicht gespeichert werden. Bitte erneut versuchen oder den Export nutzen.',
       'error',
+      `${name}: ${error instanceof Error ? error.message : String(error)}\n${describeEnvironment()}`,
     );
   } finally {
     downloadingSlide.value = false;
@@ -247,9 +263,24 @@ const expandedSlidePosition = computed(() => {
         >
           {{ props.exporting ? 'Exportiere…' : 'Export' }}
         </button>
-        <p v-if="props.exporting" class="-mt-2 text-sm text-gray-500">
-          Bilder werden erzeugt – bitte den Tab nicht wechseln.
-        </p>
+        <div v-if="props.exporting" class="mt-2 w-64 max-w-[70vw]">
+          <div
+            class="h-2 w-full overflow-hidden rounded-full bg-gray-200"
+            role="progressbar"
+            :aria-valuenow="exportProgressPercent"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            :aria-label="`Export: ${exportProgressLabel}`"
+          >
+            <div
+              class="h-full rounded-full bg-green-700 transition-[width] duration-200"
+              :style="{ width: `${exportProgressPercent}%` }"
+            />
+          </div>
+          <p class="mt-1 text-xs text-gray-600">
+            {{ exportProgressLabel }} – bitte den Tab nicht wechseln.
+          </p>
+        </div>
       </div>
     </div>
 
@@ -415,6 +446,7 @@ const expandedSlidePosition = computed(() => {
             class="mb-4"
             :pending="pendingSave"
             :saving="saving"
+            :error="saveError"
             hint="Zum Speichern antippen – iOS öffnet dann das Teilen-Menü, über das du das Bild in „Fotos“ oder „Dateien“ ablegen kannst."
             @confirm="confirmSave"
             @cancel="cancelSave"
