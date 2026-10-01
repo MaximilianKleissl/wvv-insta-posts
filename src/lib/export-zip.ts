@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
-import { toPng } from 'html-to-image';
 import type { SeasonData } from './types';
+import { renderSlideToPng, RETINA_PIXEL_RATIO } from './render-slide';
 import {
   weekendFolderName,
   slugify,
@@ -17,6 +17,73 @@ export interface ExportProgress {
   label: string;
 }
 
+export interface ZipExportResult {
+  blob: Blob;
+  /** Archive paths that could not be rasterised. One bad slide must not sink the whole export. */
+  failedSlides: string[];
+}
+
+export interface ExportOptions {
+  /** Retina renders are sharp but need a lot of canvas memory; 1 is the iOS-safe retry. */
+  pixelRatio?: number;
+}
+
+/**
+ * Rasterising a slide is heavy, synchronous main-thread work. Handing control back to the browser
+ * between slides keeps the progress UI repainting and stops mobile Safari from treating the export
+ * as a hung page.
+ */
+function yieldToMainThread(): Promise<void> {
+  return new Promise((resolve) => {
+    window.requestAnimationFrame(() => window.setTimeout(resolve, 0));
+  });
+}
+
+interface RenderJob {
+  /** Extension-less archive path, e.g. `Wochenende_01/mannschaft`. */
+  basePath: string;
+  /** Absent for caption-only jobs. */
+  slideId?: string;
+  caption?: string;
+}
+
+async function buildZip(
+  jobs: RenderJob[],
+  getSlideElement: ((slideId: string) => HTMLElement | null) | undefined,
+  onProgress: ((progress: ExportProgress) => void) | undefined,
+  options: ExportOptions,
+): Promise<ZipExportResult> {
+  const zip = new JSZip();
+  const pixelRatio = options.pixelRatio ?? RETINA_PIXEL_RATIO;
+  const failedSlides: string[] = [];
+
+  let done = 0;
+  for (const job of jobs) {
+    if (job.slideId && getSlideElement) {
+      const node = getSlideElement(job.slideId);
+      if (node) {
+        try {
+          zip.file(`${job.basePath}.png`, await renderSlideToPng(node, pixelRatio));
+        } catch (err) {
+          failedSlides.push(`${job.basePath}.png`);
+          console.error(`Failed to render ${job.basePath}.png`, err);
+        }
+      }
+    }
+
+    if (job.caption) {
+      zip.file(`${job.basePath}.txt`, job.caption);
+    }
+
+    done += 1;
+    onProgress?.({ current: done, total: jobs.length, label: job.basePath });
+    await yieldToMainThread();
+  }
+
+  // `streamFiles` keeps peak memory down while deflating, which matters on phones.
+  return { blob: await zip.generateAsync({ type: 'blob', streamFiles: true }), failedSlides };
+}
+
 /**
  * Renders each provided slide element to PNG and packages everything (PNGs + caption .txt files)
  * into a ZIP, preserving the `Wochenende_XX/file.png` + `file.txt` folder structure.
@@ -30,30 +97,27 @@ export async function exportSeasonZip(
   selectedWeekendIndexes?: number[],
   getSlideElement?: (slideId: string) => HTMLElement | null,
   onProgress?: (progress: ExportProgress) => void,
-): Promise<Blob> {
-  const zip = new JSZip();
-
-  const jobs: { weekendIndex: number; slideId: string; fileBase: string; caption?: string }[] = [];
+  options: ExportOptions = {},
+): Promise<ZipExportResult> {
+  const jobs: RenderJob[] = [];
   const weekendsToExport = selectedWeekendIndexes
     ? selectedWeekendIndexes.map((i) => season.weekends[i]).filter(Boolean)
     : season.weekends;
 
   weekendsToExport.forEach((weekend, index) => {
     const weekendIndex = selectedWeekendIndexes ? selectedWeekendIndexes[index] : index;
+    const folder = weekendFolderName(season.weekends[weekendIndex], weekendIndex);
 
-    // Add weekend caption file
+    // Caption-only job: no slideId, so nothing is rasterised for it.
     jobs.push({
-      weekendIndex,
-      slideId: `caption-${weekendIndex}`,
-      fileBase: 'caption',
+      basePath: `${folder}/caption`,
       caption: buildWeekendCaption(season, weekendIndex),
     });
 
     if (weekend.matchDays.length > 1) {
       jobs.push({
-        weekendIndex,
+        basePath: `${folder}/overview`,
         slideId: `overview-${weekendIndex}`,
-        fileBase: 'overview',
       });
     }
 
@@ -61,49 +125,13 @@ export async function exportSeasonZip(
     sortedDays.forEach((md) => {
       const originalIndex = weekend.matchDays.indexOf(md);
       jobs.push({
-        weekendIndex,
+        basePath: `${folder}/${slugify(md.team)}`,
         slideId: `matchday-${weekendIndex}-${originalIndex}`,
-        fileBase: slugify(md.team),
       });
     });
   });
 
-  let done = 0;
-  for (const job of jobs) {
-    const folder = weekendFolderName(season.weekends[job.weekendIndex], job.weekendIndex);
-
-    // Only render PNG for slide jobs (not caption-only jobs) and if getSlideElement is provided
-    if (!job.slideId.startsWith('caption-') && getSlideElement) {
-      const node = getSlideElement(job.slideId);
-      if (node) {
-        const dataUrl = await toPng(node, {
-          pixelRatio: 2,
-          cacheBust: true,
-        });
-        const base64 = dataUrl.split(',')[1] ?? '';
-        zip.file(`${folder}/${job.fileBase}.png`, base64, { base64: true });
-      }
-    }
-
-    if (job.caption) {
-      zip.file(`${folder}/${job.fileBase}.txt`, job.caption);
-    }
-    done += 1;
-    onProgress?.({ current: done, total: jobs.length, label: `${folder}/${job.fileBase}` });
-  }
-
-  return zip.generateAsync({ type: 'blob' });
-}
-
-export function downloadBlob(blob: Blob, fileName: string): void {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = fileName;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  return buildZip(jobs, getSlideElement, onProgress, options);
 }
 
 export async function exportTeamZip(
@@ -111,11 +139,10 @@ export async function exportTeamZip(
   teamData: TeamMatchDays,
   getSlideElement?: (slideId: string) => HTMLElement | null,
   onProgress?: (progress: ExportProgress) => void,
-): Promise<Blob> {
-  const zip = new JSZip();
+  options: ExportOptions = {},
+): Promise<ZipExportResult> {
   const folderName = slugify(teamData.teamName);
-
-  const jobs: { slideId: string; fileBase: string; caption?: string }[] = [];
+  const jobs: RenderJob[] = [];
   const gameTypes = [
     { key: 'home', label: 'heim', isHome: true },
     { key: 'away', label: 'auswaerts', isHome: false },
@@ -125,36 +152,15 @@ export async function exportTeamZip(
   gameTypes.forEach(({ key, label, isHome }) => {
     if (teamData.matchDays.some((matchDay) => matchDay.home === isHome)) {
       jobs.push({
+        basePath: `${folderName}/saison_uebersicht_${label}`,
         slideId: `team-${key}-${slugify(teamData.teamName)}`,
-        fileBase: `saison_uebersicht_${label}`,
         ...(!captionAttached ? { caption: buildTeamCaption(season, teamData) } : {}),
       });
       captionAttached = true;
     }
   });
 
-  let done = 0;
-  for (const job of jobs) {
-    if (getSlideElement) {
-      const node = getSlideElement(job.slideId);
-      if (node) {
-        const dataUrl = await toPng(node, {
-          pixelRatio: 2,
-          cacheBust: true,
-        });
-        const base64 = dataUrl.split(',')[1] ?? '';
-        zip.file(`${folderName}/${job.fileBase}.png`, base64, { base64: true });
-      }
-    }
-
-    if (job.caption) {
-      zip.file(`${folderName}/${job.fileBase}.txt`, job.caption);
-    }
-    done += 1;
-    onProgress?.({ current: done, total: jobs.length, label: `${folderName}/${job.fileBase}` });
-  }
-
-  return zip.generateAsync({ type: 'blob' });
+  return buildZip(jobs, getSlideElement, onProgress, options);
 }
 
 function buildTeamCaption(season: SeasonData, teamData: TeamMatchDays): string {

@@ -11,7 +11,10 @@ import SlideMatchday from '@/components/Slides/slides/matchday.vue';
 import SlideTournament from '@/components/Slides/slides/tournament.vue';
 import PreviewGallery from '@/components/preview-gallery.vue';
 import { sortedMatchDaysForWeekend, slugify } from '@/lib/grouping';
-import { exportSeasonZip, downloadBlob } from '@/lib/export-zip';
+import { exportSeasonZip } from '@/lib/export-zip';
+import { describeSaveOutcome } from '@/lib/save-file';
+import { usePendingSave } from '@/composables/usePendingSave';
+import SaveConfirmBar from '@/components/SaveConfirmBar.vue';
 import { useToast } from '@/composables/useToast';
 import { getSlideBoxStyle, type SlideFormatMode } from '@/lib/slide-format';
 import { isTournamentMatchDay } from '@/lib/grouping';
@@ -34,6 +37,17 @@ const exportFormat = ref<SlideFormatMode>('portrait_4by5');
 const { toast } = useToast();
 
 const season = computed(() => seasonData.value!);
+
+const {
+  pendingSave,
+  saving: saving,
+  save,
+  confirmSave,
+  cancelSave,
+} = usePendingSave((outcome, fileName) => {
+  const message = describeSaveOutcome(outcome, fileName);
+  if (message) toast(message, outcome === 'cancelled' ? 'error' : 'success');
+});
 
 const weekendCount = computed(() => seasonData.value?.weekends.length ?? 0);
 const matchDayCount = computed(
@@ -83,11 +97,20 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
   if (!seasonData.value) return;
   exporting.value = true;
   try {
-    const blob = await exportSeasonZip(seasonData.value, [weekendIndex], getSlideElement);
+    const { blob, failedSlides } = await exportSeasonZip(
+      seasonData.value,
+      [weekendIndex],
+      getSlideElement,
+    );
     const weekend = seasonData.value.weekends[weekendIndex];
     const fileName = `${slugify(seasonData.value.club)}_${weekend.dateRange.replace(/\s+/g, '_')}.zip`;
-    downloadBlob(blob, fileName);
-    toast('ZIP erstellt – der Download hat begonnen.');
+    await save(blob, fileName);
+    if (failedSlides.length > 0) {
+      toast(
+        `${failedSlides.length} Bild(er) konnten nicht erzeugt werden: ${failedSlides.join(', ')}`,
+        'error',
+      );
+    }
   } catch (err) {
     toast(
       `Export fehlgeschlagen: ${err instanceof Error ? err.message : 'Unbekannter Fehler'}`,
@@ -131,6 +154,14 @@ const handleExportSingleWeekend = async (weekendIndex: number) => {
 
       <div v-if="seasonData" class="space-y-4">
         <FormatToggle v-model="exportFormat" />
+
+        <SaveConfirmBar
+          v-if="pendingSave"
+          :pending="pendingSave"
+          :saving="saving"
+          @confirm="confirmSave"
+          @cancel="cancelSave"
+        />
 
         <PreviewGallery
           :season="season"
