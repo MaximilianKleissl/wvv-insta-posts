@@ -30,8 +30,7 @@ const columns = computed(() => (matchDays.value.length < 5 ? 1 : 2));
 
 // Dynamic grid allocation based on match count to balance empty spaces
 const containerGridClass = computed(
-  () =>
-    `grid min-h-0 flex-1 gap-8 w-full ${columns.value === 1 ? 'grid-cols-1' : 'grid-cols-2'}`,
+  () => `grid min-h-0 flex-1 gap-8 w-full ${columns.value === 1 ? 'grid-cols-1' : 'grid-cols-2'}`,
 );
 
 // Rows share the available height evenly, so a weekend with only one or two
