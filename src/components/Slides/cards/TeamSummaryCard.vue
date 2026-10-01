@@ -4,7 +4,7 @@
       v-for="fixture in fixtures"
       :key="fixture.matchDay.date"
       :team-name="teamName"
-      :badge-class="teamColors.getBadgeBgColor()"
+      :badge-color="teamColors.getInkColor()"
     >
       <template #badge>
         <Home v-if="fixture.matchDay.home" :size="17" :stroke-width="2.5" />
@@ -27,7 +27,7 @@
         </div>
 
         <div class="flex w-20 shrink-0 flex-col items-center">
-          <VsBadge :bg-color="teamColors.getBadgeBgColor()" />
+          <VsBadge :bg-color="teamColors.getInkColor()" />
         </div>
 
         <div class="flex min-w-0 flex-1 flex-col items-center justify-center gap-2 text-center">

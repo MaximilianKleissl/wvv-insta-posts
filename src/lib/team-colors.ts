@@ -1,56 +1,32 @@
 export interface TeamColorScheme {
   name: string;
-  imageTint: string;
-  primary: string;
-  primaryBgLight: string;
-  badgeBg: string;
-  primaryOpacity80: string;
-  borderOpacity60: string;
+  /**
+   * Solid dark color of the team: header band, background vignette and the
+   * two-tone logo knock-out. White text is drawn on top of it, so it has to
+   * stay dark enough for that to be readable.
+   */
+  tint: string;
+  /** Color for text and icons, and for solid badges. Defaults to `tint`. */
+  ink?: string;
+  /** Color of the card wash. Defaults to `ink`. */
+  surface?: string;
+  /** Color of the card border. Defaults to `ink`. */
+  edge?: string;
 }
 
 const colorSchemes: TeamColorScheme[] = [
-  {
-    name: 'green',
-    imageTint: '#047A3F',
-    primary: 'text-green-800',
-    primaryBgLight: 'bg-green-50/25',
-    badgeBg: 'bg-green-800',
-    primaryOpacity80: 'text-green-800/80',
-    borderOpacity60: 'border-green-700/60',
-  },
-  {
-    name: 'lightblue',
-    imageTint: '#2B5C61',
-    primary: 'text-[#2B5C61]',
-    primaryBgLight: 'bg-[#A3E4E6]/25',
-    badgeBg: 'bg-[#2B5C61]',
-    primaryOpacity80: 'text-[#2B5C61]/80',
-    borderOpacity60: 'border-[#2B5C61]/60',
-  },
-  {
-    name: 'darkblue',
-    imageTint: '#21263F',
-    primary: 'text-[#21263F]',
-    primaryBgLight: 'bg-[#21263F]/25',
-    badgeBg: 'bg-[#21263F]',
-    primaryOpacity80: 'text-[#21263F]/80',
-    borderOpacity60: 'border-[#21263F]/60',
-  },
-  {
-    name: 'purple',
-    imageTint: '#64325F',
-    primary: 'text-[#64325F]',
-    primaryBgLight: 'bg-[#64325F]/25',
-    badgeBg: 'bg-[#64325F]',
-    primaryOpacity80: 'text-[#64325F]/80',
-    borderOpacity60: 'border-[#64325F]/60',
-  },
+  { name: 'green', tint: '#047A3F', ink: '#166534', surface: '#F0FDF4', edge: '#15803D' },
+  { name: 'lightblue', tint: '#2B5C61', surface: '#A3E4E6' },
+  { name: 'darkblue', tint: '#21263F' },
+  { name: 'purple', tint: '#64325F' },
+  { name: 'neongreen', tint: '#374137', surface: '#F0FDF4', edge: '#0dff0d' },
 ];
 
 const explicitTeamColors: Record<string, string> = {
   'Herren 1': 'purple',
   'Herren 2': 'lightblue',
   'Damen 1': 'darkblue',
+  'Mixed 1': 'neongreen',
 };
 
 export function getTeamColorScheme(teamName: string): TeamColorScheme {

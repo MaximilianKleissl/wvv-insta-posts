@@ -48,7 +48,9 @@
   </div>
 
   <div v-else :class="[sizeClass, fallbackClass]">
-    <span :class="['text-xl font-bold text-muted', teamColors.getHomeIconColor()]"> ? </span>
+    <span class="text-xl font-bold text-muted" :style="{ color: teamColors.getInkColor() }">
+      ?
+    </span>
   </div>
 </template>
 
@@ -75,7 +77,7 @@ const { getLogoUrl } = useLogo();
 const teamColors = useTeamColors(props.themeTeamName ?? props.teamName);
 
 const logoUrl = computed(() => getLogoUrl(props.teamName));
-const tintColor = computed(() => teamColors.colorScheme.value.imageTint);
+const tintColor = computed(() => teamColors.getDarkColor());
 
 const imageError = ref(false);
 const imageLoaded = ref(false);

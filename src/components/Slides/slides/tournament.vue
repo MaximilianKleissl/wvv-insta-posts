@@ -40,9 +40,9 @@ const isOdd = computed(() => teams.value.length % 2 === 1);
   <SharedContainer :id="id" :slide-title="slideTitle" :format="format">
     <div
       class="flex items-center gap-3 text-2xl font-bold mb-2"
-      :class="[teamColors.getPrimaryTextColorWithOpacity('80')]"
+      :style="{ color: teamColors.getMutedTextColor() }"
     >
-      <Users :class="['w-7 h-7', teamColors.getHomeIconColor()]" />
+      <Users class="w-7 h-7" :style="{ color: teamColors.getInkColor() }" />
       <span>Teilnehmende Mannschaften</span>
     </div>
     <div class="grid gap-4 content-start flex-1 min-h-0 overflow-hidden grid-cols-2 auto-rows-fr">
@@ -50,7 +50,6 @@ const isOdd = computed(() => teams.value.length % 2 === 1);
         v-for="(team, index) in teams"
         :key="team"
         :team-name="props.matchDay.team"
-        :fill="true"
         :class="isOdd && index === teams.length - 1 ? 'col-span-2' : ''"
       >
         <div
@@ -63,7 +62,8 @@ const isOdd = computed(() => teams.value.length % 2 === 1);
           />
           <span
             class="font-extrabold leading-snug wrap-break-word"
-            :class="[styles.textSize, getTeamTextColor(team)]"
+            :class="styles.textSize"
+            :style="{ color: getTeamTextColor(team) }"
           >
             {{ team }}
           </span>

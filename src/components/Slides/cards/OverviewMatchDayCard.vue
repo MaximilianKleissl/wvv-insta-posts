@@ -1,5 +1,5 @@
 <template>
-  <CardFrame fill :team-name="themeTeamName" :badge-class="badgeBgColor">
+  <CardFrame :team-name="themeTeamName" :badge-color="teamColors.getInkColor()">
     <template #badge>
       <Calendar :size="20" :stroke-width="2.5" aria-hidden="true" />
       <span>{{ weekdayLabel }}</span>
@@ -18,7 +18,7 @@
       <!-- Left: club team -->
       <h3
         class="min-w-0 break-words text-center font-black uppercase leading-[1.05] tracking-[-0.035em] text-4xl"
-        :class="teamTextColor"
+        :style="{ color: teamColors.getInkColor() }"
         :title="md.team"
       >
         {{ md.team }}
@@ -28,7 +28,7 @@
       <div class="flex shrink-0 flex-col items-center justify-center">
         <VsBadge
           :team-name="themeTeamName"
-          :bg-color="badgeBgColor"
+          :bg-color="teamColors.getInkColor()"
           :result="md.match_day_result"
         />
       </div>
@@ -92,10 +92,6 @@ const props = defineProps<{
 const LARGE_LOGO_MAX_COUNT = 3;
 
 const teamColors = useTeamColors(props.themeTeamName);
-
-const badgeBgColor = computed(() => teamColors.getBadgeBgColor());
-
-const teamTextColor = computed(() => teamColors.colorScheme.value.primary);
 
 const weekdayLabel = computed(() => germanWeekdayName(props.md.date));
 

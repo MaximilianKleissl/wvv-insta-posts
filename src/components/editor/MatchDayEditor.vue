@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { reactive, computed, watch, onMounted } from 'vue';
 import type { MatchDay, Match } from '@/lib/types';
-import { getTeamColorScheme, hexToRgba } from '@/lib/team-colors';
 import { logoPathForTeam } from '@/lib/teamChecks';
 import { useConfigEditor } from '@/composables/useConfigEditor';
 import { useAssetStatus } from '@/composables/useAssetStatus';
+import { useTeamColors } from '@/composables/useTeamColors';
 
 const props = defineProps<{
   modelValue: MatchDay;
@@ -26,13 +26,8 @@ const teamOptions = computed(() =>
 );
 
 /** Background/border tint of the card in the team's theme color. */
-const cardStyle = computed(() => {
-  const tint = getTeamColorScheme(local.team).imageTint;
-  return {
-    background: hexToRgba(tint, 0.06),
-    borderColor: hexToRgba(tint, 0.35),
-  };
-});
+const teamColors = useTeamColors(() => local.team);
+const cardStyle = computed(() => teamColors.getTintedSurfaceStyle());
 
 const local = reactive(clone(props.modelValue));
 

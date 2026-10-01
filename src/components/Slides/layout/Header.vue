@@ -2,10 +2,10 @@
   <div
     class="relative w-full shrink-0 overflow-hidden font-sans select-none"
     :class="formatClasses.headerHeight"
-    :style="{ backgroundColor: schemeColor }"
+    :style="{ backgroundColor: teamColors.getDarkColor() }"
   >
     <div class="absolute inset-y-0 right-0 w-[72%] opacity-95" :style="actionImageStyle" />
-    <div class="absolute inset-0" :style="gradientStyle" />
+    <div class="absolute inset-0" :style="{ background: teamColors.getHeaderGradient() }" />
     <div class="relative z-10 flex h-full flex-col text-white" :class="formatClasses.headerPadding">
       <div class="max-w-160 pt-2">
         <div class="mt-10 mb-5 flex items-center gap-4">
@@ -21,7 +21,7 @@
       <div class="flex mt-2 gap-4">
         <LabelContainer
           :labels="slideTitle.label"
-          :color="schemeColor"
+          :color="teamColors.getDarkColor()"
           :flex-direction="formatClasses.headerLabelFlexDirection"
           :chip-classes="formatClasses.seasonClasses"
         />
@@ -63,14 +63,10 @@ const actionImage = computed(() => {
   return `${CONFIG_BASE_URL}/Action_Images/${images[index]}`;
 });
 
-const schemeColor = computed(() => teamColors.colorScheme.value.imageTint);
 const actionImageStyle = computed(() => ({
   ...(actionImage.value ? { backgroundImage: `url(${actionImage.value})` } : {}),
   backgroundPosition: 'center top',
   backgroundSize: 'cover',
   maskImage: 'linear-gradient(90deg, transparent 0%, black 10%, black 75%, transparent 100%)',
-}));
-const gradientStyle = computed(() => ({
-  background: `linear-gradient(90deg, ${schemeColor.value} 0%, ${schemeColor.value}b6 55%, transparent 100%)`,
 }));
 </script>

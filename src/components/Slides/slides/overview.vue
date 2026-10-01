@@ -27,15 +27,15 @@ const matchDays = computed(() => sortMatchDaysByDate(weekend.value.matchDays));
 // Dynamic grid allocation based on match count to balance empty spaces
 const containerGridClass = computed(() => {
   return (
-    'grid min-h-0 flex-1 content-center gap-8 w-full' +
+    'grid min-h-0 flex-1 gap-8 w-full' +
     (matchDays.value.length < 5 ? ' grid-cols-1' : ' grid-cols-2')
   );
 });
 
-// Each row takes at most 33% of the available height, so single or double
-// match day cards don't stretch across the whole slide.
+// Rows share the available height evenly, so a weekend with only one or two
+// match days fills the slide instead of stranding it at half height.
 const gridStyle = computed(() => ({
-  gridAutoRows: 'minmax(0, min(33.333%, 1fr))',
+  gridAutoRows: 'minmax(0, 1fr)',
 }));
 
 const slideTitle = computed<SlideTitle>(() => ({

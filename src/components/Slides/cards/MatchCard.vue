@@ -1,5 +1,5 @@
 <template>
-  <CardFrame :team-name="matchDay.team" :fill="true">
+  <CardFrame :team-name="matchDay.team">
     <div class="mt-3 flex min-h-0 flex-1 items-center justify-between gap-3">
       <div class="flex min-w-0 flex-1 flex-col items-center justify-center gap-2 text-center">
         <TeamLogo

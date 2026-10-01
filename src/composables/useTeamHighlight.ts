@@ -17,10 +17,11 @@ export function useTeamHighlight(season: SeasonData, themeTeamName = season.club
   };
 
   /**
-   * Get text color class based on whether team is home club
+   * Text color for a team: the club's own teams wear the team color,
+   * everyone else stays black.
    */
   const getTeamTextColor = (teamName: string): string => {
-    return isHomeClub(teamName) ? teamColors.getHomeIconColor() : 'text-black';
+    return isHomeClub(teamName) ? teamColors.getInkColor() : '#000000';
   };
 
   return {

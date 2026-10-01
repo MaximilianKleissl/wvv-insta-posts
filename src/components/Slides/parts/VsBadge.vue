@@ -2,7 +2,7 @@
   <div class="flex shrink-0 flex-col items-center gap-2">
     <div
       class="flex shrink-0 items-center justify-center rounded-2xl px-4 py-3 shadow-md"
-      :class="[bgColor]"
+      :style="{ backgroundColor: badgeColor }"
     >
       <span class="block text-5xl font-black leading-none tracking-[0.12em] text-white">
         {{ badgeText }}
@@ -31,10 +31,11 @@ const props = withDefaults(
 
 const teamColors = useTeamColors(props.teamName ?? '');
 
-const bgColor = computed(() => {
+/** Falls back to a neutral slate so an unthemed badge stays readable. */
+const badgeColor = computed(() => {
   if (props.bgColor) return props.bgColor;
-  if (props.teamName) return teamColors.getBadgeBgColor();
-  return 'bg-slate-800/10';
+  if (props.teamName) return teamColors.getInkColor();
+  return 'rgba(30, 41, 59, 0.1)';
 });
 
 const badgeText = computed(() =>

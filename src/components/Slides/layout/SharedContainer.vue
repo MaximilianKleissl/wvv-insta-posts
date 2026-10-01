@@ -16,20 +16,18 @@
         :style="{
           width: `${dimensions.width}px`,
           height: `${dimensions.height}px`,
-          background: `radial-gradient(circle at center, transparent 0%, transparent 34%, ${teamColors.colorScheme.value.imageTint} 100%)`,
+          background: teamColors.getVignetteGradient(),
         }"
       />
       <div
-        :class="[
-          'absolute -top-40 -right-40 w-96 h-96 rounded-full blur-3xl',
-          teamColors.getBadgeBgColor(),
-        ]"
+        class="absolute -top-40 -right-40 w-96 h-96 rounded-full blur-3xl"
+        :style="{ backgroundColor: teamColors.getInkColor() }"
       />
       <div
         v-if="format === 'stories'"
         class="absolute -bottom-24 -left-24 h-72 w-180 rotate-[-9deg]"
         :style="{
-          backgroundColor: storyTint(0.15),
+          backgroundColor: teamColors.getDecorationColor(0.15),
           clipPath:
             'polygon(0 20%, 12% 0, 34% 17%, 56% 4%, 82% 20%, 100% 8%, 94% 86%, 63% 70%, 38% 100%, 10% 78%)',
         }"
@@ -43,8 +41,8 @@
         v-if="format === 'stories'"
         class="absolute -bottom-44 -right-36 h-130 w-130 rounded-full opacity-80"
         :style="{
-          border: `18px solid ${storyTint(0.1)}`,
-          background: `radial-gradient(circle at 34% 28%, transparent 0 34%, ${storyTint(0.06)} 35% 36%, transparent 37%), linear-gradient(28deg, transparent 46%, ${storyTint(0.12)} 47% 49%, transparent 50%), linear-gradient(-32deg, transparent 49%, ${storyTint(0.1)} 50% 52%, transparent 53%)`,
+          border: `18px solid ${teamColors.getDecorationColor(0.1)}`,
+          background: `radial-gradient(circle at 34% 28%, transparent 0 34%, ${teamColors.getDecorationColor(0.06)} 35% 36%, transparent 37%), linear-gradient(28deg, transparent 46%, ${teamColors.getDecorationColor(0.12)} 47% 49%, transparent 50%), linear-gradient(-32deg, transparent 49%, ${teamColors.getDecorationColor(0.1)} 50% 52%, transparent 53%)`,
         }"
       />
     </div>
@@ -71,7 +69,6 @@ import SponsorFooter from './SponsorFooter.vue';
 import { useSponsors } from '@/composables/useSponsors';
 import { useTeamColors } from '@/composables/useTeamColors';
 import { CONFIG_BASE_URL } from '@/lib/config';
-import { hexToRgba } from '@/lib/team-colors';
 import type { SlideTitle } from '@/lib/slide-types';
 import {
   getSlideBoxStyle,
@@ -112,9 +109,6 @@ const backgroundImageStyle = computed(() => ({
   width: `${dimensions.value.width}px`,
   height: `${dimensions.value.height}px`,
 }));
-
-/** rgba() variant of the team tint used for the stories background decorations. */
-const storyTint = (alpha: number) => hexToRgba(teamColors.colorScheme.value.imageTint, alpha);
 
 const sponsorLogos = computed(() => {
   const sponsors = getRandomSponsors.value(3, props.slideTitle.subtitle, props.id);
