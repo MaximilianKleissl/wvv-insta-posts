@@ -14,10 +14,11 @@
       The opponent column is intentionally wider than the team column.
       This gives logos/names more room while keeping the VS badge perfectly centered.
     -->
-    <div class="grid min-h-0 flex-1 grid-cols-[1fr_auto_1.6fr] items-center gap-10">
+    <div class="grid min-h-0 flex-1 items-center" :class="layout.grid">
       <!-- Left: club team -->
       <h3
-        class="min-w-0 break-words text-center font-black uppercase leading-[1.05] tracking-[-0.035em] text-4xl"
+        class="min-w-0 truncate text-center font-black uppercase leading-[1.05] tracking-[-0.035em]"
+        :class="layout.teamName"
         :style="{ color: teamColors.getInkColor() }"
         :title="md.team"
       >
@@ -83,13 +84,38 @@ import TeamLogo from '../parts/TeamLogo.vue';
 import VsBadge from '../parts/VsBadge.vue';
 import CardFrame from './CardFrame.vue';
 
-const props = defineProps<{
-  md: MatchDay;
-  themeTeamName: string;
-}>();
+const props = withDefaults(
+  defineProps<{
+    md: MatchDay;
+    themeTeamName: string;
+    columns?: number;
+  }>(),
+  { columns: 1 },
+);
 
 // Above this number of opponents, use the logo layout.
 const LARGE_LOGO_MAX_COUNT = 3;
+
+/**
+ * A two-column overview hands the card roughly half the width, so the team name
+ * would wrap mid-name. The narrow layout tightens the gap, gives the team
+ * column more of the row and steps the name down, so it always stays on one
+ * line. The name is additionally truncated, which guarantees the single line
+ * even for a name that is unexpectedly long.
+ */
+const narrow = computed(() => props.columns > 1);
+
+const layout = computed(() =>
+  narrow.value
+    ? {
+        grid: 'gap-4 grid-cols-[1.35fr_auto_1.35fr]',
+        teamName: 'text-lg',
+      }
+    : {
+        grid: 'gap-10 grid-cols-[1fr_auto_1.6fr]',
+        teamName: 'text-4xl',
+      },
+);
 
 const teamColors = useTeamColors(props.themeTeamName);
 
@@ -156,17 +182,16 @@ const opponents = computed(() => {
 
 const opponentLayout = computed(() => {
   const count = opponents.value.length;
+  const many = count > LARGE_LOGO_MAX_COUNT;
 
-  if (count > LARGE_LOGO_MAX_COUNT) {
-    return {
-      logo: 'h-24 w-24 p-1',
-      name: 'max-w-[4rem] text-[12px] text-slate-600',
-    };
+  if (narrow.value) {
+    return many
+      ? { logo: 'h-16 w-16 p-1', name: 'max-w-[3rem] text-[11px] text-slate-600' }
+      : { logo: 'h-24 w-24 p-1', name: 'max-w-[4rem] text-[12px] text-slate-600' };
   }
 
-  return {
-    logo: 'h-30 w-30 p-2',
-    name: 'max-w-[5.5rem] text-[13px] text-slate-600',
-  };
+  return many
+    ? { logo: 'h-24 w-24 p-1', name: 'max-w-[4rem] text-[12px] text-slate-600' }
+    : { logo: 'h-30 w-30 p-2', name: 'max-w-[5.5rem] text-[13px] text-slate-600' };
 });
 </script>

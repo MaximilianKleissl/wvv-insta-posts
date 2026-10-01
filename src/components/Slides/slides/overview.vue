@@ -24,13 +24,15 @@ const weekend = computed(() => props.season.weekends[props.weekendIndex]);
 // because it is at home.
 const matchDays = computed(() => sortMatchDaysByDate(weekend.value.matchDays));
 
+// A weekend with up to four match days gets one card per row, anything above
+// that splits into two columns.
+const columns = computed(() => (matchDays.value.length < 5 ? 1 : 2));
+
 // Dynamic grid allocation based on match count to balance empty spaces
-const containerGridClass = computed(() => {
-  return (
-    'grid min-h-0 flex-1 gap-8 w-full' +
-    (matchDays.value.length < 5 ? ' grid-cols-1' : ' grid-cols-2')
-  );
-});
+const containerGridClass = computed(
+  () =>
+    `grid min-h-0 flex-1 gap-8 w-full ${columns.value === 1 ? 'grid-cols-1' : 'grid-cols-2'}`,
+);
 
 // Rows share the available height evenly, so a weekend with only one or two
 // match days fills the slide instead of stranding it at half height.
@@ -53,6 +55,7 @@ const slideTitle = computed<SlideTitle>(() => ({
         :key="getMatchDayKey(md)"
         :md="md"
         :theme-team-name="season.club"
+        :columns="columns"
       />
     </div>
   </SharedContainer>

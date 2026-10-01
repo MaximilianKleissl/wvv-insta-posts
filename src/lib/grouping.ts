@@ -18,6 +18,34 @@ export function parseGermanDate(date: string): Date | null {
   return new Date(Number(year), Number(month) - 1, Number(day));
 }
 
+/**
+ * Rewrites free-form input into "DD.MM.YYYY" by keeping the digits and placing
+ * the separators, so partial input grows into the format instead of drifting
+ * away from it. Anything that is not a digit is dropped.
+ */
+export function maskGermanDate(value: string): string {
+  const digits = value.replace(/\D/g, '').slice(0, 8);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, 2)}.${digits.slice(2, 4)}`;
+  return `${digits.slice(0, 2)}.${digits.slice(2, 4)}.${digits.slice(4)}`;
+}
+
+/**
+ * Strict check for "DD.MM.YYYY". Unlike `parseGermanDate` it also rejects dates
+ * that do not exist, which the Date constructor would silently roll over
+ * (31.02.2025 would become 03.03.2025).
+ */
+export function isValidGermanDate(value: string): boolean {
+  const match = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(value.trim());
+  if (!match) return false;
+  const [, day, month, year] = match;
+  const d = Number(day);
+  const m = Number(month);
+  const y = Number(year);
+  if (m < 1 || m > 12) return false;
+  return d >= 1 && d <= new Date(y, m, 0).getDate();
+}
+
 export function germanWeekdayName(date: string): string {
   const parsed = parseGermanDate(date);
   if (!parsed) return '';

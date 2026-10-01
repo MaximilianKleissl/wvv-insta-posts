@@ -2,6 +2,7 @@
 import { reactive, computed, watch, onMounted } from 'vue';
 import type { MatchDay, Match } from '@/lib/types';
 import { logoPathForTeam } from '@/lib/teamChecks';
+import { maskGermanDate, isValidGermanDate } from '@/lib/grouping';
 import { useConfigEditor } from '@/composables/useConfigEditor';
 import { useAssetStatus } from '@/composables/useAssetStatus';
 import { useTeamColors } from '@/composables/useTeamColors';
@@ -140,6 +141,25 @@ const setResult = (index: number, key: 'home' | 'away', value: string) => {
   matches[index].result = result;
 };
 
+/**
+ * Keeps the date field in "DD.MM.YYYY" while typing: the separators are placed
+ * from the digits alone, so the format cannot drift while the field is filled in.
+ */
+function onDateInput(event: Event) {
+  const input = event.target as HTMLInputElement;
+  local.date = maskGermanDate(input.value);
+  input.value = local.date;
+}
+
+/** Zero-pads a single-digit date such as "2.6.2025" once the field is left. */
+function onDateBlur() {
+  const digits = local.date.replace(/\D/g, '');
+  if (/^\d{6,8}$/.test(digits)) local.date = maskGermanDate(digits);
+}
+
+/** A filled-in date that is not a real calendar day, e.g. "31.02.2025". */
+const dateInvalid = computed(() => local.date.trim() !== '' && !isValidGermanDate(local.date));
+
 const valid = () =>
   (local.matches && local.matches.length > 0) || (local.teams && local.teams.length >= 2);
 </script>
@@ -198,7 +218,19 @@ const valid = () =>
       </label>
       <label class="block">
         <span class="text-xs text-gray-500">Datum</span>
-        <input v-model="local.date" class="editor-input" placeholder="26.10.2025" />
+        <input
+          :value="local.date"
+          class="editor-input"
+          :class="dateInvalid ? '!border-red-500 focus:!shadow-[0_0_0_2px_rgb(239_68_68_/_0.15)]' : ''"
+          placeholder="26.10.2025"
+          inputmode="numeric"
+          maxlength="10"
+          @input="onDateInput"
+          @blur="onDateBlur"
+        />
+        <span v-if="dateInvalid" class="mt-1 block text-xs text-red-600">
+          Kein gültiges Datum im Format dd.mm.yyyy
+        </span>
       </label>
       <label class="block">
         <span class="text-xs text-gray-500">Spielort</span>
