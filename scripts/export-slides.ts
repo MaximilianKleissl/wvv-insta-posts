@@ -214,7 +214,7 @@ export async function exportSlides(opts: ExportOptions = {}) {
   const format = (opts.format ?? getArg('format') ?? 'portrait_4by5') as
     'portrait_4by5' | 'stories';
   const imageFormat = (opts.imageFormat ?? getArg('image-format') ?? 'png') as 'png' | 'jpeg';
-  const pixelRatio = Number(opts.pixelRatio ?? getArg('pixel-ratio') ?? 1);
+  const pixelRatio = Number(opts.pixelRatio ?? getArg('pixel-ratio') ?? 2);
   const onlyWeekends = getArg('only-weekends')
     ? getArg('only-weekends')!
         .split(',')
@@ -223,7 +223,10 @@ export async function exportSlides(opts: ExportOptions = {}) {
     : opts.onlyWeekends;
 
   const browser: Browser = await chromium.launch({ headless: true });
-  const page = await browser.newPage({ viewport: { width: 1600, height: 1200 } });
+  const page = await browser.newPage({
+    viewport: { width: 1600, height: 1200 },
+    deviceScaleFactor: 1,
+  });
   await ensureDir(OUT_DIR);
 
   try {
