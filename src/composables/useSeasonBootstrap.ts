@@ -1,18 +1,20 @@
 import { onMounted } from 'vue';
 import { useSeasonData } from './useSeasonData';
 import { useSponsors } from './useSponsors';
+import { useActionImages } from './useActionImages';
 import { fetchSeasonData } from '@/lib/sample-data';
 
 /** Loads sponsors + season data on mount; exposes state and a retry action. */
 export function useSeasonBootstrap() {
   const { setSeasonData, seasonData, loading, error } = useSeasonData();
   const { loadSponsors } = useSponsors();
+  const { loadActionImages } = useActionImages();
 
   const reload = async () => {
     loading.value = true;
     error.value = null;
     try {
-      await loadSponsors();
+      await Promise.all([loadSponsors(), loadActionImages()]);
       setSeasonData(await fetchSeasonData());
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Unbekannter Fehler beim Laden der Daten.';

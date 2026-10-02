@@ -95,6 +95,45 @@ async function selectFormat(page: Page, format: 'portrait_4by5' | 'stories', sli
   );
 }
 
+async function waitForRenderAssets(page: Page, slideIds: string[]) {
+  await page.evaluate(async (ids) => {
+    await document.fonts.ready;
+
+    const urls = new Set<string>();
+    const imageElements: HTMLImageElement[] = [];
+    for (const id of ids) {
+      const slide = document.getElementById(id);
+      if (!slide) throw new Error(`Missing slide ${id}`);
+      const elements = [slide, ...slide.querySelectorAll<HTMLElement>('*')];
+      for (const element of elements) {
+        if (element instanceof HTMLImageElement) imageElements.push(element);
+        const backgroundImage = getComputedStyle(element).backgroundImage;
+        for (const match of backgroundImage.matchAll(/url\(["']?(.*?)["']?\)/g)) {
+          if (match[1]) urls.add(new URL(match[1], document.baseURI).href);
+        }
+      }
+    }
+
+    await Promise.all([
+      ...imageElements.map((image) => image.decode().catch(() => undefined)),
+      ...[...urls].map(
+        (src) =>
+          new Promise<void>((resolve) => {
+            const image = new Image();
+            image.onload = () => resolve();
+            image.onerror = () => resolve();
+            image.src = src;
+            if (image.complete) resolve();
+          }),
+      ),
+    ]);
+
+    await new Promise<void>((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+    );
+  }, slideIds);
+}
+
 /**
  * Rasterizes one slide and returns encoded image bytes.
  *
@@ -188,7 +227,13 @@ export async function exportSlides(opts: ExportOptions = {}) {
     await page.goto(url.toString(), { waitUntil: 'networkidle', timeout: 180_000 });
     await waitForAppReady(page);
     const jobs = await getExportJobs(page, { ...opts, onlyWeekends, format });
-    if (jobs.length > 0) await selectFormat(page, format, jobs[0].slideId);
+    if (jobs.length > 0) {
+      await selectFormat(page, format, jobs[0].slideId);
+      await waitForRenderAssets(
+        page,
+        jobs.map((job) => job.slideId),
+      );
+    }
     for (const j of jobs) {
       const buf = await renderSlide(page, j.slideId, pixelRatio, imageFormat);
       const extension = imageFormat === 'jpeg' ? '.jpg' : '.png';
