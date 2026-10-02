@@ -9,6 +9,9 @@ export interface StatEntry {
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
+import { ExternalLink } from 'lucide-vue-next';
+
+const IMAGE_GALLERY_URL = 'https://maximiliankleissl.github.io/wvv-posts-config/';
 
 const props = defineProps<{ stats: StatEntry[] }>();
 
@@ -53,6 +56,16 @@ onBeforeUnmount(() => {
 <template>
   <div ref="containerRef" class="relative">
     <div class="flex items-center gap-2">
+      <a
+        :href="IMAGE_GALLERY_URL"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white transition hover:bg-white/30"
+        title="Generierte Spieltagsbilder öffnen"
+        aria-label="Generierte Spieltagsbilder öffnen"
+      >
+        <ExternalLink :size="16" aria-hidden="true" />
+      </a>
       <button
         :aria-expanded="isOpen"
         aria-haspopup="true"
