@@ -97,6 +97,11 @@ async function selectFormat(page: Page, format: 'portrait_4by5' | 'stories', sli
 
 async function waitForRenderAssets(page: Page, slideIds: string[]) {
   await page.evaluate(async (ids) => {
+    await Promise.all(
+      ['400', '600', '700', '900'].map((weight) =>
+        document.fonts.load(`${weight} 16px Montserrat`),
+      ),
+    );
     await document.fonts.ready;
 
     const urls = new Set<string>();

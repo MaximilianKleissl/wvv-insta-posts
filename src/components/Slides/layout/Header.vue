@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative w-full shrink-0 overflow-hidden font-sans select-none"
+    class="relative w-full shrink-0 overflow-hidden select-none"
     :class="formatClasses.headerHeight"
     :style="{ backgroundColor: teamColors.getDarkColor() }"
   >

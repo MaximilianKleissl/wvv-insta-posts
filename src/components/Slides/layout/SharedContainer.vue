@@ -1,7 +1,7 @@
 <template>
   <div
     :id="id"
-    class="relative flex flex-col bg-slate-50 text-slate-900 antialiased select-none"
+    class="slide-canvas relative flex flex-col bg-slate-50 text-slate-900 antialiased select-none"
     :style="slideBoxStyle"
   >
     <div class="absolute inset-0 pointer-events-none overflow-hidden">
