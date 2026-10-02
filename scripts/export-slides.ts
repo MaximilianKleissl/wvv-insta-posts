@@ -11,6 +11,7 @@ interface ExportOptions {
   configUrl?: string;
   baseUrl?: string;
   format?: 'portrait_4by5' | 'stories';
+  imageFormat?: 'png' | 'jpeg';
   pixelRatio?: number;
   onlyWeekends?: number[];
   timeoutMs?: number;
@@ -95,16 +96,21 @@ async function selectFormat(page: Page, format: 'portrait_4by5' | 'stories', sli
 }
 
 /**
- * Rasterizes one slide and returns the PNG bytes.
+ * Rasterizes one slide and returns encoded image bytes.
  *
  * `page.evaluate` cannot return a `Blob` (it is not part of the value
  * serialization protocol), so the page encodes the bytes as base64 and Node
  * decodes them again. Chunks keep `String.fromCharCode` below its argument
  * limit for full-size 1080x1350 slides.
  */
-async function renderSlide(page: Page, slideId: string, pixelRatio: number): Promise<Buffer> {
+async function renderSlide(
+  page: Page,
+  slideId: string,
+  pixelRatio: number,
+  imageFormat: 'png' | 'jpeg',
+): Promise<Buffer> {
   const base64 = await page.evaluate(
-    async (args: { slideId: string; pixelRatio: number }) => {
+    async (args: { slideId: string; pixelRatio: number; imageFormat: 'png' | 'jpeg' }) => {
       const node = document.getElementById(args.slideId);
       if (!node) throw new Error(`Missing node ${args.slideId}`);
       const w = window as unknown as {
@@ -122,6 +128,25 @@ async function renderSlide(page: Page, slideId: string, pixelRatio: number): Pro
       } else {
         throw new Error('No renderer available on page');
       }
+      if (args.imageFormat === 'jpeg') {
+        const image = await createImageBitmap(blob);
+        const canvas = document.createElement('canvas');
+        canvas.width = image.width;
+        canvas.height = image.height;
+        const context = canvas.getContext('2d');
+        if (!context) throw new Error('Could not create canvas context');
+        context.fillStyle = '#fff';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(image, 0, 0);
+        image.close();
+        blob = await new Promise<Blob>((resolve, reject) => {
+          canvas.toBlob(
+            (result) => (result ? resolve(result) : reject(new Error('JPEG encoding failed'))),
+            'image/jpeg',
+            0.88,
+          );
+        });
+      }
       const bytes = new Uint8Array(await blob.arrayBuffer());
       let binary = '';
       const chunkSize = 0x8000;
@@ -130,7 +155,7 @@ async function renderSlide(page: Page, slideId: string, pixelRatio: number): Pro
       }
       return btoa(binary);
     },
-    { slideId, pixelRatio },
+    { slideId, pixelRatio, imageFormat },
   );
   return Buffer.from(base64, 'base64');
 }
@@ -144,6 +169,7 @@ export async function exportSlides(opts: ExportOptions = {}) {
   const configUrl = opts.configUrl ?? getArg('config-url') ?? getArg('configUrl');
   const format = (opts.format ?? getArg('format') ?? 'portrait_4by5') as
     'portrait_4by5' | 'stories';
+  const imageFormat = (opts.imageFormat ?? getArg('image-format') ?? 'png') as 'png' | 'jpeg';
   const pixelRatio = Number(opts.pixelRatio ?? getArg('pixel-ratio') ?? 1);
   const onlyWeekends = getArg('only-weekends')
     ? getArg('only-weekends')!
@@ -164,9 +190,10 @@ export async function exportSlides(opts: ExportOptions = {}) {
     const jobs = await getExportJobs(page, { ...opts, onlyWeekends, format });
     if (jobs.length > 0) await selectFormat(page, format, jobs[0].slideId);
     for (const j of jobs) {
-      const buf = await renderSlide(page, j.slideId, pixelRatio);
-      const fileName =
-        format === 'stories' ? j.fileName.replace(/\.png$/, '_stories.png') : j.fileName;
+      const buf = await renderSlide(page, j.slideId, pixelRatio, imageFormat);
+      const extension = imageFormat === 'jpeg' ? '.jpg' : '.png';
+      const baseName = j.fileName.replace(/\.png$/, '');
+      const fileName = `${baseName}${format === 'stories' ? '_stories' : ''}${extension}`;
       await fs.writeFile(path.join(OUT_DIR, fileName), buf);
       console.log(`Wrote ${fileName} at ${pixelRatio}x`);
     }
