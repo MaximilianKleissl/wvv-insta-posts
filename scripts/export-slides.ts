@@ -1,7 +1,7 @@
 import { chromium, type Browser, type Page } from 'playwright';
 import fs from 'fs/promises';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -50,7 +50,7 @@ interface ExportJob {
 
 async function getExportJobs(page: Page, opts: ExportOptions) {
   const jobs = await page.evaluate(
-    async (onlyWeekends: number[] | undefined, format: string) => {
+    async (args: { onlyWeekends: number[] | undefined; format: string }) => {
       const fn = (
         window as unknown as {
           __getExportJobs?: (o: {
@@ -60,38 +60,54 @@ async function getExportJobs(page: Page, opts: ExportOptions) {
         }
       ).__getExportJobs;
       if (typeof fn === 'function') {
-        return await fn({ onlyWeekends, format });
+        return await fn({ onlyWeekends: args.onlyWeekends, format: args.format });
       }
       return [] as ExportJob[];
     },
-    opts.onlyWeekends,
-    opts.format ?? 'portrait_4by5',
+    { onlyWeekends: opts.onlyWeekends, format: opts.format ?? 'portrait_4by5' },
   );
   return jobs as ExportJob[];
 }
 
-async function renderSlide(page: Page, slideId: string, pixelRatio: number) {
-  return await page.evaluate(
-    async (slideId: string, pixelRatio: number) => {
-      const node = document.getElementById(slideId);
-      if (!node) throw new Error(`Missing node ${slideId}`);
+/**
+ * Rasterizes one slide and returns the PNG bytes.
+ *
+ * `page.evaluate` cannot return a `Blob` (it is not part of the value
+ * serialization protocol), so the page encodes the bytes as base64 and Node
+ * decodes them again. Chunks keep `String.fromCharCode` below its argument
+ * limit for full-size 1080x1350 slides.
+ */
+async function renderSlide(page: Page, slideId: string, pixelRatio: number): Promise<Buffer> {
+  const base64 = await page.evaluate(
+    async (args: { slideId: string; pixelRatio: number }) => {
+      const node = document.getElementById(args.slideId);
+      if (!node) throw new Error(`Missing node ${args.slideId}`);
       const w = window as unknown as {
         __renderSlideToPng?: (n: HTMLElement, p: number) => Promise<Blob>;
         htmlToImage?: { toBlob: (n: HTMLElement, o: unknown) => Promise<Blob> };
       };
-      if (w.__renderSlideToPng) return await w.__renderSlideToPng(node, pixelRatio);
-      if (w.htmlToImage?.toBlob)
-        return await w.htmlToImage.toBlob(node, { pixelRatio, cacheBust: true });
-      throw new Error('No renderer available on page');
+      let blob: Blob;
+      if (w.__renderSlideToPng) {
+        blob = await w.__renderSlideToPng(node, args.pixelRatio);
+      } else if (w.htmlToImage?.toBlob) {
+        blob = await w.htmlToImage.toBlob(node, {
+          pixelRatio: args.pixelRatio,
+          cacheBust: true,
+        });
+      } else {
+        throw new Error('No renderer available on page');
+      }
+      const bytes = new Uint8Array(await blob.arrayBuffer());
+      let binary = '';
+      const chunkSize = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunkSize) {
+        binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+      }
+      return btoa(binary);
     },
-    slideId,
-    pixelRatio,
+    { slideId, pixelRatio },
   );
-}
-
-async function blobToBuffer(blob: Blob): Promise<Buffer> {
-  const array = await blob.arrayBuffer();
-  return Buffer.from(array);
+  return Buffer.from(base64, 'base64');
 }
 
 export async function exportSlides(opts: ExportOptions = {}) {
@@ -122,8 +138,7 @@ export async function exportSlides(opts: ExportOptions = {}) {
     await waitForAppReady(page);
     const jobs = await getExportJobs(page, { ...opts, onlyWeekends, format });
     for (const j of jobs) {
-      const blob = await renderSlide(page, j.slideId, pixelRatio);
-      const buf = await blobToBuffer(blob);
+      const buf = await renderSlide(page, j.slideId, pixelRatio);
       await fs.writeFile(path.join(OUT_DIR, j.fileName), buf);
       console.log(`Wrote ${j.fileName}`);
     }
@@ -132,7 +147,7 @@ export async function exportSlides(opts: ExportOptions = {}) {
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
   exportSlides().catch((e) => {
     console.error(e);
     process.exit(1);
