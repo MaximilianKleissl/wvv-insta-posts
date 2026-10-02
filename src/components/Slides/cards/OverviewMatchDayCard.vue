@@ -17,12 +17,14 @@
     <div class="grid min-h-0 flex-1 items-center" :class="layout.grid">
       <!-- Left: club team -->
       <h3
-        class="min-w-0 truncate text-center font-black uppercase leading-[1.05] tracking-[-0.035em]"
+        class="min-w-0 whitespace-normal break-words text-center font-black uppercase leading-[1.05] tracking-[-0.035em]"
         :class="layout.teamName"
         :style="{ color: teamColors.getInkColor() }"
         :title="md.team"
       >
-        {{ md.team }}
+        <template v-for="(part, index) in teamNameParts" :key="index"
+          >{{ index > 0 ? '-' : '' }}{{ part }}<wbr v-if="index < teamNameParts.length - 1"
+        /></template>
       </h3>
 
       <!-- Middle: VS badge or result -->
@@ -118,6 +120,7 @@ const layout = computed(() =>
 );
 
 const teamColors = useTeamColors(props.themeTeamName);
+const teamNameParts = computed(() => props.md.team.split('-'));
 
 const weekdayLabel = computed(() => germanWeekdayName(props.md.date));
 
