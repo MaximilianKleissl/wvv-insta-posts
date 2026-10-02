@@ -69,6 +69,31 @@ async function getExportJobs(page: Page, opts: ExportOptions) {
   return jobs as ExportJob[];
 }
 
+async function selectFormat(page: Page, format: 'portrait_4by5' | 'stories', slideId: string) {
+  const dimensions =
+    format === 'stories' ? { width: 1080, height: 1920 } : { width: 1080, height: 1350 };
+  const label = format === 'stories' ? 'Stories' : 'Portrait 4:5';
+  await page
+    .getByRole('group', { name: 'Bildformat' })
+    .getByRole('button', { name: label })
+    .click();
+  await page.waitForFunction(
+    (args) => {
+      const slide = document.getElementById(args.slideId);
+      const selected = document.querySelector(
+        '[aria-label="Bildformat"] button[aria-pressed="true"]',
+      );
+      return (
+        slide?.style.width === `${args.width}px` &&
+        slide.style.height === `${args.height}px` &&
+        selected?.textContent?.trim() === args.label
+      );
+    },
+    { slideId, ...dimensions, label },
+    { timeout: 10_000 },
+  );
+}
+
 /**
  * Rasterizes one slide and returns the PNG bytes.
  *
@@ -119,7 +144,7 @@ export async function exportSlides(opts: ExportOptions = {}) {
   const configUrl = opts.configUrl ?? getArg('config-url') ?? getArg('configUrl');
   const format = (opts.format ?? getArg('format') ?? 'portrait_4by5') as
     'portrait_4by5' | 'stories';
-  const pixelRatio = Number(opts.pixelRatio ?? getArg('pixel-ratio') ?? 2);
+  const pixelRatio = Number(opts.pixelRatio ?? getArg('pixel-ratio') ?? 1);
   const onlyWeekends = getArg('only-weekends')
     ? getArg('only-weekends')!
         .split(',')
@@ -137,10 +162,13 @@ export async function exportSlides(opts: ExportOptions = {}) {
     await page.goto(url.toString(), { waitUntil: 'networkidle', timeout: 180_000 });
     await waitForAppReady(page);
     const jobs = await getExportJobs(page, { ...opts, onlyWeekends, format });
+    if (jobs.length > 0) await selectFormat(page, format, jobs[0].slideId);
     for (const j of jobs) {
       const buf = await renderSlide(page, j.slideId, pixelRatio);
-      await fs.writeFile(path.join(OUT_DIR, j.fileName), buf);
-      console.log(`Wrote ${j.fileName}`);
+      const fileName =
+        format === 'stories' ? j.fileName.replace(/\.png$/, '_stories.png') : j.fileName;
+      await fs.writeFile(path.join(OUT_DIR, fileName), buf);
+      console.log(`Wrote ${fileName} at ${pixelRatio}x`);
     }
   } finally {
     await browser.close();
