@@ -3,8 +3,8 @@ stages:
   - export
 
 variables:
-  NODE_VERSION: "20"
-  PLAYWRIGHT_BROWSERS_PATH: "/root/.cache/ms-playwright"
+  NODE_VERSION: '20'
+  PLAYWRIGHT_BROWSERS_PATH: '/root/.cache/ms-playwright'
 
 cache:
   paths:
@@ -30,18 +30,18 @@ export_images:
   variables:
     # Set VITE_CONFIG_BASE_URL / CONFIG_URL in GitLab CI variables if needed
     CONFIG_URL: ${CONFIG_URL}
-    PIXEL_RATIO: "2"
-    FORMAT: "portrait_4by5"
-    ONLY_WEEKENDS: ""
-    BASE_URL: "file://${CI_PROJECT_DIR}/dist/index.html"
+    PIXEL_RATIO: '2'
+    FORMAT: 'portrait_4by5'
+    ONLY_WEEKENDS: ''
+    BASE_URL: 'file://${CI_PROJECT_DIR}/dist/index.html'
   script:
     - npm ci --cache .npm-cache
     - node --experimental-strip-types scripts/export-slides.ts \
-        --base-url="$BASE_URL" \
-        --config-url="$CONFIG_URL" \
-        --format="$FORMAT" \
-        --pixel-ratio="$PIXEL_RATIO" \
-        ${ONLY_WEEKENDS:+--only-weekends="$ONLY_WEEKENDS"}
+      --base-url="$BASE_URL" \
+      --config-url="$CONFIG_URL" \
+      --format="$FORMAT" \
+      --pixel-ratio="$PIXEL_RATIO" \
+      ${ONLY_WEEKENDS:+--only-weekends="$ONLY_WEEKENDS"}
   artifacts:
     paths:
       - images/

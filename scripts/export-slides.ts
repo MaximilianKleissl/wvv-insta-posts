@@ -30,12 +30,15 @@ async function ensureDir(p: string) {
 }
 
 async function waitForAppReady(page: Page) {
-  await page.waitForFunction(() => {
-    const w = window as unknown as { __APP_READY__?: boolean };
-    if (w.__APP_READY__) return true;
-    const el = document.querySelector('[data-app-ready="true"]');
-    return !!el;
-  }, { timeout: 120_000 });
+  await page.waitForFunction(
+    () => {
+      const w = window as unknown as { __APP_READY__?: boolean };
+      if (w.__APP_READY__) return true;
+      const el = document.querySelector('[data-app-ready="true"]');
+      return !!el;
+    },
+    { timeout: 120_000 },
+  );
 }
 
 interface ExportJob {
@@ -46,28 +49,44 @@ interface ExportJob {
 }
 
 async function getExportJobs(page: Page, opts: ExportOptions) {
-  const jobs = await page.evaluate(async (onlyWeekends: number[] | undefined, format: string) => {
-    const fn = (window as unknown as { __getExportJobs?: (o: { onlyWeekends?: number[]; format?: string }) => Promise<ExportJob[]> }).__getExportJobs;
-    if (typeof fn === 'function') {
-      return await fn({ onlyWeekends, format });
-    }
-    return [] as ExportJob[];
-  }, opts.onlyWeekends, opts.format ?? 'portrait_4by5');
+  const jobs = await page.evaluate(
+    async (onlyWeekends: number[] | undefined, format: string) => {
+      const fn = (
+        window as unknown as {
+          __getExportJobs?: (o: {
+            onlyWeekends?: number[];
+            format?: string;
+          }) => Promise<ExportJob[]>;
+        }
+      ).__getExportJobs;
+      if (typeof fn === 'function') {
+        return await fn({ onlyWeekends, format });
+      }
+      return [] as ExportJob[];
+    },
+    opts.onlyWeekends,
+    opts.format ?? 'portrait_4by5',
+  );
   return jobs as ExportJob[];
 }
 
 async function renderSlide(page: Page, slideId: string, pixelRatio: number) {
-  return await page.evaluate(async (slideId: string, pixelRatio: number) => {
-    const node = document.getElementById(slideId);
-    if (!node) throw new Error(`Missing node ${slideId}`);
-    const w = window as unknown as {
-      __renderSlideToPng?: (n: HTMLElement, p: number) => Promise<Blob>;
-      htmlToImage?: { toBlob: (n: HTMLElement, o: unknown) => Promise<Blob> };
-    };
-    if (w.__renderSlideToPng) return await w.__renderSlideToPng(node, pixelRatio);
-    if (w.htmlToImage?.toBlob) return await w.htmlToImage.toBlob(node, { pixelRatio, cacheBust: true });
-    throw new Error('No renderer available on page');
-  }, slideId, pixelRatio);
+  return await page.evaluate(
+    async (slideId: string, pixelRatio: number) => {
+      const node = document.getElementById(slideId);
+      if (!node) throw new Error(`Missing node ${slideId}`);
+      const w = window as unknown as {
+        __renderSlideToPng?: (n: HTMLElement, p: number) => Promise<Blob>;
+        htmlToImage?: { toBlob: (n: HTMLElement, o: unknown) => Promise<Blob> };
+      };
+      if (w.__renderSlideToPng) return await w.__renderSlideToPng(node, pixelRatio);
+      if (w.htmlToImage?.toBlob)
+        return await w.htmlToImage.toBlob(node, { pixelRatio, cacheBust: true });
+      throw new Error('No renderer available on page');
+    },
+    slideId,
+    pixelRatio,
+  );
 }
 
 async function blobToBuffer(blob: Blob): Promise<Buffer> {
@@ -76,12 +95,20 @@ async function blobToBuffer(blob: Blob): Promise<Buffer> {
 }
 
 export async function exportSlides(opts: ExportOptions = {}) {
-  const baseUrl = opts.baseUrl ?? getArg('base-url') ?? getArg('baseUrl') ?? 'http://localhost:4173/wvv-insta-posts/';
+  const baseUrl =
+    opts.baseUrl ??
+    getArg('base-url') ??
+    getArg('baseUrl') ??
+    'http://localhost:4173/wvv-insta-posts/';
   const configUrl = opts.configUrl ?? getArg('config-url') ?? getArg('configUrl');
-  const format = (opts.format ?? getArg('format') ?? 'portrait_4by5') as 'portrait_4by5' | 'stories';
+  const format = (opts.format ?? getArg('format') ?? 'portrait_4by5') as
+    'portrait_4by5' | 'stories';
   const pixelRatio = Number(opts.pixelRatio ?? getArg('pixel-ratio') ?? 2);
   const onlyWeekends = getArg('only-weekends')
-    ? getArg('only-weekends')!.split(',').map((n) => Number(n)).filter((n) => !Number.isNaN(n))
+    ? getArg('only-weekends')!
+        .split(',')
+        .map((n) => Number(n))
+        .filter((n) => !Number.isNaN(n))
     : opts.onlyWeekends;
 
   const browser: Browser = await chromium.launch({ headless: true });
