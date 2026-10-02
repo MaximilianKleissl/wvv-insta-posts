@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useSeasonBootstrap } from '@/composables/useSeasonBootstrap';
 import { useSlideRegistry } from '@/composables/useSlideRegistry';
@@ -16,6 +16,7 @@ import { usePendingSave } from '@/composables/usePendingSave';
 import SaveConfirmBar from '@/components/SaveConfirmBar.vue';
 import { useToast } from '@/composables/useToast';
 import { getSlideBoxStyle, type SlideFormatMode } from '@/lib/slide-format';
+import { exposeHeadlessExportApis } from '@/composables/useHeadlessExport';
 import { isTournamentMatchDay } from '@/lib/grouping';
 import type { StatEntry } from '@/components/HeaderMenu.vue';
 
@@ -84,6 +85,12 @@ const exportSlides = computed<SlideRef[]>(() => {
   });
   return refs;
 });
+
+exposeHeadlessExportApis(seasonData.value);
+watch(
+  () => seasonData.value,
+  (s) => exposeHeadlessExportApis(s),
+);
 
 const handleExportSingleWeekend = async (weekendIndex: number) => {
   if (!seasonData.value) return;
