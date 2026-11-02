@@ -56,6 +56,7 @@
           </div>
 
           <span
+            v-if="opponents.length < 3"
             class="max-w-full break-words text-center font-extrabold leading-tight"
             :class="opponentLayout.name"
           >
